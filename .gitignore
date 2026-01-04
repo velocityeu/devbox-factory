@@ -18,3 +18,7 @@ Desktop.ini
 # Temporary files
 *.tmp
 *.temp
+
+# ISO files (large, user-provided)
+iso/*.iso
+*.iso

@@ -500,6 +500,22 @@ Create pre-configured Windows 11 development VMs with tools auto-installed.
 | **1. Template** | `.\devbox template` | Create sysprepped VHDX from ISO | 30-60 min (one-time) |
 | **2. VM** | `.\devbox vm` | Clone template to new VMs | 2-5 min each |
 
+### ISO Files
+
+Place your Windows ISO files in the `iso/` folder:
+
+| OS | Download Link |
+|----|---------------|
+| **Windows 11 23H2/24H2** | [Microsoft Download](https://www.microsoft.com/software-download/windows11) |
+| **Windows Server 2025** | [Evaluation Center](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2025) |
+
+```
+devbox-factory/
+└── iso/
+    ├── Win11_24H2_English_x64.iso      <- Place your ISO here
+    └── README.md                        <- Instructions
+```
+
 ### Interactive Mode
 
 ```powershell
@@ -600,6 +616,8 @@ devbox-factory/
 ├── devbox.ps1                 # CLI wrapper
 ├── config/
 │   └── presets.json           # VM presets and profiles
+├── iso/                       # Place Windows ISOs here
+│   └── README.md              # ISO instructions
 ├── templates/
 │   ├── New-DevBoxTemplate.ps1 # VHDX template creation
 │   ├── autounattend.xml       # Unattended Windows install
