@@ -569,6 +569,18 @@ function Get-PresetValues {
         'ServerClass' = @{ MemoryGB = 32; ProcessorCount = 16; DiskSizeGB = 512 }
     }
 
+    if ($Script:Presets -and $Script:Presets.vmPresets) {
+        $presetFromConfig = $Script:Presets.vmPresets.$PresetName
+        if ($null -ne $presetFromConfig) {
+            return @{
+                MemoryGB = [int]$presetFromConfig.MemoryGB
+                ProcessorCount = [int]$presetFromConfig.ProcessorCount
+                DiskSizeGB = [int]$presetFromConfig.DiskSizeGB
+                DynamicMemory = [bool]$presetFromConfig.DynamicMemory
+            }
+        }
+    }
+
     if ($presets.ContainsKey($PresetName)) {
         return $presets[$PresetName]
     }
@@ -845,6 +857,7 @@ function Invoke-InteractiveMode {
         MemoryGB = 8
         ProcessorCount = 4
         DiskSizeGB = 127
+        DynamicMemory = $false
         SwitchName = "Default Switch"
         InstallMode = "Automatic"
         DevBoxProfile = "Full"
@@ -1056,6 +1069,9 @@ function Invoke-InteractiveMode {
                 $config.MemoryGB = $specs.MemoryGB
                 $config.ProcessorCount = $specs.ProcessorCount
                 $config.DiskSizeGB = $specs.DiskSizeGB
+                if ($null -ne $specs.DynamicMemory) {
+                    $config.DynamicMemory = $specs.DynamicMemory
+                }
 
                 # Start VMs?
                 Write-Host ""
@@ -1144,6 +1160,9 @@ function Invoke-InteractiveMode {
                 $config.MemoryGB = $specs.MemoryGB
                 $config.ProcessorCount = $specs.ProcessorCount
                 $config.DiskSizeGB = $specs.DiskSizeGB
+                if ($null -ne $specs.DynamicMemory) {
+                    $config.DynamicMemory = $specs.DynamicMemory
+                }
 
                 # Install Mode
                 $modeChoice = Show-InstallModeMenu
@@ -1523,6 +1542,7 @@ function Main {
         $Script:MemoryGB = $config.MemoryGB
         $Script:ProcessorCount = $config.ProcessorCount
         $Script:DiskSizeGB = $config.DiskSizeGB
+        $Script:DynamicMemory = $config.DynamicMemory
         $Script:SwitchName = $config.SwitchName
         $Script:InstallMode = $config.InstallMode
         $Script:DevBoxProfile = $config.DevBoxProfile
@@ -1537,6 +1557,7 @@ function Main {
         $MemoryGB = $config.MemoryGB
         $ProcessorCount = $config.ProcessorCount
         $DiskSizeGB = $config.DiskSizeGB
+        $DynamicMemory = $config.DynamicMemory
         $SwitchName = $config.SwitchName
         $InstallMode = $config.InstallMode
         $DevBoxProfile = $config.DevBoxProfile

@@ -1,6 +1,15 @@
 # Check for smart quotes and encoding issues
-$file = "C:\Projects\Install-ClaudeCode-VibeDev-Ultra\devbox.ps1"
-$content = Get-Content $file -Raw
+[CmdletBinding()]
+param(
+    [string]$Path = (Join-Path $PSScriptRoot "devbox.ps1")
+)
+
+if (-not (Test-Path $Path)) {
+    Write-Host "File not found: $Path" -ForegroundColor Red
+    exit 1
+}
+
+$content = Get-Content $Path -Raw
 
 # Check for smart quotes (curly quotes)
 $smartQuotes = @(
@@ -10,10 +19,10 @@ $smartQuotes = @(
     [char]8217   # '
 )
 
-Write-Host "Checking $file for smart quotes..." -ForegroundColor Cyan
+Write-Host "Checking $Path for smart quotes..." -ForegroundColor Cyan
 $found = $false
 $lineNum = 0
-foreach ($line in (Get-Content $file)) {
+foreach ($line in (Get-Content $Path)) {
     $lineNum++
     foreach ($sq in $smartQuotes) {
         if ($line.Contains($sq)) {

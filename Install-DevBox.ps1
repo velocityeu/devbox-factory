@@ -1190,8 +1190,12 @@ function Start-DevBox-Installation {
     Install-Package -PackageId $Script:Config.Packages.WindowsTerminal -DisplayName "Windows Terminal"
     Install-Package -PackageId $Script:Config.Packages.VSCode -DisplayName "VS Code" -ChocolateyFallback $Script:Config.ChocoFallback.VSCode
 
-    # Phase 4: Runtime Environments
-    Write-Log "Phase 4: Runtime Environments" -Level Header
+    # Phase 4: VS Code Extensions
+    Write-Log "Phase 4: VS Code Extensions" -Level Header
+    Install-VSCodeExtensions
+
+    # Phase 5: Runtime Environments
+    Write-Log "Phase 5: Runtime Environments" -Level Header
 
     if (-not $script:SkipPython) {
         Install-Package -PackageId $Script:Config.Packages.Python -DisplayName "Python 3.12" -ChocolateyFallback $Script:Config.ChocoFallback.Python
@@ -1206,14 +1210,14 @@ function Start-DevBox-Installation {
         Install-JSPackageManagers
     }
 
-    # Phase 5: Containerization
+    # Phase 6: Containerization
     if (-not $script:SkipDocker) {
         Write-Log "Phase 5: Docker & Containerization" -Level Header
         Enable-WSL2
         Install-Package -PackageId $Script:Config.Packages.Docker -DisplayName "Docker Desktop" -ChocolateyFallback $Script:Config.ChocoFallback.Docker
     }
 
-    # Phase 6: Databases
+    # Phase 7: Databases
     if (-not $script:SkipDatabases) {
         Write-Log "Phase 6: Databases" -Level Header
         Install-Package -PackageId $Script:Config.Packages.PostgreSQL -DisplayName "PostgreSQL 16" -ChocolateyFallback $Script:Config.ChocoFallback.PostgreSQL
@@ -1221,19 +1225,17 @@ function Start-DevBox-Installation {
         Install-Redis
     }
 
-    # Phase 7: Azure Tools
+    # Phase 8: Azure Tools
     if (-not $script:SkipAzure) {
         Install-AzureTools
     }
 
-    # Phase 8: AI Coding Tools
+    # Phase 9: AI Coding Tools
     if (-not $script:SkipAITools) {
-        Write-Log "Phase 8: AI Coding Tools" -Level Header
+        Write-Log "Phase 9: AI Coding Tools" -Level Header
 
         Update-PathEnvironment
         Start-Sleep -Seconds 2
-
-        Install-VSCodeExtensions
 
         if ($Script:Config.InstallAI) {
             Install-Package -PackageId $Script:Config.Packages.Cursor -DisplayName "Cursor IDE"
