@@ -4,7 +4,7 @@
 
 Professional-grade Windows 11 development environment automation. Create reproducible dev boxes with AI tools, full-stack runtimes, and Hyper-V VM templates.
 
-> Built by [Velocity EU](https://velocity.eu) - Eliminating "works on my machine" since day one.
+> Built by [Velocity EU](https://www.velocity-eu.com) - Eliminating "works on my machine" since day one.
 
 ## Features
 
@@ -64,9 +64,42 @@ DevBox Factory provides a human-friendly CLI wrapper:
 .\devbox help          # Show help
 ```
 
-## Interactive Menu
+### Help Menu
 
-Run `.\devbox install` with no parameters:
+```
+  +=================================================================+
+  |  DEVBOX FACTORY                       v2.0.0  Build: 2026-01-04  |
+  |  One command. Identical dev environments. Every time.            |
+  +=================================================================+
+
+  USAGE: .\devbox <command> [arguments]
+
+  COMMANDS:
+
+    init        Download and initialize DevBox Factory
+    install     Install development tools (interactive menu)
+    template    Create VM template from Windows ISO
+    vm          Create development VM from template
+    test        Run health checks and verify installation
+    help        Show this help message
+
+  EXAMPLES:
+
+    .\devbox install
+    .\devbox template -ISOPath C:\ISOs\Win11.iso
+    .\devbox vm -VMName DevVM-01 -StartVM
+
+  MORE INFO:
+    https://github.com/velocityeu/devbox-factory
+```
+
+---
+
+## Interactive Menus
+
+All DevBox Factory scripts feature interactive menus with guided wizards. Simply run any command without parameters to launch the menu.
+
+### Installation Menu (`.\devbox install`)
 
 ```
   +=================================================================+
@@ -95,7 +128,299 @@ Run `.\devbox install` with no parameters:
        Git, Windows Terminal, VS Code
 
    [Q] Quit
+
+  Enter choice [1-6, Q]:
 ```
+
+### Custom Installation Menu
+
+When you select `[5] Custom Installation`:
+
+```
+  CUSTOM INSTALLATION - Select Components
+
+   [1] Core Tools (Required)
+       Git, Windows Terminal, VS Code
+
+   [2] AI Coding Tools
+       Claude Code, Cursor, VS Code AI extensions
+
+   [3] Node.js Environment
+       NVM, Node.js LTS, npm, pnpm, yarn, bun
+
+   [4] Python
+       Python 3.12 with pip
+
+   [5] Docker & Containers
+       WSL2, Docker Desktop
+
+   [6] Databases
+       PostgreSQL, MongoDB, Redis
+
+   [7] Azure Development
+       Azure CLI, Functions, .NET SDK, Terraform, Bicep
+
+  Enter components (comma-separated, e.g., 2,3,4):
+```
+
+---
+
+### Template Creation Menu (`.\devbox template`)
+
+Stage 1 of VM automation - creates a sysprepped Windows 11 template VHDX.
+
+```
+  +===============================================================+
+  |                                                               |
+  |   ██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗   |
+  |   ██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║   |
+  |   ██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║   |
+  |   ╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝   |
+  |    ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝    |
+  |     ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝     |
+  |                                                               |
+  +===============================================================+
+  |           HYPER-V TEMPLATE CREATOR - Stage 1                  |
+  +===============================================================+
+
+  MAIN MENU
+
+   [1] Quick Start (Recommended)
+       Select ISO, use default settings, create template
+
+   [2] Custom Configuration
+       Configure all template settings manually
+
+   [3] View Current Settings
+       Review default configuration
+
+   [Q] Quit
+
+  Enter choice [1-3, Q]:
+```
+
+#### ISO Selection
+
+```
+  SELECT WINDOWS 11 ISO
+
+  Found ISOs in common locations:
+
+   [1] C:\ISOs\Win11_23H2_English_x64.iso (5.2 GB)
+   [2] C:\Users\Admin\Downloads\Win11_23H2.iso (5.1 GB)
+
+   [B] Browse for ISO file...
+   [Q] Back
+
+  Enter choice:
+```
+
+#### VM Preset Selection
+
+```
+  SELECT VM PRESET
+
+   [1] Lightweight
+       4 GB RAM, 2 CPUs, 80 GB Disk
+       Best for: Testing, Light coding, Learning
+
+   [2] Standard (Recommended)
+       8 GB RAM, 4 CPUs, 127 GB Disk
+       Best for: Web development, General coding, Most users
+
+   [3] Performance
+       16 GB RAM, 8 CPUs, 256 GB Disk
+       Best for: AI/ML development, Multiple projects, Docker heavy
+
+   [4] Server-Class
+       32 GB RAM, 16 CPUs, 512 GB Disk
+       Best for: Database hosting, Enterprise development
+
+   [C] Custom specs...
+   [B] Back
+
+  Enter choice [1-4, C, B]:
+```
+
+---
+
+### VM Creation Menu (`.\devbox vm`)
+
+Stage 2 of VM automation - creates VMs from the template.
+
+```
+  +===============================================================+
+  |                                                               |
+  |   ██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗   |
+  |   ██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║   |
+  |   ██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║   |
+  |   ╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝   |
+  |    ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝    |
+  |     ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝     |
+  |                                                               |
+  +===============================================================+
+  |              HYPER-V VM CREATOR - Stage 2                     |
+  +===============================================================+
+
+  MAIN MENU
+
+   [1] Quick Create (Recommended)
+       Create a single VM with default settings
+
+   [2] Batch Create
+       Create multiple VMs with naming pattern
+
+   [3] Advanced Configuration
+       Full control over all settings
+
+   [4] List Existing VMs
+       View and manage DevBox VMs
+
+   [Q] Quit
+
+  Enter choice [1-4, Q]:
+```
+
+#### DevBox Profile Selection
+
+```
+  SELECT DEVBOX PROFILE
+
+  Choose which tools to auto-install on first boot:
+
+   [1] Full (Recommended)
+       Everything: AI tools, Web Dev, Azure, Docker, Databases
+
+   [2] AI Coder
+       Claude Code, Cursor, VS Code + AI extensions, Node.js, Python
+
+   [3] Web Developer
+       Node.js, Python, Docker, PostgreSQL, MongoDB, Redis
+
+   [4] Azure Developer
+       Azure CLI, Functions, .NET SDK, Terraform, Bicep
+
+   [5] Minimal
+       Git, Windows Terminal, VS Code only
+
+   [N] None - skip DevBox installation
+
+   [B] Back
+
+  Enter choice [1-5, N, B]:
+```
+
+#### Batch VM Creation Preview
+
+```
+  BATCH VM CREATION
+
+  Base Name: TeamDev
+  Count: 5
+  Pattern: -{0:D2}
+
+  Preview of VM names:
+    - TeamDev-01
+    - TeamDev-02
+    - TeamDev-03
+    - TeamDev-04
+    - TeamDev-05
+
+  [C] Confirm and create
+  [E] Edit settings
+  [B] Back
+
+  Enter choice:
+```
+
+#### Pre-flight Validation
+
+```
+  PRE-FLIGHT VALIDATION
+
+   [+] Template VHDX exists
+   [+] Hyper-V module available
+   [+] Virtual switch 'Default Switch' found
+   [+] Sufficient disk space (523 GB free)
+   [+] No VM name conflicts
+   [+] Install-DevBox.ps1 found (will copy to VM)
+
+   All checks passed!
+
+  [C] Continue with VM creation
+  [B] Back to menu
+
+  Enter choice:
+```
+
+---
+
+### Health Check Menu (`.\devbox test`)
+
+```
+  +=================================================================+
+  |  DEVBOX FACTORY - HEALTH CHECK      v2.0.0  Build: 2026-01-04  |
+  +=================================================================+
+
+  CORE TOOLS
+  ----------
+  Checking Git... [PASS] 2.43.0
+  Checking VS Code... [PASS] 1.85.0
+  Checking Windows Terminal... [PASS]
+  Checking PowerShell 7... [PASS] 7.4.0
+
+  AI CODING TOOLS
+  ----------------
+  Checking Claude Code... [PASS] 1.0.0
+  Checking Cursor IDE... [PASS]
+  Checking VS Code AI extensions... [PASS] 3 AI extension(s)
+
+  DEVELOPMENT RUNTIMES
+  ---------------------
+  Checking Node.js... [PASS] 20.10.0
+  Checking npm... [PASS] 10.2.3
+  Checking Python... [PASS] 3.12.0
+  Checking pip... [PASS] 23.3.1
+  Checking .NET SDK... [PASS] 8.0.100
+  Checking pnpm... [PASS] 8.12.0
+
+  CONTAINERIZATION
+  -----------------
+  Checking Docker... [PASS] 24.0.7
+  Checking Docker Compose... [PASS] 2.23.3
+  Checking WSL... [PASS] 2.0.9.0
+  Checking Docker Desktop Service... [PASS] Running
+
+  HYPER-V / VM SUPPORT
+  ---------------------
+  Checking Hyper-V... [PASS] Enabled
+  Checking Hyper-V VM Management... [PASS] Running
+  Checking DevBox Templates... [PASS] C:\HyperV\Templates
+  Checking DevBox VMs... [PASS] C:\HyperV\VMs
+
+  NETWORK CONNECTIVITY
+  ---------------------
+  Checking GitHub access... [PASS] Connected
+  Checking npm registry... [PASS] Connected
+
+  +=================================================================+
+  |                          SUMMARY                                |
+  +=================================================================+
+
+  Results: 22 passed, 0 warnings, 0 failed (of 22 checks)
+
+  [OK] DevBox environment is healthy!
+```
+
+You can also run specific categories:
+
+```powershell
+.\devbox test -Category Core,AI      # Only check core and AI tools
+.\devbox test -Category Docker       # Only check containerization
+.\devbox test -Category HyperV       # Only check VM support
+```
+
+---
 
 ## Installation Profiles
 
@@ -149,6 +474,13 @@ Run `.\devbox install` with no parameters:
 
 Create pre-configured Windows 11 development VMs with tools auto-installed.
 
+### Two-Stage Process
+
+| Stage | Command | Purpose | Time |
+|-------|---------|---------|------|
+| **1. Template** | `.\devbox template` | Create sysprepped VHDX from ISO | 30-60 min (one-time) |
+| **2. VM** | `.\devbox vm` | Clone template to new VMs | 2-5 min each |
+
 ### Interactive Mode
 
 ```powershell
@@ -159,20 +491,13 @@ Create pre-configured Windows 11 development VMs with tools auto-installed.
 .\devbox vm
 ```
 
-Features:
-- **File picker dialogs** for ISO and template selection
-- **VM presets** (Lightweight, Standard, Performance, Server-class)
-- **Pre-flight validation** before any changes
-- **Live naming preview** for batch VM creation
-- **Back/Cancel** on every screen
-
 ### Command-Line Mode
 
 ```powershell
-# Stage 1: Create template from Windows 11 ISO (one-time, ~30-60 min)
+# Stage 1: Create template from Windows 11 ISO
 .\devbox template -ISOPath "C:\ISOs\Win11_23H2.iso"
 
-# Stage 2: Create dev VMs (fast, ~2-5 min each)
+# Stage 2: Create dev VMs
 .\devbox vm -VMName "DevVM-01" -InstallMode Automatic -StartVM
 ```
 
@@ -196,6 +521,15 @@ Features:
 # High-spec Azure development
 .\devbox vm -VMName "Azure-Dev" -DevBoxProfile Azure -MemoryGB 16 -ProcessorCount 8 -StartVM
 ```
+
+### VM Presets
+
+| Preset | RAM | CPUs | Disk | Best For |
+|--------|-----|------|------|----------|
+| **Lightweight** | 4 GB | 2 | 80 GB | Testing, learning |
+| **Standard** | 8 GB | 4 | 127 GB | General development |
+| **Performance** | 16 GB | 8 | 256 GB | AI/ML, Docker heavy |
+| **Server-Class** | 32 GB | 16 | 512 GB | Enterprise, databases |
 
 ### Default VM Credentials
 
@@ -237,38 +571,6 @@ For automation/scripting:
 | `-SkipVSCodeExtensions` | Skip VS Code extensions |
 | `-NoReboot` | Don't prompt for reboot |
 | `-LogPath` | Custom log file path |
-
-## Health Check
-
-Verify your environment:
-
-```powershell
-.\devbox test
-```
-
-Output:
-```
-  +=================================================================+
-  |  DEVBOX FACTORY - HEALTH CHECK      v2.0.0  Build: 2026-01-04  |
-  +=================================================================+
-
-  CORE TOOLS
-  ----------
-  Checking Git... [PASS] 2.43.0
-  Checking VS Code... [PASS] 1.85.0
-  Checking Windows Terminal... [PASS]
-  Checking PowerShell 7... [PASS] 7.4.0
-
-  AI CODING TOOLS
-  ----------------
-  Checking Claude Code... [PASS] 1.0.0
-  Checking Cursor IDE... [PASS]
-
-  SUMMARY
-  Results: 15 passed, 1 warnings, 0 failed (of 16 checks)
-
-  [OK] DevBox environment is healthy!
-```
 
 ## Project Structure
 
@@ -379,4 +681,4 @@ Pull requests welcome! Test on a clean Windows 11 VM before submitting.
 
 ---
 
-**DevBox Factory v2.0.0** | Built by [Velocity EU](https://velocity.eu) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
+**DevBox Factory v2.0.0** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
