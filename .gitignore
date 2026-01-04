@@ -1,6 +1,7 @@
 # Logs
 *.log
 VibeDev-Install.log
+DevBox-Install.log
 
 # Claude Code local config
 .claude/
@@ -22,3 +23,13 @@ Desktop.ini
 # ISO files (large, user-provided)
 iso/*.iso
 *.iso
+
+# Pre-downloaded dependencies (large installer files)
+# Keep manifest.json and README.md, ignore actual installers
+dependencies/*.exe
+dependencies/*.msi
+dependencies/*.zip
+dependencies/*.msix
+!dependencies/manifest.json
+!dependencies/README.md
+!dependencies/.gitkeep

@@ -152,6 +152,22 @@
     }
   },
 
+  "dependencyMapping": {
+    "comment": "Maps WinGet package IDs to manifest dependency IDs for offline installation",
+    "Git.Git": "git",
+    "Microsoft.VisualStudioCode": "vscode",
+    "Microsoft.WindowsTerminal": "windows-terminal",
+    "Microsoft.VCRedist.2015+.x64": "vcredist-x64",
+    "Microsoft.DotNet.SDK.8": "dotnet-sdk-8",
+    "OpenJS.NodeJS.LTS": "nodejs-lts",
+    "Python.Python.3.12": "python-3.12",
+    "Microsoft.WindowsADK": "windows-adk",
+    "Microsoft.ADKPEAddon": "adk-winpe",
+    "Docker.DockerDesktop": "docker-desktop",
+    "Microsoft.AzureCLI": "azure-cli",
+    "Microsoft.PowerShell": "powershell-7"
+  },
+
   "installModes": {
     "Automatic": {
       "Description": "Auto-login and run Install-DevBox.ps1 silently on first boot",

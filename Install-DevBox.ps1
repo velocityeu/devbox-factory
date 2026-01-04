@@ -204,6 +204,37 @@ $Script:Version = "3.0.0"
 $Script:Build = "20260104.1800"
 $Script:BuildDate = "2026-01-04 18:00"
 
+# Import download helper module if available
+$Script:DownloadHelpersAvailable = $false
+$Script:DependenciesPath = Join-Path $PSScriptRoot "dependencies"
+$Script:ManifestPath = Join-Path $Script:DependenciesPath "manifest.json"
+
+$helperModulePath = Join-Path $PSScriptRoot "modules\DownloadHelpers.psm1"
+if (Test-Path $helperModulePath) {
+    try {
+        Import-Module $helperModulePath -Force -ErrorAction Stop
+        $Script:DownloadHelpersAvailable = $true
+    } catch {
+        # Continue without offline support
+    }
+}
+
+# Dependency ID mapping (WinGet ID -> manifest dependency ID)
+$Script:DependencyMapping = @{
+    "Git.Git"                       = "git"
+    "Microsoft.VisualStudioCode"    = "vscode"
+    "Microsoft.WindowsTerminal"     = "windows-terminal"
+    "Microsoft.VCRedist.2015+.x64"  = "vcredist-x64"
+    "Microsoft.DotNet.SDK.8"        = "dotnet-sdk-8"
+    "OpenJS.NodeJS.LTS"             = "nodejs-lts"
+    "Python.Python.3.12"            = "python-3.12"
+    "Microsoft.WindowsADK"          = "windows-adk"
+    "Microsoft.ADKPEAddon"          = "adk-winpe"
+    "Docker.DockerDesktop"          = "docker-desktop"
+    "Microsoft.AzureCLI"            = "azure-cli"
+    "Microsoft.PowerShell"          = "powershell-7"
+}
+
 # ============================================================================
 # MENU SYSTEM
 # ============================================================================
@@ -644,6 +675,7 @@ function Install-Package {
 
     Write-Log "Checking $name..." -Level Info
 
+    # Check if already installed
     $installed = winget list --id $PackageId --exact 2>$null | Out-String
     if ($installed -and $installed -notmatch "No installed package") {
         Write-Log "$name is already installed. Skipping." -Level Info
@@ -651,6 +683,25 @@ function Install-Package {
         return $true
     }
 
+    # Try offline installation first if download helpers are available
+    if ($Script:DownloadHelpersAvailable) {
+        $dependencyId = $Script:DependencyMapping[$PackageId]
+        if ($dependencyId) {
+            Write-Log "Checking for pre-downloaded $name..." -Level Info
+
+            $offlineResult = Install-FromDependency -DependencyId $dependencyId `
+                -DependenciesPath $Script:DependenciesPath `
+                -ManifestPath $Script:ManifestPath
+
+            if ($offlineResult) {
+                Write-Log "$name installed from local cache." -Level Success
+                [void]$Script:Config.InstalledItems.Add("$name (offline)")
+                return $true
+            }
+        }
+    }
+
+    # Online installation via WinGet
     Write-Log "Installing $name via WinGet..." -Level Info
 
     try {
@@ -666,6 +717,7 @@ function Install-Package {
         Write-Log "WinGet installation failed for $name" -Level Warning
     }
 
+    # Fallback to Chocolatey
     if ($ChocolateyFallback -and (Test-CommandExists "choco")) {
         Write-Log "Trying Chocolatey fallback for $name..." -Level Warning
 

@@ -1,0 +1,231 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-01-04",
+  "description": "DevBox Factory dependency manifest for offline installation",
+
+  "dependencies": {
+    "git": {
+      "displayName": "Git for Windows",
+      "version": "2.43.0",
+      "downloadUrl": "https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe",
+      "fileName": "Git-2.43.0-64-bit.exe",
+      "expectedSizeBytes": 63000000,
+      "checksumSha256": "",
+      "installArgs": "/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /COMPONENTS=\"icons,ext\\reg\\shellhere,assoc,assoc_sh\"",
+      "wingetId": "Git.Git",
+      "chocoId": "git",
+      "required": true,
+      "category": "core",
+      "order": 1
+    },
+    "vscode": {
+      "displayName": "Visual Studio Code",
+      "version": "latest",
+      "downloadUrl": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
+      "fileName": "VSCodeUserSetup-x64.exe",
+      "expectedSizeBytes": 95000000,
+      "checksumSha256": "",
+      "installArgs": "/VERYSILENT /NORESTART /MERGETASKS=!runcode,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath",
+      "wingetId": "Microsoft.VisualStudioCode",
+      "chocoId": "vscode",
+      "required": true,
+      "category": "core",
+      "order": 2
+    },
+    "windows-terminal": {
+      "displayName": "Windows Terminal",
+      "version": "latest",
+      "downloadUrl": "",
+      "fileName": "",
+      "expectedSizeBytes": 0,
+      "checksumSha256": "",
+      "installArgs": "",
+      "wingetId": "Microsoft.WindowsTerminal",
+      "chocoId": "microsoft-windows-terminal",
+      "required": true,
+      "category": "core",
+      "order": 3,
+      "notes": "Best installed via WinGet/Microsoft Store"
+    },
+    "vcredist-x64": {
+      "displayName": "Visual C++ Redistributable 2015-2022 (x64)",
+      "version": "14.38.33135",
+      "downloadUrl": "https://aka.ms/vs/17/release/vc_redist.x64.exe",
+      "fileName": "vc_redist.x64.exe",
+      "expectedSizeBytes": 25000000,
+      "checksumSha256": "",
+      "installArgs": "/quiet /norestart",
+      "wingetId": "Microsoft.VCRedist.2015+.x64",
+      "chocoId": "vcredist140",
+      "required": true,
+      "category": "runtime",
+      "order": 1
+    },
+    "dotnet-sdk-8": {
+      "displayName": ".NET SDK 8.0",
+      "version": "8.0.401",
+      "downloadUrl": "https://download.visualstudio.microsoft.com/download/pr/dotnet-sdk-8.0-win-x64.exe",
+      "fileName": "dotnet-sdk-8.0-win-x64.exe",
+      "expectedSizeBytes": 200000000,
+      "checksumSha256": "",
+      "installArgs": "/quiet /norestart",
+      "wingetId": "Microsoft.DotNet.SDK.8",
+      "chocoId": "dotnet-sdk",
+      "required": false,
+      "category": "runtime",
+      "order": 2,
+      "profiles": ["Full", "Azure"]
+    },
+    "nodejs-lts": {
+      "displayName": "Node.js LTS",
+      "version": "20.10.0",
+      "downloadUrl": "https://nodejs.org/dist/v20.10.0/node-v20.10.0-x64.msi",
+      "fileName": "node-v20.10.0-x64.msi",
+      "expectedSizeBytes": 30000000,
+      "checksumSha256": "",
+      "installArgs": "/quiet /norestart",
+      "wingetId": "OpenJS.NodeJS.LTS",
+      "chocoId": "nodejs-lts",
+      "required": false,
+      "category": "runtime",
+      "order": 3,
+      "profiles": ["Full", "AICoder", "WebDev"]
+    },
+    "python-3.12": {
+      "displayName": "Python 3.12",
+      "version": "3.12.2",
+      "downloadUrl": "https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe",
+      "fileName": "python-3.12.2-amd64.exe",
+      "expectedSizeBytes": 25000000,
+      "checksumSha256": "",
+      "installArgs": "/quiet InstallAllUsers=1 PrependPath=1 Include_test=0",
+      "wingetId": "Python.Python.3.12",
+      "chocoId": "python312",
+      "required": false,
+      "category": "runtime",
+      "order": 4,
+      "profiles": ["Full", "AICoder", "WebDev"]
+    },
+    "windows-adk": {
+      "displayName": "Windows Assessment and Deployment Kit",
+      "version": "10.1.26100.1",
+      "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=2243390",
+      "fileName": "adksetup.exe",
+      "expectedSizeBytes": 2000000,
+      "checksumSha256": "",
+      "installArgs": "/quiet /features OptionId.DeploymentTools",
+      "wingetId": "Microsoft.WindowsADK",
+      "chocoId": "windows-adk",
+      "required": false,
+      "category": "vm-tools",
+      "order": 1,
+      "notes": "Bootstrapper only - downloads ~1.5GB additional components during install"
+    },
+    "adk-winpe": {
+      "displayName": "Windows PE Add-on for ADK",
+      "version": "10.1.26100.1",
+      "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=2243391",
+      "fileName": "adkwinpesetup.exe",
+      "expectedSizeBytes": 4000000,
+      "checksumSha256": "",
+      "installArgs": "/quiet /features OptionId.WindowsPreinstallationEnvironment",
+      "wingetId": "Microsoft.ADKPEAddon",
+      "chocoId": "windows-adk-winpe",
+      "required": false,
+      "category": "vm-tools",
+      "order": 2,
+      "notes": "Required for WinPE boot media creation"
+    },
+    "docker-desktop": {
+      "displayName": "Docker Desktop",
+      "version": "latest",
+      "downloadUrl": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe",
+      "fileName": "Docker-Desktop-Installer.exe",
+      "expectedSizeBytes": 550000000,
+      "checksumSha256": "",
+      "installArgs": "install --quiet --accept-license",
+      "wingetId": "Docker.DockerDesktop",
+      "chocoId": "docker-desktop",
+      "required": false,
+      "category": "containers",
+      "order": 1,
+      "profiles": ["Full", "WebDev"]
+    },
+    "azure-cli": {
+      "displayName": "Azure CLI",
+      "version": "latest",
+      "downloadUrl": "https://aka.ms/installazurecliwindowsx64",
+      "fileName": "azure-cli.msi",
+      "expectedSizeBytes": 55000000,
+      "checksumSha256": "",
+      "installArgs": "/quiet /norestart",
+      "wingetId": "Microsoft.AzureCLI",
+      "chocoId": "azure-cli",
+      "required": false,
+      "category": "cloud",
+      "order": 1,
+      "profiles": ["Full", "Azure"]
+    },
+    "powershell-7": {
+      "displayName": "PowerShell 7",
+      "version": "7.4.1",
+      "downloadUrl": "https://github.com/PowerShell/PowerShell/releases/download/v7.4.1/PowerShell-7.4.1-win-x64.msi",
+      "fileName": "PowerShell-7.4.1-win-x64.msi",
+      "expectedSizeBytes": 105000000,
+      "checksumSha256": "",
+      "installArgs": "/quiet ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1 ENABLE_PSREMOTING=0 REGISTER_MANIFEST=1 USE_MU=1 ENABLE_MU=1 ADD_PATH=1",
+      "wingetId": "Microsoft.PowerShell",
+      "chocoId": "powershell-core",
+      "required": false,
+      "category": "core",
+      "order": 4,
+      "profiles": ["Full", "Azure"]
+    }
+  },
+
+  "categories": {
+    "core": {
+      "displayName": "Core Tools",
+      "description": "Essential development tools",
+      "order": 1
+    },
+    "runtime": {
+      "displayName": "Runtimes & SDKs",
+      "description": "Development runtimes and language SDKs",
+      "order": 2
+    },
+    "vm-tools": {
+      "displayName": "VM Creation Tools",
+      "description": "Tools for Hyper-V template creation",
+      "order": 3
+    },
+    "containers": {
+      "displayName": "Containerization",
+      "description": "Docker and container tools",
+      "order": 4
+    },
+    "cloud": {
+      "displayName": "Cloud Tools",
+      "description": "Azure and cloud development tools",
+      "order": 5
+    }
+  },
+
+  "profiles": {
+    "Full": {
+      "dependencies": ["git", "vscode", "windows-terminal", "vcredist-x64", "dotnet-sdk-8", "nodejs-lts", "python-3.12", "docker-desktop", "azure-cli", "powershell-7"]
+    },
+    "AICoder": {
+      "dependencies": ["git", "vscode", "windows-terminal", "vcredist-x64", "nodejs-lts", "python-3.12"]
+    },
+    "WebDev": {
+      "dependencies": ["git", "vscode", "windows-terminal", "vcredist-x64", "nodejs-lts", "python-3.12", "docker-desktop"]
+    },
+    "Azure": {
+      "dependencies": ["git", "vscode", "windows-terminal", "vcredist-x64", "dotnet-sdk-8", "azure-cli", "powershell-7"]
+    },
+    "Minimal": {
+      "dependencies": ["git", "vscode", "windows-terminal"]
+    }
+  }
+}

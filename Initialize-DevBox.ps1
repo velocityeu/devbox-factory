@@ -54,6 +54,20 @@ $Script:ISOSearchPaths = @(
     "D:\ISOs"
 )
 
+# Import download helper module if available (not available when running via irm | iex)
+$Script:DownloadHelpersAvailable = $false
+if (-not [string]::IsNullOrWhiteSpace($PSScriptRoot)) {
+    $helperModulePath = Join-Path $PSScriptRoot "modules\DownloadHelpers.psm1"
+    if (Test-Path $helperModulePath) {
+        try {
+            Import-Module $helperModulePath -Force -ErrorAction Stop
+            $Script:DownloadHelpersAvailable = $true
+        } catch {
+            # Continue without progress helpers
+        }
+    }
+}
+
 #region Banner and UI
 
 function Get-VersionString {
@@ -668,7 +682,13 @@ function Download-DevBoxFiles {
     Show-Message "Creating directory structure..." -Level Info
     try {
         New-Item -ItemType Directory -Path $DestinationPath -Force -ErrorAction Stop | Out-Null
-        New-Item -ItemType Directory -Path (Join-Path $DestinationPath "HyperV") -Force -ErrorAction Stop | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $DestinationPath "config") -Force -ErrorAction Stop | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $DestinationPath "templates") -Force -ErrorAction Stop | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $DestinationPath "vms") -Force -ErrorAction Stop | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $DestinationPath "utils") -Force -ErrorAction Stop | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $DestinationPath "iso") -Force -ErrorAction Stop | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $DestinationPath "modules") -Force -ErrorAction Stop | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $DestinationPath "dependencies") -Force -ErrorAction Stop | Out-Null
         Show-Message "Directories created" -Level Success
     } catch {
         Show-Message "Failed to create directories: $_" -Level Error
@@ -676,10 +696,19 @@ function Download-DevBoxFiles {
     }
 
     Write-Host ""
-    $totalFiles = $Script:RequiredFiles.Count
+
+    # Add additional files needed for full functionality
+    $allFiles = $Script:RequiredFiles + @(
+        @{ Path = "modules/DownloadHelpers.psm1"; Required = $false },
+        @{ Path = "dependencies/manifest.json"; Required = $false },
+        @{ Path = "dependencies/README.md"; Required = $false },
+        @{ Path = "Download-Dependencies.ps1"; Required = $false }
+    )
+
+    $totalFiles = $allFiles.Count
     $current = 0
 
-    foreach ($fileInfo in $Script:RequiredFiles) {
+    foreach ($fileInfo in $allFiles) {
         $file = $fileInfo.Path
         $isRequired = $fileInfo.Required
         $current++
@@ -693,32 +722,52 @@ function Download-DevBoxFiles {
             New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
         }
 
-        $progressBar = "[" + ("=" * [math]::Floor(($current / $totalFiles) * 20)) + (" " * (20 - [math]::Floor(($current / $totalFiles) * 20))) + "]"
-        Write-Host "  $progressBar $current/$totalFiles " -NoNewline
+        # Use progress helpers if available
+        if ($Script:DownloadHelpersAvailable) {
+            # Download with progress (auto-selects spinner or bar based on content length)
+            Write-Host "  [$current/$totalFiles] " -NoNewline -ForegroundColor DarkGray
+            $downloadResult = Start-DownloadWithProgress -Url $url `
+                -DestinationPath $destFile `
+                -DisplayName $file
 
-        try {
-            $webClient = New-Object System.Net.WebClient
-            $webClient.Headers.Add("User-Agent", "DevBox-Factory/2.0")
-            $webClient.DownloadFile($url, $destFile)
-
-            if (Test-Path $destFile) {
-                $fileSize = (Get-Item $destFile).Length
-                if ($fileSize -gt 0) {
-                    Write-Host "[+] $file" -ForegroundColor Green
-                    $results.Downloaded += $file
+            if ($downloadResult.Success) {
+                $results.Downloaded += $file
+            } else {
+                if ($isRequired) {
+                    $results.Failed += $file
                 } else {
-                    throw "Empty file downloaded"
+                    $results.Skipped += $file
                 }
-            } else {
-                throw "File not created"
             }
-        } catch {
-            if ($isRequired) {
-                Write-Host "[X] $file (REQUIRED)" -ForegroundColor Red
-                $results.Failed += $file
-            } else {
-                Write-Host "[-] $file (optional, skipped)" -ForegroundColor Yellow
-                $results.Skipped += $file
+        } else {
+            # Fallback: basic download with simple progress
+            $progressBar = "[" + ("=" * [math]::Floor(($current / $totalFiles) * 20)) + (" " * (20 - [math]::Floor(($current / $totalFiles) * 20))) + "]"
+            Write-Host "  $progressBar $current/$totalFiles " -NoNewline
+
+            try {
+                $webClient = New-Object System.Net.WebClient
+                $webClient.Headers.Add("User-Agent", "DevBox-Factory/3.0")
+                $webClient.DownloadFile($url, $destFile)
+
+                if (Test-Path $destFile) {
+                    $fileSize = (Get-Item $destFile).Length
+                    if ($fileSize -gt 0) {
+                        Write-Host "[+] $file" -ForegroundColor Green
+                        $results.Downloaded += $file
+                    } else {
+                        throw "Empty file downloaded"
+                    }
+                } else {
+                    throw "File not created"
+                }
+            } catch {
+                if ($isRequired) {
+                    Write-Host "[X] $file (REQUIRED)" -ForegroundColor Red
+                    $results.Failed += $file
+                } else {
+                    Write-Host "[-] $file (optional, skipped)" -ForegroundColor Yellow
+                    $results.Skipped += $file
+                }
             }
         }
     }
