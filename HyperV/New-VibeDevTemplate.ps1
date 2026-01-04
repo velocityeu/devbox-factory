@@ -12,8 +12,10 @@
     6. Runs Sysprep to generalize the image
     7. Exports the optimized VHDX template
 
+    Run without parameters for interactive menu mode.
+
 .PARAMETER ISOPath
-    Path to Windows 11 ISO file (required)
+    Path to Windows 11 ISO file. If not provided, interactive mode is launched.
 
 .PARAMETER TemplatePath
     Directory to store the template VHDX. Default: C:\HyperV\Templates
@@ -46,22 +48,31 @@
 .PARAMETER TimeZone
     Windows timezone. Default: Pacific Standard Time
 
+.PARAMETER Preset
+    VM specification preset: Lightweight, Standard, Performance, ServerClass, Custom
+
+.PARAMETER Interactive
+    Launch interactive menu mode (default if no ISOPath provided)
+
+.EXAMPLE
+    .\New-VibeDevTemplate.ps1
+    # Launches interactive menu
+
 .EXAMPLE
     .\New-VibeDevTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso"
 
 .EXAMPLE
-    .\New-VibeDevTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso" -SkipWindowsUpdates -MemoryGB 16
+    .\New-VibeDevTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso" -Preset Performance -SkipWindowsUpdates
 
 .NOTES
     Requires: Windows 10/11 Pro or Server with Hyper-V capability
     Author: VibeDev Team
-    Version: 1.0
+    Version: 2.0.0
+    Build: 2026-01-04
 #>
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
-    [ValidateScript({ Test-Path $_ -PathType Leaf })]
     [string]$ISOPath,
 
     [string]$TemplatePath = "C:\HyperV\Templates",
@@ -85,7 +96,12 @@ param(
     [ValidateRange(1, 11)]
     [int]$WindowsEditionIndex = 6,
 
-    [string]$TimeZone = "Pacific Standard Time"
+    [string]$TimeZone = "Pacific Standard Time",
+
+    [ValidateSet('Lightweight', 'Standard', 'Performance', 'ServerClass', 'Custom')]
+    [string]$Preset,
+
+    [switch]$Interactive
 )
 
 #Requires -RunAsAdministrator
@@ -94,10 +110,21 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
+# Version information
+$Script:VibeDevVersion = @{
+    Major       = 2
+    Minor       = 0
+    Patch       = 0
+    BuildDate   = "2026-01-04"
+    BuildNumber = "20260104.001"
+}
+
 # Script-level variables
 $Script:LogPath = Join-Path $env:USERPROFILE "VibeDev-Template.log"
 $Script:RequiresReboot = $false
 $Script:VMName = "$TemplateName-Build"
+$Script:InteractiveMode = $false
+$Script:SelectedConfig = @{}
 $Script:VHDXPath = Join-Path $TemplatePath "$TemplateName.vhdx"
 $Script:TempVHDXPath = Join-Path $env:TEMP "$TemplateName-temp.vhdx"
 $Script:ADKPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit"
@@ -142,22 +169,566 @@ function Write-Log {
     }
 }
 
+function Get-VersionString {
+    return "v$($Script:VibeDevVersion.Major).$($Script:VibeDevVersion.Minor).$($Script:VibeDevVersion.Patch)"
+}
+
 function Show-Banner {
-    $banner = @"
+    $version = Get-VersionString
+    $build = $Script:VibeDevVersion.BuildDate
 
-  ╔═══════════════════════════════════════════════════════════════╗
-  ║   ██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗   ║
-  ║   ██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║   ║
-  ║   ██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║   ║
-  ║   ╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝   ║
-  ║    ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝    ║
-  ║     ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝     ║
-  ╠═══════════════════════════════════════════════════════════════╣
-  ║           HYPER-V TEMPLATE CREATOR - Stage 1                  ║
-  ╚═══════════════════════════════════════════════════════════════╝
+    Clear-Host
+    Write-Host ""
+    Write-Host "  +===============================================================+" -ForegroundColor Magenta
+    Write-Host "  |                                                               |" -ForegroundColor Magenta
+    Write-Host "  |   ██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗   |" -ForegroundColor Magenta
+    Write-Host "  |   ██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║   |" -ForegroundColor Magenta
+    Write-Host "  |   ██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║   |" -ForegroundColor Magenta
+    Write-Host "  |   ╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝   |" -ForegroundColor Magenta
+    Write-Host "  |    ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝    |" -ForegroundColor Magenta
+    Write-Host "  |     ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝     |" -ForegroundColor Magenta
+    Write-Host "  |                                                               |" -ForegroundColor Magenta
+    Write-Host "  +===============================================================+" -ForegroundColor Magenta
+    Write-Host "  |           HYPER-V TEMPLATE CREATOR - Stage 1                  |" -ForegroundColor Cyan
+    Write-Host "  |                                                               |" -ForegroundColor Cyan
+    Write-Host "  |   Version: $version                        Build: $build   |" -ForegroundColor Cyan
+    Write-Host "  +===============================================================+" -ForegroundColor Magenta
+    Write-Host ""
+}
 
-"@
-    Write-Host $banner -ForegroundColor Cyan
+#endregion
+
+#region Interactive Menu Functions
+
+function Show-ISOFilePicker {
+    Add-Type -AssemblyName System.Windows.Forms
+
+    $dialog = New-Object System.Windows.Forms.OpenFileDialog
+    $dialog.Title = "Select Windows 11 ISO File"
+    $dialog.Filter = "ISO Files (*.iso)|*.iso|All Files (*.*)|*.*"
+    $dialog.FilterIndex = 1
+    $dialog.InitialDirectory = "$env:USERPROFILE\Downloads"
+    $dialog.Multiselect = $false
+
+    $result = $dialog.ShowDialog()
+
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        return $dialog.FileName
+    }
+    return $null
+}
+
+function Test-ISOFile {
+    param([string]$Path)
+
+    $result = @{
+        IsValid = $false
+        Path = $Path
+        SizeGB = 0
+        FileName = ""
+        Error = $null
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        $result.Error = "No path provided"
+        return $result
+    }
+
+    if (-not (Test-Path $Path -PathType Leaf)) {
+        $result.Error = "File not found: $Path"
+        return $result
+    }
+
+    $ext = [System.IO.Path]::GetExtension($Path).ToLower()
+    if ($ext -ne ".iso") {
+        $result.Error = "File is not an ISO: $Path"
+        return $result
+    }
+
+    $fileInfo = Get-Item $Path
+    $result.FileName = $fileInfo.Name
+    $result.SizeGB = [math]::Round($fileInfo.Length / 1GB, 2)
+
+    if ($result.SizeGB -lt 3) {
+        $result.Error = "ISO file too small (${result.SizeGB}GB). Windows 11 ISO should be 4-6GB."
+        return $result
+    }
+
+    $result.IsValid = $true
+    return $result
+}
+
+function Find-ISOFiles {
+    $locations = @(
+        "$env:USERPROFILE\Downloads",
+        "$env:USERPROFILE\Desktop",
+        "C:\ISOs",
+        "D:\ISOs",
+        "E:\ISOs",
+        "$env:USERPROFILE\Documents"
+    )
+
+    $isoFiles = @()
+
+    foreach ($loc in $locations) {
+        if (Test-Path $loc) {
+            $files = Get-ChildItem -Path $loc -Filter "*.iso" -ErrorAction SilentlyContinue |
+                     Where-Object { $_.Length -gt 3GB } |
+                     Select-Object FullName, Name, @{N='SizeGB';E={[math]::Round($_.Length/1GB,2)}}, LastWriteTime
+            $isoFiles += $files
+        }
+    }
+
+    return $isoFiles | Sort-Object LastWriteTime -Descending
+}
+
+function Show-MainMenu {
+    Show-Banner
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                    MAIN MENU                               |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] Quick Start (Guided Wizard)" -ForegroundColor White
+    Write-Host "       Step-by-step template creation with smart defaults" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [2] Custom Configuration" -ForegroundColor White
+    Write-Host "       Full control over all settings" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [3] Manage Existing Templates" -ForegroundColor White
+    Write-Host "       View, delete, or export templates" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [Q] Quit" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+    $choice = Read-Host "  Enter your choice"
+    return $choice
+}
+
+function Show-ISOSelectionMenu {
+    Show-Banner
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                    ISO SELECTION                           |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] Browse for ISO file" -ForegroundColor White
+    Write-Host "       Opens Windows file picker dialog" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [2] Enter path manually" -ForegroundColor White
+    Write-Host "       Type the full path to the ISO file" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [3] Scan common locations" -ForegroundColor White
+    Write-Host "       Search Downloads, Desktop, C:\ISOs, etc." -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [B] Back to main menu" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+    $choice = Read-Host "  Enter your choice"
+    return $choice
+}
+
+function Show-ISOScanResults {
+    param([array]$ISOFiles)
+
+    Show-Banner
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                  FOUND ISO FILES                           |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+
+    if ($ISOFiles.Count -eq 0) {
+        Write-Host "   No ISO files found in common locations." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "   Press Enter to go back..." -ForegroundColor Gray
+        Read-Host
+        return $null
+    }
+
+    $index = 1
+    foreach ($iso in $ISOFiles) {
+        Write-Host "   [$index] $($iso.Name)" -ForegroundColor White
+        Write-Host "       Size: $($iso.SizeGB) GB | Modified: $($iso.LastWriteTime.ToString('yyyy-MM-dd'))" -ForegroundColor Gray
+        Write-Host "       Path: $($iso.FullName)" -ForegroundColor DarkGray
+        Write-Host ""
+        $index++
+    }
+
+    Write-Host "   [B] Back" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+    $choice = Read-Host "  Select ISO file"
+
+    if ($choice -eq 'B' -or $choice -eq 'b') {
+        return $null
+    }
+
+    $selectedIndex = 0
+    if ([int]::TryParse($choice, [ref]$selectedIndex)) {
+        if ($selectedIndex -ge 1 -and $selectedIndex -le $ISOFiles.Count) {
+            return $ISOFiles[$selectedIndex - 1].FullName
+        }
+    }
+
+    return $null
+}
+
+function Show-ISOValidation {
+    param([hashtable]$ValidationResult)
+
+    Write-Host ""
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                  ISO VALIDATION                            |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   File: $($ValidationResult.FileName)" -ForegroundColor White
+    Write-Host "   Size: $($ValidationResult.SizeGB) GB" -ForegroundColor White
+    Write-Host "   Path: $($ValidationResult.Path)" -ForegroundColor Gray
+    Write-Host ""
+
+    if ($ValidationResult.IsValid) {
+        Write-Host "   [+] File exists" -ForegroundColor Green
+        Write-Host "   [+] Valid ISO format" -ForegroundColor Green
+        Write-Host "   [+] Size appropriate for Windows 11" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "   ISO validated successfully!" -ForegroundColor Green
+    } else {
+        Write-Host "   [X] Validation failed: $($ValidationResult.Error)" -ForegroundColor Red
+    }
+
+    Write-Host ""
+    Write-Host "  Press Enter to continue..." -ForegroundColor Gray
+    Read-Host
+}
+
+function Show-PresetMenu {
+    Show-Banner
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                  VM SPECIFICATIONS                         |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] Lightweight    4GB RAM,  2 CPUs,  80GB disk" -ForegroundColor White
+    Write-Host "       Basic development, minimal resources" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [2] Standard       8GB RAM,  4 CPUs, 127GB disk  * Default" -ForegroundColor White
+    Write-Host "       Typical development workload" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [3] Performance   16GB RAM,  8 CPUs, 256GB disk" -ForegroundColor White
+    Write-Host "       Heavy workloads, multiple IDEs" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [4] Server-class  32GB RAM, 16 CPUs, 512GB disk" -ForegroundColor White
+    Write-Host "       Database servers, enterprise apps" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [C] Custom - enter your own values" -ForegroundColor White
+    Write-Host ""
+    Write-Host "   [B] Back" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+    $choice = Read-Host "  Enter choice [2]"
+
+    if ([string]::IsNullOrWhiteSpace($choice)) { $choice = "2" }
+
+    return $choice
+}
+
+function Get-PresetValues {
+    param([string]$PresetName)
+
+    $presets = @{
+        'Lightweight' = @{ MemoryGB = 4; ProcessorCount = 2; DiskSizeGB = 80 }
+        'Standard'    = @{ MemoryGB = 8; ProcessorCount = 4; DiskSizeGB = 127 }
+        'Performance' = @{ MemoryGB = 16; ProcessorCount = 8; DiskSizeGB = 256 }
+        'ServerClass' = @{ MemoryGB = 32; ProcessorCount = 16; DiskSizeGB = 512 }
+    }
+
+    if ($presets.ContainsKey($PresetName)) {
+        return $presets[$PresetName]
+    }
+    return $presets['Standard']
+}
+
+function Show-CustomSpecsPrompt {
+    Write-Host ""
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                  CUSTOM SPECIFICATIONS                     |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+
+    $memInput = Read-Host "  Memory (GB) [8]"
+    $memory = if ([string]::IsNullOrWhiteSpace($memInput)) { 8 } else { [int]$memInput }
+
+    $cpuInput = Read-Host "  CPU Cores [4]"
+    $cpu = if ([string]::IsNullOrWhiteSpace($cpuInput)) { 4 } else { [int]$cpuInput }
+
+    $diskInput = Read-Host "  Disk Size (GB) [127]"
+    $disk = if ([string]::IsNullOrWhiteSpace($diskInput)) { 127 } else { [int]$diskInput }
+
+    return @{
+        MemoryGB = [Math]::Max(4, [Math]::Min(64, $memory))
+        ProcessorCount = [Math]::Max(2, [Math]::Min(32, $cpu))
+        DiskSizeGB = [Math]::Max(40, [Math]::Min(2048, $disk))
+    }
+}
+
+function Show-ConfigurationSummary {
+    param([hashtable]$Config)
+
+    Show-Banner
+
+    Write-Host "  +===========================================================+" -ForegroundColor Green
+    Write-Host "  |                  CONFIGURATION SUMMARY                     |" -ForegroundColor Green
+    Write-Host "  +===========================================================+" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  ISO File:" -ForegroundColor Cyan
+    Write-Host "    Path: $($Config.ISOPath)" -ForegroundColor White
+    Write-Host "    Status: Verified OK" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  Windows Edition:" -ForegroundColor Cyan
+    Write-Host "    Edition: Windows 11 Pro (Index $($Config.WindowsEditionIndex))" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  Template Settings:" -ForegroundColor Cyan
+    Write-Host "    Name: $($Config.TemplateName)" -ForegroundColor White
+    Write-Host "    Path: $($Config.TemplatePath)\$($Config.TemplateName).vhdx" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  VM Specifications:" -ForegroundColor Cyan
+    Write-Host "    Memory: $($Config.MemoryGB) GB" -ForegroundColor White
+    Write-Host "    CPUs: $($Config.ProcessorCount) cores" -ForegroundColor White
+    Write-Host "    Disk: $($Config.DiskSizeGB) GB" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  Options:" -ForegroundColor Cyan
+    Write-Host "    Skip Windows Updates: $(if($Config.SkipWindowsUpdates){'Yes'}else{'No'})" -ForegroundColor White
+    Write-Host "    Time Zone: $($Config.TimeZone)" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  Estimated Time: 45-90 minutes" -ForegroundColor Yellow
+    Write-Host "  Required Disk Space: ~150 GB" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  +===========================================================+" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   [P] Proceed with template creation" -ForegroundColor White
+    Write-Host "   [E] Edit configuration" -ForegroundColor White
+    Write-Host "   [C] Cancel" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+    $choice = Read-Host "  Enter choice"
+    return $choice
+}
+
+function Show-ExistingTemplates {
+    Show-Banner
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                 EXISTING TEMPLATES                         |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+
+    $templateDir = "C:\HyperV\Templates"
+    if (-not (Test-Path $templateDir)) {
+        Write-Host "   No templates found. Template directory does not exist." -ForegroundColor Yellow
+        Write-Host "   Path: $templateDir" -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "   Press Enter to go back..." -ForegroundColor Gray
+        Read-Host
+        return
+    }
+
+    $templates = Get-ChildItem -Path $templateDir -Filter "*.vhdx" -ErrorAction SilentlyContinue
+
+    if ($templates.Count -eq 0) {
+        Write-Host "   No template VHDX files found." -ForegroundColor Yellow
+        Write-Host "   Path: $templateDir" -ForegroundColor Gray
+    } else {
+        $index = 1
+        foreach ($t in $templates) {
+            $sizeGB = [math]::Round($t.Length / 1GB, 2)
+            Write-Host "   [$index] $($t.Name)" -ForegroundColor White
+            Write-Host "       Size: $sizeGB GB | Created: $($t.CreationTime.ToString('yyyy-MM-dd HH:mm'))" -ForegroundColor Gray
+            Write-Host ""
+            $index++
+        }
+    }
+
+    Write-Host "   [B] Back to main menu" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+    Write-Host "  Press Enter to go back..." -ForegroundColor Gray
+    Read-Host
+}
+
+function Invoke-InteractiveMode {
+    $config = @{
+        ISOPath = ""
+        TemplatePath = "C:\HyperV\Templates"
+        TemplateName = "Win11-VibeDev-Template"
+        MemoryGB = 8
+        ProcessorCount = 4
+        DiskSizeGB = 127
+        SwitchName = "Default Switch"
+        SkipWindowsUpdates = $false
+        WindowsEditionIndex = 6
+        TimeZone = "Pacific Standard Time"
+    }
+
+    while ($true) {
+        $mainChoice = Show-MainMenu
+
+        switch ($mainChoice.ToUpper()) {
+            'Q' {
+                Write-Host ""
+                Write-Log "User cancelled template creation" -Level Warning
+                return $null
+            }
+            '1' {
+                # Quick Start - Guided Wizard
+                # Step 1: ISO Selection
+                $isoSelected = $false
+                while (-not $isoSelected) {
+                    $isoChoice = Show-ISOSelectionMenu
+                    switch ($isoChoice.ToUpper()) {
+                        'B' { break }
+                        '1' {
+                            $isoPath = Show-ISOFilePicker
+                            if ($isoPath) {
+                                $validation = Test-ISOFile -Path $isoPath
+                                Show-ISOValidation -ValidationResult $validation
+                                if ($validation.IsValid) {
+                                    $config.ISOPath = $isoPath
+                                    $isoSelected = $true
+                                }
+                            }
+                        }
+                        '2' {
+                            Write-Host ""
+                            $manualPath = Read-Host "  Enter full path to ISO file"
+                            if ($manualPath) {
+                                $validation = Test-ISOFile -Path $manualPath
+                                Show-ISOValidation -ValidationResult $validation
+                                if ($validation.IsValid) {
+                                    $config.ISOPath = $manualPath
+                                    $isoSelected = $true
+                                }
+                            }
+                        }
+                        '3' {
+                            $foundISOs = Find-ISOFiles
+                            $selectedISO = Show-ISOScanResults -ISOFiles $foundISOs
+                            if ($selectedISO) {
+                                $validation = Test-ISOFile -Path $selectedISO
+                                Show-ISOValidation -ValidationResult $validation
+                                if ($validation.IsValid) {
+                                    $config.ISOPath = $selectedISO
+                                    $isoSelected = $true
+                                }
+                            }
+                        }
+                    }
+                    if ($isoChoice.ToUpper() -eq 'B') { break }
+                }
+
+                if (-not $isoSelected) { continue }
+
+                # Step 2: Preset Selection (Quick mode uses Standard)
+                $config.MemoryGB = 8
+                $config.ProcessorCount = 4
+                $config.DiskSizeGB = 127
+
+                # Step 3: Confirmation
+                $summaryChoice = Show-ConfigurationSummary -Config $config
+                switch ($summaryChoice.ToUpper()) {
+                    'P' { return $config }
+                    'E' { continue }
+                    'C' { continue }
+                }
+            }
+            '2' {
+                # Custom Configuration
+                # Step 1: ISO Selection
+                $isoSelected = $false
+                while (-not $isoSelected) {
+                    $isoChoice = Show-ISOSelectionMenu
+                    switch ($isoChoice.ToUpper()) {
+                        'B' { break }
+                        '1' {
+                            $isoPath = Show-ISOFilePicker
+                            if ($isoPath) {
+                                $validation = Test-ISOFile -Path $isoPath
+                                Show-ISOValidation -ValidationResult $validation
+                                if ($validation.IsValid) {
+                                    $config.ISOPath = $isoPath
+                                    $isoSelected = $true
+                                }
+                            }
+                        }
+                        '2' {
+                            Write-Host ""
+                            $manualPath = Read-Host "  Enter full path to ISO file"
+                            if ($manualPath) {
+                                $validation = Test-ISOFile -Path $manualPath
+                                Show-ISOValidation -ValidationResult $validation
+                                if ($validation.IsValid) {
+                                    $config.ISOPath = $manualPath
+                                    $isoSelected = $true
+                                }
+                            }
+                        }
+                        '3' {
+                            $foundISOs = Find-ISOFiles
+                            $selectedISO = Show-ISOScanResults -ISOFiles $foundISOs
+                            if ($selectedISO) {
+                                $validation = Test-ISOFile -Path $selectedISO
+                                Show-ISOValidation -ValidationResult $validation
+                                if ($validation.IsValid) {
+                                    $config.ISOPath = $selectedISO
+                                    $isoSelected = $true
+                                }
+                            }
+                        }
+                    }
+                    if ($isoChoice.ToUpper() -eq 'B') { break }
+                }
+
+                if (-not $isoSelected) { continue }
+
+                # Step 2: Preset Selection
+                $presetChoice = Show-PresetMenu
+                switch ($presetChoice.ToUpper()) {
+                    'B' { continue }
+                    '1' { $specs = Get-PresetValues -PresetName 'Lightweight' }
+                    '2' { $specs = Get-PresetValues -PresetName 'Standard' }
+                    '3' { $specs = Get-PresetValues -PresetName 'Performance' }
+                    '4' { $specs = Get-PresetValues -PresetName 'ServerClass' }
+                    'C' { $specs = Show-CustomSpecsPrompt }
+                    default { $specs = Get-PresetValues -PresetName 'Standard' }
+                }
+
+                $config.MemoryGB = $specs.MemoryGB
+                $config.ProcessorCount = $specs.ProcessorCount
+                $config.DiskSizeGB = $specs.DiskSizeGB
+
+                # Step 3: Additional Options
+                Write-Host ""
+                $skipUpdates = Read-Host "  Skip Windows Updates? (y/N)"
+                $config.SkipWindowsUpdates = ($skipUpdates -eq 'y' -or $skipUpdates -eq 'Y')
+
+                # Step 4: Confirmation
+                $summaryChoice = Show-ConfigurationSummary -Config $config
+                switch ($summaryChoice.ToUpper()) {
+                    'P' { return $config }
+                    'E' { continue }
+                    'C' { continue }
+                }
+            }
+            '3' {
+                Show-ExistingTemplates
+            }
+        }
+    }
 }
 
 #endregion
@@ -783,6 +1354,42 @@ function Main {
     $startTime = Get-Date
 
     Show-Banner
+
+    # Check if running in interactive mode (no ISOPath provided)
+    if ([string]::IsNullOrEmpty($ISOPath)) {
+        Write-Log "Starting interactive mode..." -Level Info
+        $config = Invoke-InteractiveMode
+
+        if ($null -eq $config) {
+            Write-Host ""
+            Write-Host "  Template creation cancelled." -ForegroundColor Yellow
+            Write-Host ""
+            return
+        }
+
+        # Apply interactive configuration to script variables
+        $Script:ISOPath = $config.ISOPath
+        $Script:TemplatePath = $config.TemplatePath
+        $Script:TemplateName = $config.TemplateName
+        $Script:MemoryGB = $config.MemoryGB
+        $Script:ProcessorCount = $config.ProcessorCount
+        $Script:DiskSizeGB = $config.DiskSizeGB
+        $Script:SwitchName = $config.SwitchName
+        $Script:SkipWindowsUpdates = $config.SkipWindowsUpdates
+        $Script:WindowsEditionIndex = $config.WindowsEditionIndex
+        $Script:TimeZone = $config.TimeZone
+
+        # Update local variables for use in this function
+        $ISOPath = $config.ISOPath
+        $TemplatePath = $config.TemplatePath
+        $TemplateName = $config.TemplateName
+        $MemoryGB = $config.MemoryGB
+        $ProcessorCount = $config.ProcessorCount
+        $DiskSizeGB = $config.DiskSizeGB
+
+        Clear-Host
+        Show-Banner
+    }
 
     Write-Log "VibeDev Template Creator started" -Level Header
     Write-Log "ISO: $ISOPath" -Level Info

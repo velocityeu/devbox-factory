@@ -1,0 +1,244 @@
+{
+  "version": "2.0.0",
+  "buildDate": "2026-01-04",
+
+  "vmPresets": {
+    "Lightweight": {
+      "MemoryGB": 4,
+      "ProcessorCount": 2,
+      "DiskSizeGB": 80,
+      "DynamicMemory": true,
+      "Description": "Basic development, minimal resources",
+      "RecommendedFor": ["Testing", "Light coding", "Learning"]
+    },
+    "Standard": {
+      "MemoryGB": 8,
+      "ProcessorCount": 4,
+      "DiskSizeGB": 127,
+      "DynamicMemory": false,
+      "Description": "Typical development workload",
+      "RecommendedFor": ["Web development", "General coding", "Most users"],
+      "IsDefault": true
+    },
+    "Performance": {
+      "MemoryGB": 16,
+      "ProcessorCount": 8,
+      "DiskSizeGB": 256,
+      "DynamicMemory": false,
+      "Description": "Heavy workloads, multiple IDEs",
+      "RecommendedFor": ["AI/ML development", "Multiple projects", "Docker heavy"]
+    },
+    "ServerClass": {
+      "MemoryGB": 32,
+      "ProcessorCount": 16,
+      "DiskSizeGB": 512,
+      "DynamicMemory": false,
+      "Description": "Database servers, enterprise apps",
+      "RecommendedFor": ["Database hosting", "Enterprise development", "Large projects"]
+    }
+  },
+
+  "vmScenarios": {
+    "DevWorkstation": {
+      "Preset": "Standard",
+      "VibeDevProfile": "Full",
+      "InstallMode": "Automatic",
+      "Description": "Single developer workstation with all tools"
+    },
+    "TeamVM": {
+      "Preset": "Standard",
+      "VibeDevProfile": "Full",
+      "InstallMode": "SemiAutomatic",
+      "Description": "Team member VMs with desktop shortcut"
+    },
+    "TestLab": {
+      "Preset": "Lightweight",
+      "VibeDevProfile": "Minimal",
+      "InstallMode": "Manual",
+      "Description": "Testing and experiments"
+    },
+    "AIWorkstation": {
+      "Preset": "Performance",
+      "VibeDevProfile": "AICoder",
+      "InstallMode": "Automatic",
+      "Description": "AI/ML development with Claude Code"
+    },
+    "AzureDev": {
+      "Preset": "Standard",
+      "VibeDevProfile": "Azure",
+      "InstallMode": "Automatic",
+      "Description": "Azure cloud development"
+    },
+    "WebDev": {
+      "Preset": "Standard",
+      "VibeDevProfile": "WebDev",
+      "InstallMode": "Automatic",
+      "Description": "Full-stack web development"
+    }
+  },
+
+  "windowsEditions": {
+    "1": {
+      "Name": "Windows 11 Home",
+      "Index": 1,
+      "Recommended": false,
+      "Notes": "Limited features, no Hyper-V nesting"
+    },
+    "2": {
+      "Name": "Windows 11 Home N",
+      "Index": 2,
+      "Recommended": false,
+      "Notes": "No media features"
+    },
+    "3": {
+      "Name": "Windows 11 Home Single Language",
+      "Index": 3,
+      "Recommended": false,
+      "Notes": "Single language only"
+    },
+    "4": {
+      "Name": "Windows 11 Education",
+      "Index": 4,
+      "Recommended": false,
+      "Notes": "Education features"
+    },
+    "5": {
+      "Name": "Windows 11 Education N",
+      "Index": 5,
+      "Recommended": false,
+      "Notes": "Education without media"
+    },
+    "6": {
+      "Name": "Windows 11 Pro",
+      "Index": 6,
+      "Recommended": true,
+      "Notes": "Best for development - Hyper-V, BitLocker, RDP"
+    },
+    "7": {
+      "Name": "Windows 11 Pro N",
+      "Index": 7,
+      "Recommended": false,
+      "Notes": "Pro without media features"
+    },
+    "8": {
+      "Name": "Windows 11 Pro for Workstations",
+      "Index": 8,
+      "Recommended": false,
+      "Notes": "Server-grade features"
+    }
+  },
+
+  "vibeDevProfiles": {
+    "Full": {
+      "Description": "Everything: AI tools, Web Dev, Azure, Docker, Databases",
+      "Components": ["Core", "AI", "NodeJS", "Python", "Docker", "Databases", "Azure"],
+      "IsDefault": true
+    },
+    "AICoder": {
+      "Description": "Claude Code, Cursor, VS Code + AI extensions, Node.js, Python",
+      "Components": ["Core", "AI", "NodeJS", "Python"]
+    },
+    "WebDev": {
+      "Description": "Node.js, Python, Docker, PostgreSQL, MongoDB, Redis",
+      "Components": ["Core", "NodeJS", "Python", "Docker", "Databases"]
+    },
+    "Azure": {
+      "Description": "Azure CLI, Functions, .NET SDK, Terraform, Bicep",
+      "Components": ["Core", "AI", "Azure", "Docker"]
+    },
+    "Minimal": {
+      "Description": "Git, Windows Terminal, VS Code only",
+      "Components": ["Core"]
+    }
+  },
+
+  "installModes": {
+    "Automatic": {
+      "Description": "Auto-login and run Install-VibeDev.ps1 silently on first boot",
+      "AutoLogin": true,
+      "SilentInstall": true,
+      "IsDefault": true
+    },
+    "SemiAutomatic": {
+      "Description": "Auto-login with desktop shortcut for VibeDev installer",
+      "AutoLogin": true,
+      "SilentInstall": false,
+      "CreateShortcut": true
+    },
+    "Manual": {
+      "Description": "Just create VM, user installs tools manually",
+      "AutoLogin": false,
+      "SilentInstall": false
+    }
+  },
+
+  "isoScanLocations": [
+    "%USERPROFILE%\\Downloads",
+    "%USERPROFILE%\\Desktop",
+    "C:\\ISOs",
+    "D:\\ISOs",
+    "E:\\ISOs",
+    "%USERPROFILE%\\Documents"
+  ],
+
+  "templateDefaults": {
+    "TemplatePath": "C:\\HyperV\\Templates",
+    "TemplateName": "Win11-VibeDev-Template",
+    "VMPath": "C:\\HyperV\\VMs",
+    "SwitchName": "Default Switch",
+    "TimeZone": "Pacific Standard Time"
+  },
+
+  "errorCodes": {
+    "HYPERV_NOT_AVAILABLE": {
+      "Message": "Hyper-V is not available on this system",
+      "Steps": [
+        "Ensure Windows Pro, Enterprise, or Server edition",
+        "Enable VT-x/AMD-V in BIOS/UEFI",
+        "Run: Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All",
+        "Restart computer"
+      ]
+    },
+    "ISO_NOT_FOUND": {
+      "Message": "Windows 11 ISO file not found",
+      "Steps": [
+        "Download Windows 11 ISO from: https://www.microsoft.com/software-download/windows11",
+        "Use the file picker to browse for the ISO",
+        "Check file permissions"
+      ]
+    },
+    "DISK_SPACE_LOW": {
+      "Message": "Insufficient disk space",
+      "Steps": [
+        "Free up disk space (need ~150GB for template)",
+        "Move template storage to a larger drive",
+        "Use Disk Cleanup to remove temporary files"
+      ]
+    },
+    "TEMPLATE_NOT_FOUND": {
+      "Message": "VibeDev template VHDX not found",
+      "Steps": [
+        "Run New-VibeDevTemplate.ps1 to create a template first",
+        "Check template path is correct",
+        "Verify template was not deleted"
+      ]
+    },
+    "SWITCH_NOT_FOUND": {
+      "Message": "Virtual switch not found",
+      "Steps": [
+        "Use 'Default Switch' which is created automatically",
+        "Open Hyper-V Manager to create a virtual switch",
+        "Run: New-VMSwitch -Name 'MySwitch' -SwitchType Internal"
+      ]
+    },
+    "ADK_NOT_INSTALLED": {
+      "Message": "Windows ADK is not installed",
+      "Steps": [
+        "The script will attempt to install ADK automatically",
+        "If that fails, install manually via winget:",
+        "winget install Microsoft.WindowsADK",
+        "winget install Microsoft.ADKPEAddon"
+      ]
+    }
+  }
+}

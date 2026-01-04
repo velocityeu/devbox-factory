@@ -6,22 +6,45 @@ Ultimate Windows 11 development environment setup for AI-powered "vibe coding" w
 
 ## Features
 
-- **Interactive Menu** - No need to remember parameters, just pick an option
+- **Bootstrap Script** - One-liner to download everything on vanilla Windows 11
+- **Interactive Menus** - Guided wizards with file pickers, no parameters needed
 - **Pre-configured Profiles** - Full, AI Coder, Web Dev, Azure, or Custom
 - **Azure Development** - Complete Azure toolchain for cloud developers
-- **Hyper-V VM Automation** - Create dev VMs with VibeDev pre-installed
+- **Hyper-V VM Automation** - Create dev VMs with interactive template/VM wizards
+- **Version Control** - All scripts show version (v2.0.0) and build date
+- **Pre-flight Validation** - Checks disk space, prerequisites before changes
 - **Idempotent** - Safe to run multiple times
 - **Smart Fallbacks** - WinGet primary, Chocolatey backup
 
 ## Quick Start
 
-### One-Line Install (Run as Administrator)
+### Option 1: Bootstrap (Recommended for Vanilla Windows 11)
+
+Download all VibeDev scripts to your PC, then run the installer interactively:
 
 ```powershell
+# Run as Administrator
+irm https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main/VibeDevBootstrap.ps1 | iex
+```
+
+This bootstrap script:
+- Checks Windows 11 22H2+ and Administrator privileges
+- Lets you choose installation directory (default: `C:\VibeDev`)
+- Downloads all scripts including Hyper-V VM automation
+- Offers to run the installer immediately or later
+
+### Option 2: Direct Install (One-Line)
+
+Run the installer directly without downloading files:
+
+```powershell
+# Run as Administrator
 irm https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main/Install-VibeDev.ps1 | iex
 ```
 
-### Local Install
+### Option 3: Local Install
+
+If you've already cloned the repository:
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -250,7 +273,26 @@ git config --global user.email "your.email@example.com"
 
 Create pre-configured Windows 11 development VMs with VibeDev tools auto-installed.
 
-### Quick Start
+### Interactive Mode (v2.0+)
+
+Run either script without parameters to launch the guided interactive menu:
+
+```powershell
+# Stage 1: Create template with interactive wizard
+.\HyperV\New-VibeDevTemplate.ps1
+
+# Stage 2: Create VMs with interactive wizard
+.\HyperV\New-VibeDevVM.ps1
+```
+
+Features:
+- **File picker dialogs** for ISO and template selection
+- **VM presets** (Lightweight, Standard, Performance, Server-class)
+- **Pre-flight validation** before any changes
+- **Live naming preview** for batch VM creation
+- **Back/Cancel** on every screen
+
+### Command-Line Quick Start
 
 ```powershell
 # Stage 1: Create template from Windows 11 ISO (one-time, ~30-60 min)
