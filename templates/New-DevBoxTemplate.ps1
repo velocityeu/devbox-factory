@@ -262,7 +262,13 @@ function Test-ISOFile {
 }
 
 function Find-ISOFiles {
+    # Include local iso/ folder and common locations
+    $scriptDir = if ($Script:ScriptRoot) { Split-Path $Script:ScriptRoot -Parent } else { $PSScriptRoot }
+    $localIsoPath = Join-Path $scriptDir "iso"
+
     $locations = @(
+        $localIsoPath,
+        ".\iso",
         "$env:USERPROFILE\Downloads",
         "$env:USERPROFILE\Desktop",
         "C:\ISOs",
@@ -1572,6 +1578,14 @@ function Main {
         if ($null -eq $config) {
             Write-Host ""
             Write-Host "  Template creation cancelled." -ForegroundColor Yellow
+            Write-Host ""
+            return
+        }
+
+        # Validate config has required properties
+        if (-not $config.ContainsKey('ISOPath') -or [string]::IsNullOrEmpty($config.ISOPath)) {
+            Write-Host ""
+            Write-Host "  [ERROR] No ISO path specified in configuration." -ForegroundColor Red
             Write-Host ""
             return
         }
