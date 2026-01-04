@@ -54,41 +54,19 @@ function Show-Banner {
     $build = $Script:DevBoxVersion.Build
 
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  BOOTSTRAP INSTALLER" -ForegroundColor White -NoNewline
-    Write-Host "                                              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  One command. Identical dev environments. Every time." -ForegroundColor Gray -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
-    Write-Host "                          $version " -ForegroundColor DarkGray -NoNewline
-    Write-Host "build $build" -ForegroundColor DarkYellow -NoNewline
-    Write-Host "  ║" -ForegroundColor DarkCyan
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  ____  ______      ______   ____  __  __                            |" -ForegroundColor Cyan
+    Write-Host "  | |  _ \| ____\ \   / /  _ \ / __ \ \ \/ /                            |" -ForegroundColor Cyan
+    Write-Host "  | | | | |  _|  \ \ / /| |_) | |  | | \  /                             |" -ForegroundColor Cyan
+    Write-Host "  | | |_| | |___  \ V / |  _ <| |  | | /  \                             |" -ForegroundColor Cyan
+    Write-Host "  | |____/|_____|  \_/  |_| \_\ \__/ /_/\_\                             |" -ForegroundColor Cyan
+    Write-Host "  |                                                                     |" -ForegroundColor DarkCyan
+    Write-Host "  |                      F A C T O R Y                                  |" -ForegroundColor Yellow
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  BOOTSTRAP INSTALLER                                                |" -ForegroundColor White
+    Write-Host "  |  One command. Identical dev environments. Every time.               |" -ForegroundColor Gray
+    Write-Host "  |  by Velocity EU                           $version build $build  |" -ForegroundColor DarkGray
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
     Write-Host ""
 }
 

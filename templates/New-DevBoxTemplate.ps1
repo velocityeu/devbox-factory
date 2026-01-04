@@ -179,39 +179,18 @@ function Show-Banner {
 
     Clear-Host
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  TEMPLATE CREATOR" -ForegroundColor White -NoNewline
-    Write-Host "          Hyper-V Windows 11 Template - Stage 1" -ForegroundColor DarkGray -NoNewline
-    Write-Host "  ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
-    Write-Host "                            $version " -ForegroundColor DarkGray -NoNewline
-    Write-Host "build $build" -ForegroundColor DarkYellow -NoNewline
-    Write-Host "  ║" -ForegroundColor DarkCyan
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  ____  ______      ______   ____  __  __                            |" -ForegroundColor Cyan
+    Write-Host "  | |  _ \| ____\ \   / /  _ \ / __ \ \ \/ /                            |" -ForegroundColor Cyan
+    Write-Host "  | | | | |  _|  \ \ / /| |_) | |  | | \  /                             |" -ForegroundColor Cyan
+    Write-Host "  | | |_| | |___  \ V / |  _ <| |  | | /  \                             |" -ForegroundColor Cyan
+    Write-Host "  | |____/|_____|  \_/  |_| \_\ \__/ /_/\_\                             |" -ForegroundColor Cyan
+    Write-Host "  |                                                                     |" -ForegroundColor DarkCyan
+    Write-Host "  |                      F A C T O R Y                                  |" -ForegroundColor Yellow
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  TEMPLATE CREATOR       Hyper-V Windows 11 Template - Stage 1       |" -ForegroundColor White
+    Write-Host "  |  by Velocity EU                           $version build $build  |" -ForegroundColor DarkGray
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
     Write-Host ""
 }
 

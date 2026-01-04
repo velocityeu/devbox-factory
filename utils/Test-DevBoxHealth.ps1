@@ -36,39 +36,18 @@ $Script:WarnCount = 0
 function Show-Banner {
     Clear-Host
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  HEALTH CHECK" -ForegroundColor White -NoNewline
-    Write-Host "                Verify Installation and Environment" -ForegroundColor DarkGray -NoNewline
-    Write-Host "  ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
-    Write-Host "                          v$Script:Version " -ForegroundColor DarkGray -NoNewline
-    Write-Host "build $Script:Build" -ForegroundColor DarkYellow -NoNewline
-    Write-Host "  ║" -ForegroundColor DarkCyan
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  ____  ______      ______   ____  __  __                            |" -ForegroundColor Cyan
+    Write-Host "  | |  _ \| ____\ \   / /  _ \ / __ \ \ \/ /                            |" -ForegroundColor Cyan
+    Write-Host "  | | | | |  _|  \ \ / /| |_) | |  | | \  /                             |" -ForegroundColor Cyan
+    Write-Host "  | | |_| | |___  \ V / |  _ <| |  | | /  \                             |" -ForegroundColor Cyan
+    Write-Host "  | |____/|_____|  \_/  |_| \_\ \__/ /_/\_\                             |" -ForegroundColor Cyan
+    Write-Host "  |                                                                     |" -ForegroundColor DarkCyan
+    Write-Host "  |                      F A C T O R Y                                  |" -ForegroundColor Yellow
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  HEALTH CHECK            Verify Installation and Environment        |" -ForegroundColor White
+    Write-Host "  |  by Velocity EU                           v$Script:Version build $Script:Build  |" -ForegroundColor DarkGray
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
     Write-Host ""
 }
 

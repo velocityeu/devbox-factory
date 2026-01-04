@@ -210,48 +210,27 @@ $Script:Build = "20260104.002"
 function Show-Banner {
     Clear-Host
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  TOOL INSTALLER" -ForegroundColor White -NoNewline
-    Write-Host "            Windows 11 Development Environment" -ForegroundColor DarkGray -NoNewline
-    Write-Host "  ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
-    Write-Host "                          v$Script:Version " -ForegroundColor DarkGray -NoNewline
-    Write-Host "build $Script:Build" -ForegroundColor DarkYellow -NoNewline
-    Write-Host "  ║" -ForegroundColor DarkCyan
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  ____  ______      ______   ____  __  __                            |" -ForegroundColor Cyan
+    Write-Host "  | |  _ \| ____\ \   / /  _ \ / __ \ \ \/ /                            |" -ForegroundColor Cyan
+    Write-Host "  | | | | |  _|  \ \ / /| |_) | |  | | \  /                             |" -ForegroundColor Cyan
+    Write-Host "  | | |_| | |___  \ V / |  _ <| |  | | /  \                             |" -ForegroundColor Cyan
+    Write-Host "  | |____/|_____|  \_/  |_| \_\ \__/ /_/\_\                             |" -ForegroundColor Cyan
+    Write-Host "  |                                                                     |" -ForegroundColor DarkCyan
+    Write-Host "  |                      F A C T O R Y                                  |" -ForegroundColor Yellow
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  TOOL INSTALLER          Windows 11 Development Environment         |" -ForegroundColor White
+    Write-Host "  |  by Velocity EU                           v$Script:Version build $Script:Build  |" -ForegroundColor DarkGray
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
     Write-Host ""
 }
 
 function Show-MainMenu {
     Show-Banner
 
-    Write-Host "  ┌─────────────────────────────────────────────────────────────┐" -ForegroundColor Cyan
-    Write-Host "  │                    SELECT INSTALLATION                      │" -ForegroundColor Cyan
-    Write-Host "  └─────────────────────────────────────────────────────────────┘" -ForegroundColor Cyan
+    Write-Host "  +---------------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                    SELECT INSTALLATION                        |" -ForegroundColor Cyan
+    Write-Host "  +---------------------------------------------------------------+" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "   [1] " -ForegroundColor Yellow -NoNewline
     Write-Host "Full Installation" -ForegroundColor White -NoNewline
@@ -281,7 +260,7 @@ function Show-MainMenu {
     Write-Host "   [Q] " -ForegroundColor Red -NoNewline
     Write-Host "Quit" -ForegroundColor White
     Write-Host ""
-    Write-Host "  ─────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host "  ---------------------------------------------------------------" -ForegroundColor DarkGray
 
     $choice = Read-Host "  Enter your choice"
     return $choice
@@ -290,9 +269,9 @@ function Show-MainMenu {
 function Show-CustomMenu {
     Show-Banner
 
-    Write-Host "  ┌─────────────────────────────────────────────────────────────┐" -ForegroundColor Cyan
-    Write-Host "  │                   CUSTOM INSTALLATION                       │" -ForegroundColor Cyan
-    Write-Host "  └─────────────────────────────────────────────────────────────┘" -ForegroundColor Cyan
+    Write-Host "  +---------------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                   CUSTOM INSTALLATION                         |" -ForegroundColor Cyan
+    Write-Host "  +---------------------------------------------------------------+" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "  Select components to install (enter numbers separated by commas)" -ForegroundColor Gray
     Write-Host ""
@@ -328,7 +307,7 @@ function Show-CustomMenu {
     Write-Host "Azure Development" -ForegroundColor White -NoNewline
     Write-Host " - Azure CLI, Functions, .NET, Terraform" -ForegroundColor Gray
     Write-Host ""
-    Write-Host "  ─────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host "  ---------------------------------------------------------------" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  Example: " -ForegroundColor Gray -NoNewline
     Write-Host "2,3,4" -ForegroundColor Cyan -NoNewline
@@ -472,9 +451,9 @@ function Set-CustomConfiguration {
 
 function Show-SelectedComponents {
     Write-Host ""
-    Write-Host "  ┌─────────────────────────────────────────────────────────────┐" -ForegroundColor Green
-    Write-Host "  │                 COMPONENTS TO INSTALL                       │" -ForegroundColor Green
-    Write-Host "  └─────────────────────────────────────────────────────────────┘" -ForegroundColor Green
+    Write-Host "  +---------------------------------------------------------------+" -ForegroundColor Green
+    Write-Host "  |                 COMPONENTS TO INSTALL                         |" -ForegroundColor Green
+    Write-Host "  +---------------------------------------------------------------+" -ForegroundColor Green
     Write-Host ""
 
     Write-Host "   [*] Core: Git, Windows Terminal, VS Code" -ForegroundColor White
@@ -502,7 +481,7 @@ function Show-SelectedComponents {
     }
 
     Write-Host ""
-    Write-Host "  ─────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host "  ---------------------------------------------------------------" -ForegroundColor DarkGray
     Write-Host ""
 }
 
@@ -1106,9 +1085,9 @@ function Install-AzureTools {
 
 function Show-Summary {
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "  ║             INSTALLATION SUMMARY                          ║" -ForegroundColor Cyan
-    Write-Host "  ╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "  +===========================================================+" -ForegroundColor Cyan
+    Write-Host "  |             INSTALLATION SUMMARY                          |" -ForegroundColor Cyan
+    Write-Host "  +===========================================================+" -ForegroundColor Cyan
     Write-Host ""
 
     if ($Script:Config.InstalledItems.Count -gt 0) {
@@ -1135,7 +1114,7 @@ function Show-Summary {
         Write-Host ""
     }
 
-    Write-Host "  ─────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host "  ---------------------------------------------------------------" -ForegroundColor DarkGray
     Write-Host "  Log file: $LogPath" -ForegroundColor Gray
     Write-Host ""
 

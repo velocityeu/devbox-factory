@@ -32,45 +32,25 @@ $Script:Build = "20260104.002"
 
 function Show-Banner {
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  One command. Identical dev environments. Every time." -ForegroundColor White -NoNewline
-    Write-Host "              ║" -ForegroundColor DarkCyan
-    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
-    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
-    Write-Host "                          v$Script:Version " -ForegroundColor DarkGray -NoNewline
-    Write-Host "build $Script:Build" -ForegroundColor DarkYellow -NoNewline
-    Write-Host "  ║" -ForegroundColor DarkCyan
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  ____  ______      ______   ____  __  __                            |" -ForegroundColor Cyan
+    Write-Host "  | |  _ \| ____\ \   / /  _ \ / __ \ \ \/ /                            |" -ForegroundColor Cyan
+    Write-Host "  | | | | |  _|  \ \ / /| |_) | |  | | \  /                             |" -ForegroundColor Cyan
+    Write-Host "  | | |_| | |___  \ V / |  _ <| |  | | /  \                             |" -ForegroundColor Cyan
+    Write-Host "  | |____/|_____|  \_/  |_| \_\ \__/ /_/\_\                             |" -ForegroundColor Cyan
+    Write-Host "  |                                                                     |" -ForegroundColor DarkCyan
+    Write-Host "  |                      F A C T O R Y                                  |" -ForegroundColor Yellow
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
+    Write-Host "  |  One command. Identical dev environments. Every time.               |" -ForegroundColor White
+    Write-Host "  |  by Velocity EU                           v$Script:Version build $Script:Build  |" -ForegroundColor DarkGray
+    Write-Host "  +=====================================================================+" -ForegroundColor DarkCyan
     Write-Host ""
 }
 
 function Show-Help {
     Show-Banner
     Write-Host "  USAGE: " -ForegroundColor Cyan -NoNewline
-    Write-Host ".\devbox <command> [arguments]" -ForegroundColor White
+    Write-Host '.\devbox <command> [arguments]' -ForegroundColor White
     Write-Host ""
     Write-Host "  COMMANDS:" -ForegroundColor Cyan
     Write-Host ""
@@ -89,9 +69,9 @@ function Show-Help {
     Write-Host ""
     Write-Host "  EXAMPLES:" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "    .\devbox install" -ForegroundColor DarkGray
-    Write-Host "    .\devbox template -ISOPath C:\ISOs\Win11.iso" -ForegroundColor DarkGray
-    Write-Host "    .\devbox vm -VMName DevVM-01 -StartVM" -ForegroundColor DarkGray
+    Write-Host '    .\devbox install' -ForegroundColor DarkGray
+    Write-Host '    .\devbox template -ISOPath C:\ISOs\Win11.iso' -ForegroundColor DarkGray
+    Write-Host '    .\devbox vm -VMName DevVM-01 -StartVM' -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  MORE INFO:" -ForegroundColor Cyan
     Write-Host "    https://github.com/velocityeu/devbox-factory" -ForegroundColor Blue
