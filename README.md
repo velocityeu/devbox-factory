@@ -1,21 +1,16 @@
 # Install-ClaudeCode-VibeDev-Ultra
 
-Ultimate Windows 11 development environment setup for AI-powered "vibe coding" with Claude Code, Cursor, and full-stack tools.
+Ultimate Windows 11 development environment setup for AI-powered "vibe coding" with Claude Code, Cursor, Azure tools, and full-stack development.
 
 > Create Automatically VibeCoding Environment on vanilla Windows 11 22H2+ PC
 
-## What Gets Installed
+## Features
 
-| Category | Tools |
-|----------|-------|
-| **Package Managers** | WinGet (primary), Chocolatey (fallback) |
-| **Core Tools** | Git, Windows Terminal |
-| **Runtimes** | Python 3.12+, Node.js LTS (via NVM) |
-| **JS Package Managers** | npm, pnpm, yarn, bun |
-| **AI Coding Tools** | Claude Code, Cursor IDE, VS Code |
-| **VS Code Extensions** | GitHub Copilot, Claude, Continue, Cline, ESLint, Prettier, GitLens |
-| **Databases** | PostgreSQL 16, MongoDB, Redis |
-| **Containers** | WSL2, Docker Desktop |
+- **Interactive Menu** - No need to remember parameters, just pick an option
+- **Pre-configured Profiles** - Full, AI Coder, Web Dev, Azure, or Custom
+- **Azure Development** - Complete Azure toolchain for cloud developers
+- **Idempotent** - Safe to run multiple times
+- **Smart Fallbacks** - WinGet primary, Chocolatey backup
 
 ## Quick Start
 
@@ -27,49 +22,175 @@ irm https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultr
 
 ### Local Install
 
-1. Download `Install-VibeDev.ps1`
-2. Open PowerShell as Administrator
-3. Run:
-
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force
 .\Install-VibeDev.ps1
 ```
 
-## Parameters
+## Interactive Menu
+
+Simply run the script with no parameters to see the menu:
+
+```
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║   ██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗   ║
+  ║   ██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║   ║
+  ║   ██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║   ║
+  ║   ╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝   ║
+  ║    ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝    ║
+  ║     ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝     ║
+  ╚═══════════════════════════════════════════════════════════════╝
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                    SELECT INSTALLATION                      │
+  └─────────────────────────────────────────────────────────────┘
+
+   [1] Full Installation (Recommended)
+       Everything: AI tools, Web dev, Docker, Databases, Azure
+
+   [2] AI Vibe Coder
+       Claude Code, Cursor, VS Code + AI extensions, Node.js, Python
+
+   [3] Full-Stack Web Developer
+       Node.js, Python, Docker, PostgreSQL, MongoDB, Redis
+
+   [4] Azure Cloud Developer
+       Azure CLI, Functions, .NET SDK, Terraform, Bicep, Docker
+
+   [5] Custom Installation
+       Choose exactly what to install
+
+   [6] Minimal (Core Only)
+       Git, Windows Terminal, VS Code
+
+   [Q] Quit
+```
+
+### Custom Installation Menu
+
+Option `[5]` lets you pick specific components:
+
+```
+   [1] Core Tools - Git, Windows Terminal, VS Code (Always included)
+   [2] AI Coding Tools - Claude Code, Cursor, AI extensions
+   [3] Node.js Environment - NVM, Node.js, npm, pnpm, yarn, bun
+   [4] Python - Python 3.12 with pip
+   [5] Docker & Containers - WSL2, Docker Desktop
+   [6] Databases - PostgreSQL, MongoDB, Redis
+   [7] Azure Development - Azure CLI, Functions, .NET, Terraform
+
+  Example: 2,3,4 (AI tools + Node.js + Python)
+```
+
+## Installation Profiles
+
+| Profile | What's Included |
+|---------|-----------------|
+| **Full** | Everything: AI, Web Dev, Azure, Docker, Databases |
+| **AICoder** | Claude Code, Cursor, VS Code + AI extensions, Node.js, Python |
+| **WebDev** | Node.js, Python, Docker, PostgreSQL, MongoDB, Redis |
+| **Azure** | Azure CLI, Functions, .NET SDK, Terraform, Bicep, Docker, AI tools |
+| **Minimal** | Git, Windows Terminal, VS Code only |
+
+## What Gets Installed
+
+### Core (Always Installed)
+- Git
+- Windows Terminal
+- VS Code
+
+### AI Coding Tools
+- Claude Code (CLI)
+- Cursor IDE
+- VS Code Extensions: GitHub Copilot, Claude, Continue, Cline
+
+### Web Development
+- Node.js LTS (via NVM)
+- npm, pnpm, yarn, bun
+- Python 3.12
+- VS Code Extensions: ESLint, Prettier, Tailwind, React snippets
+
+### Databases
+- PostgreSQL 16
+- MongoDB
+- Redis
+
+### Containers
+- WSL2
+- Docker Desktop
+
+### Azure Development
+- Azure CLI
+- Azure Functions Core Tools
+- Azure Developer CLI (azd)
+- Azure Data Studio
+- Azure Storage Explorer
+- Bicep CLI
+- Terraform
+- .NET SDK 8
+- Az PowerShell Module
+- VS Code Extensions: Azure Functions, Resources, Storage, CosmosDB, Docker, C#, Terraform
+
+## Command-Line Parameters
+
+For automation/scripting, use parameters instead of the menu:
+
+### Profile Parameter
+
+```powershell
+# Full installation (silent)
+.\Install-VibeDev.ps1 -Silent -Profile Full
+
+# AI Coder setup
+.\Install-VibeDev.ps1 -Silent -Profile AICoder
+
+# Azure developer setup
+.\Install-VibeDev.ps1 -Silent -Profile Azure
+
+# Web developer setup
+.\Install-VibeDev.ps1 -Silent -Profile WebDev
+
+# Minimal setup
+.\Install-VibeDev.ps1 -Silent -Profile Minimal
+```
+
+### Skip Parameters
 
 | Parameter | Description |
 |-----------|-------------|
-| `-Silent` | Non-interactive mode (auto-accept all prompts) |
-| `-SkipNodeJS` | Skip Node.js and NVM installation |
-| `-SkipPython` | Skip Python installation |
-| `-SkipDocker` | Skip Docker Desktop and WSL2 setup |
-| `-SkipDatabases` | Skip PostgreSQL, MongoDB, and Redis |
-| `-SkipAITools` | Skip Claude Code, Cursor, and VS Code |
-| `-SkipVSCodeExtensions` | Skip VS Code extension installation |
+| `-Silent` | Non-interactive mode |
+| `-Profile` | Installation profile: Full, AICoder, WebDev, Azure, Minimal |
+| `-SkipNodeJS` | Skip Node.js and NVM |
+| `-SkipPython` | Skip Python |
+| `-SkipDotNet` | Skip .NET SDK |
+| `-SkipDocker` | Skip Docker and WSL2 |
+| `-SkipDatabases` | Skip PostgreSQL, MongoDB, Redis |
+| `-SkipAITools` | Skip Claude Code, Cursor |
+| `-SkipAzure` | Skip Azure tools |
+| `-SkipVSCodeExtensions` | Skip VS Code extensions |
 | `-NoReboot` | Don't prompt for reboot |
 | `-LogPath` | Custom log file path |
 
-## Usage Examples
+### Examples
 
 ```powershell
-# Full installation (interactive)
+# Interactive menu (default)
 .\Install-VibeDev.ps1
 
-# Silent mode for automation/CI
-.\Install-VibeDev.ps1 -Silent
+# Full silent installation
+.\Install-VibeDev.ps1 -Silent -Profile Full
 
-# Skip databases (minimal setup)
-.\Install-VibeDev.ps1 -SkipDatabases
+# AI tools without databases
+.\Install-VibeDev.ps1 -Silent -Profile AICoder
 
-# AI tools only (no Docker/databases)
+# Azure developer with custom log
+.\Install-VibeDev.ps1 -Silent -Profile Azure -LogPath "C:\Logs\install.log"
+
+# Custom: skip databases and Docker
 .\Install-VibeDev.ps1 -SkipDatabases -SkipDocker
 
-# Just runtimes and tools (no AI)
-.\Install-VibeDev.ps1 -SkipAITools
-
-# Custom log location
-.\Install-VibeDev.ps1 -LogPath "C:\Logs\install.log"
+# Web dev without AI tools
+.\Install-VibeDev.ps1 -Silent -Profile WebDev
 ```
 
 ## Requirements
@@ -77,53 +198,45 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 - **OS**: Windows 11 22H2 or later (Build 22621+)
 - **Privileges**: Administrator
 - **Internet**: Required for downloads
-- **Disk Space**: ~10GB recommended
-
-## VS Code Extensions Installed
-
-| Extension | Purpose |
-|-----------|---------|
-| GitHub Copilot | AI code completion |
-| GitHub Copilot Chat | AI chat assistant |
-| Claude Code | Anthropic's Claude in VS Code |
-| Continue | Open-source AI coding assistant |
-| Cline | Autonomous coding agent |
-| ESLint | JavaScript linting |
-| Prettier | Code formatting |
-| GitLens | Git supercharged |
-| PowerShell | PowerShell language support |
-| Python | Python language support |
+- **Disk Space**: ~15GB for full installation
 
 ## Post-Installation
 
 ### Verify Installation
 
-Open a **new** PowerShell or terminal window and run:
-
 ```powershell
-# Check versions
+# Core tools
 git --version
 node --version
 python --version
-claude --version
-docker --version
 
-# Check package managers
+# AI tools
+claude --version
+
+# Package managers
 pnpm --version
 yarn --version
 bun --version
+
+# Azure tools
+az --version
+func --version
+azd version
+terraform --version
 ```
 
-### Authenticate Claude Code
+### Authenticate Services
 
 ```powershell
+# Claude Code
 claude
-# Follow the browser authentication flow
+
+# Azure CLI
+az login
+
+# GitHub CLI (if needed)
+gh auth login
 ```
-
-### Start Docker Desktop
-
-Launch Docker Desktop from the Start menu. It may require a restart on first run.
 
 ### Configure Git
 
@@ -132,41 +245,72 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
 
+## VS Code Extensions by Category
+
+### Base Extensions
+| Extension | ID |
+|-----------|-----|
+| ESLint | `dbaeumer.vscode-eslint` |
+| Prettier | `esbenp.prettier-vscode` |
+| GitLens | `eamodio.gitlens` |
+| PowerShell | `ms-vscode.powershell` |
+
+### AI Extensions
+| Extension | ID |
+|-----------|-----|
+| GitHub Copilot | `GitHub.copilot` |
+| GitHub Copilot Chat | `GitHub.copilot-chat` |
+| Claude Code | `anthropic.claude-code` |
+| Continue | `Continue.continue` |
+| Cline | `saoudrizwan.claude-dev` |
+
+### Web Development Extensions
+| Extension | ID |
+|-----------|-----|
+| Python | `ms-python.python` |
+| Pylance | `ms-python.vscode-pylance` |
+| Tailwind CSS | `bradlc.vscode-tailwindcss` |
+| ES7 React Snippets | `dsznajder.es7-react-js-snippets` |
+| Prisma | `Prisma.prisma` |
+
+### Azure Extensions
+| Extension | ID |
+|-----------|-----|
+| Azure Functions | `ms-azuretools.vscode-azurefunctions` |
+| Azure Resources | `ms-azuretools.vscode-azureresourcegroups` |
+| Azure Storage | `ms-azuretools.vscode-azurestorage` |
+| Azure CosmosDB | `ms-azuretools.vscode-cosmosdb` |
+| Docker | `ms-azuretools.vscode-docker` |
+| C# | `ms-dotnettools.csharp` |
+| Azure Account | `ms-vscode.azure-account` |
+| Terraform | `hashicorp.terraform` |
+
 ## Troubleshooting
 
 ### "Command not found" after installation
-
-Close and reopen your terminal. The PATH environment needs to refresh.
+Close and reopen your terminal to refresh PATH.
 
 ### WinGet not available
-
-Update Windows or install "App Installer" from the Microsoft Store.
+Update Windows or install "App Installer" from Microsoft Store.
 
 ### Docker won't start
-
 1. Ensure WSL2 is enabled: `wsl --status`
 2. Reboot if you just enabled WSL2
 3. Check virtualization is enabled in BIOS
 
-### Chocolatey installation fails
-
-Run manually:
+### Azure CLI login issues
 ```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+# Clear cached credentials
+az account clear
+az login
 ```
 
 ### VS Code extensions not installing
-
-Install manually via VS Code:
-1. Open VS Code
-2. Press `Ctrl+Shift+X`
-3. Search for and install each extension
+Install manually: `Ctrl+Shift+X` in VS Code
 
 ## Log File
 
-Installation logs are saved to: `%USERPROFILE%\VibeDev-Install.log`
+Installation logs: `%USERPROFILE%\VibeDev-Install.log`
 
 ## License
 
@@ -174,11 +318,11 @@ MIT License - Feel free to modify and distribute.
 
 ## Contributing
 
-Pull requests welcome! Please test on a clean Windows 11 VM before submitting.
+Pull requests welcome! Test on a clean Windows 11 VM before submitting.
 
 ## Resources
 
 - [Claude Code Documentation](https://code.claude.com/docs/en/setup)
+- [Azure CLI Documentation](https://learn.microsoft.com/en-us/cli/azure/)
 - [WinGet Documentation](https://learn.microsoft.com/en-us/windows/package-manager/winget/)
 - [Chocolatey Documentation](https://docs.chocolatey.org/)
-- [VS Code Marketplace](https://marketplace.visualstudio.com/)
