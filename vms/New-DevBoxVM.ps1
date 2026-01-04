@@ -67,7 +67,8 @@
 .NOTES
     Requires: DevBox template created by New-DevBoxTemplate.ps1
     Author: DevBox Factory Team
-    Version: 2.0.0
+    Version: 3.0.0
+    Build: 20260104.1800
 #>
 
 [CmdletBinding()]
@@ -114,11 +115,11 @@ $ErrorActionPreference = "Stop"
 
 # Version Information
 $Script:DevBoxVersion = @{
-    Major = 2
+    Major = 3
     Minor = 0
     Patch = 0
-    BuildDate = "2026-01-04"
-    BuildNumber = "20260104.002"
+    BuildDate = "2026-01-04 18:00"
+    BuildNumber = "20260104.1800"
 }
 
 # Script-level variables

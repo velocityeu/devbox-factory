@@ -200,8 +200,9 @@ $Script:Config = @{
 }
 
 # Version Information
-$Script:Version = "2.0.0"
-$Script:Build = "20260104.002"
+$Script:Version = "3.0.0"
+$Script:Build = "20260104.1800"
+$Script:BuildDate = "2026-01-04 18:00"
 
 # ============================================================================
 # MENU SYSTEM

@@ -6,27 +6,29 @@
     Self-contained bootstrapper that:
     1. Verifies Windows 11 22H2+ and administrator privileges
     2. Checks network connectivity to GitHub
-    3. Prompts for installation directory
-    4. Downloads all DevBox Factory scripts from GitHub
-    5. Validates downloads
-    6. Optionally runs Install-DevBox.ps1
+    3. Checks for updates and offers to update if newer version available
+    4. Prompts for installation directory
+    5. Downloads all DevBox Factory scripts from GitHub
+    6. Validates downloads
+    7. Optionally runs Install-DevBox.ps1
 
 .EXAMPLE
     irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex
 
 .NOTES
-    Version: 2.0.0
-    Build: 2026-01-04
+    Version: 3.0.0
+    Build: 20260104.1800
     DevBox Factory - https://github.com/velocityeu/devbox-factory
 #>
 
 #Requires -Version 5.1
 
 $Script:DevBoxVersion = @{
-    Major       = 2
+    Major       = 3
     Minor       = 0
     Patch       = 0
-    Build       = "20260104.002"
+    Build       = "20260104.1800"
+    BuildDate   = "2026-01-04 18:00"
 }
 
 $Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/devbox-factory/main"
@@ -131,6 +133,156 @@ function Show-ErrorWithRemediation {
         }
     }
     Write-Host ""
+}
+
+#endregion
+
+#region Version Check and Update
+
+function Get-RemoteVersion {
+    <#
+    .SYNOPSIS
+        Fetches the latest version info from GitHub
+    #>
+    try {
+        $versionUrl = "$Script:GitHubBaseUrl/Initialize-DevBox.ps1"
+        $webClient = New-Object System.Net.WebClient
+        $webClient.Headers.Add("User-Agent", "DevBox-Factory/$($Script:DevBoxVersion.Major).$($Script:DevBoxVersion.Minor)")
+        $content = $webClient.DownloadString($versionUrl)
+
+        # Parse version from the remote script
+        if ($content -match 'Major\s*=\s*(\d+)') { $major = [int]$matches[1] } else { return $null }
+        if ($content -match 'Minor\s*=\s*(\d+)') { $minor = [int]$matches[1] } else { return $null }
+        if ($content -match 'Patch\s*=\s*(\d+)') { $patch = [int]$matches[1] } else { return $null }
+        if ($content -match 'Build\s*=\s*"([^"]+)"') { $build = $matches[1] } else { $build = "unknown" }
+        if ($content -match 'BuildDate\s*=\s*"([^"]+)"') { $buildDate = $matches[1] } else { $buildDate = "unknown" }
+
+        return @{
+            Major     = $major
+            Minor     = $minor
+            Patch     = $patch
+            Build     = $build
+            BuildDate = $buildDate
+            Version   = "$major.$minor.$patch"
+        }
+    } catch {
+        return $null
+    }
+}
+
+function Compare-Versions {
+    <#
+    .SYNOPSIS
+        Compares local and remote versions
+    .RETURNS
+        -1 if local < remote (update available)
+         0 if local = remote (up to date)
+         1 if local > remote (local is newer)
+    #>
+    param(
+        [hashtable]$Local,
+        [hashtable]$Remote
+    )
+
+    if ($Local.Major -lt $Remote.Major) { return -1 }
+    if ($Local.Major -gt $Remote.Major) { return 1 }
+
+    if ($Local.Minor -lt $Remote.Minor) { return -1 }
+    if ($Local.Minor -gt $Remote.Minor) { return 1 }
+
+    if ($Local.Patch -lt $Remote.Patch) { return -1 }
+    if ($Local.Patch -gt $Remote.Patch) { return 1 }
+
+    # Same version, check build number
+    if ($Local.Build -lt $Remote.Build) { return -1 }
+    if ($Local.Build -gt $Remote.Build) { return 1 }
+
+    return 0
+}
+
+function Test-ForUpdates {
+    <#
+    .SYNOPSIS
+        Checks for updates and prompts user to update if available
+    .RETURNS
+        $true if should continue, $false if user wants to update first
+    #>
+    param(
+        [string]$ExistingInstallPath = $null
+    )
+
+    # Only check for updates if we have an existing installation
+    if (-not $ExistingInstallPath -or -not (Test-Path $ExistingInstallPath)) {
+        return @{ Continue = $true; UpdateAvailable = $false }
+    }
+
+    Show-Message "Checking for updates..." -Level Info
+
+    $remoteVersion = Get-RemoteVersion
+    if (-not $remoteVersion) {
+        Show-Message "Could not check for updates (offline?)" -Level Warning
+        return @{ Continue = $true; UpdateAvailable = $false }
+    }
+
+    $comparison = Compare-Versions -Local $Script:DevBoxVersion -Remote $remoteVersion
+    $localVer = "v$($Script:DevBoxVersion.Major).$($Script:DevBoxVersion.Minor).$($Script:DevBoxVersion.Patch)"
+    $remoteVer = "v$($remoteVersion.Version)"
+
+    if ($comparison -lt 0) {
+        # Update available
+        Write-Host ""
+        Write-Host "  +===========================================================+" -ForegroundColor Yellow
+        Write-Host "  |                   UPDATE AVAILABLE                         |" -ForegroundColor Yellow
+        Write-Host "  +===========================================================+" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "  Installed: $localVer (build $($Script:DevBoxVersion.Build))" -ForegroundColor White
+        Write-Host "  Available: $remoteVer (build $($remoteVersion.Build))" -ForegroundColor Green
+        Write-Host "  Released:  $($remoteVersion.BuildDate)" -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "   [1] Update now (Recommended)" -ForegroundColor White
+        Write-Host "       Download latest version to: $ExistingInstallPath" -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "   [2] Skip update" -ForegroundColor White
+        Write-Host "       Continue with current version" -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+        $choice = Read-Host "  Enter choice [1]"
+        if ([string]::IsNullOrWhiteSpace($choice)) { $choice = "1" }
+
+        if ($choice -eq "1") {
+            return @{ Continue = $true; UpdateAvailable = $true; UpdateNow = $true; InstallPath = $ExistingInstallPath }
+        } else {
+            Show-Message "Skipping update, continuing with $localVer" -Level Info
+            return @{ Continue = $true; UpdateAvailable = $true; UpdateNow = $false }
+        }
+    } elseif ($comparison -eq 0) {
+        Show-Message "You have the latest version ($localVer)" -Level Success
+        return @{ Continue = $true; UpdateAvailable = $false }
+    } else {
+        Show-Message "Local version ($localVer) is newer than remote ($remoteVer)" -Level Info
+        return @{ Continue = $true; UpdateAvailable = $false }
+    }
+}
+
+function Find-ExistingInstallation {
+    <#
+    .SYNOPSIS
+        Looks for existing DevBox Factory installation
+    #>
+    $commonPaths = @(
+        "C:\DevBox",
+        "$env:USERPROFILE\DevBox",
+        "$PSScriptRoot"
+    )
+
+    foreach ($path in $commonPaths) {
+        if (Test-Path (Join-Path $path "devbox.ps1")) {
+            return $path
+        }
+    }
+
+    return $null
 }
 
 #endregion
@@ -751,6 +903,37 @@ function Show-PostBootstrapMenu {
 function Main {
     Show-Banner
 
+    # Check for existing installation and updates
+    $existingPath = Find-ExistingInstallation
+    if ($existingPath) {
+        Show-Message "Found existing installation: $existingPath" -Level Info
+        $updateCheck = Test-ForUpdates -ExistingInstallPath $existingPath
+
+        if ($updateCheck.UpdateAvailable -and $updateCheck.UpdateNow) {
+            # User wants to update - proceed with download to existing path
+            Show-Message "Updating installation at: $existingPath" -Level Header
+            $installPath = $existingPath
+        } elseif ($updateCheck.UpdateAvailable -and -not $updateCheck.UpdateNow) {
+            # User skipped update - show post-bootstrap menu for existing install
+            Show-NextSteps -InstallPath $existingPath
+            $hypervChecks = Test-HyperVPrerequisites
+            $isoCheck = Test-ISOAvailability -BasePath $existingPath
+            $hypervReady = ($hypervChecks | Where-Object { $_.Name -eq "Hyper-V Feature" }).Passed
+            $isoFound = $isoCheck.Passed
+            Show-PostBootstrapMenu -InstallPath $existingPath -HyperVReady $hypervReady -ISOFound $isoFound
+            return
+        } else {
+            # Already up to date - show post-bootstrap menu
+            Show-NextSteps -InstallPath $existingPath
+            $hypervChecks = Test-HyperVPrerequisites
+            $isoCheck = Test-ISOAvailability -BasePath $existingPath
+            $hypervReady = ($hypervChecks | Where-Object { $_.Name -eq "Hyper-V Feature" }).Passed
+            $isoFound = $isoCheck.Passed
+            Show-PostBootstrapMenu -InstallPath $existingPath -HyperVReady $hypervReady -ISOFound $isoFound
+            return
+        }
+    }
+
     # Prerequisites check (critical)
     $checks = Test-Prerequisites
     $result = Show-PrerequisiteResults -Checks $checks -Title "CORE PREREQUISITES"
@@ -797,8 +980,10 @@ function Main {
         return
     }
 
-    # Get installation directory
-    $installPath = Get-InstallationDirectory
+    # Get installation directory (skip if updating existing installation)
+    if (-not $installPath) {
+        $installPath = Get-InstallationDirectory
+    }
 
     # Download files
     $downloadResults = Download-DevBoxFiles -DestinationPath $installPath

@@ -67,8 +67,8 @@
 .NOTES
     Requires: Windows 10/11 Pro or Server with Hyper-V capability
     DevBox Factory - https://github.com/velocityeu/devbox-factory
-    Version: 2.0.0
-    Build: 2026-01-04
+    Version: 3.0.0
+    Build: 20260104.1800
 #>
 
 [CmdletBinding()]
@@ -117,11 +117,11 @@ $ProgressPreference = "SilentlyContinue"
 
 # Version information
 $Script:DevBoxVersion = @{
-    Major       = 2
+    Major       = 3
     Minor       = 0
     Patch       = 0
-    BuildDate   = "2026-01-04"
-    BuildNumber = "20260104.002"
+    BuildDate   = "2026-01-04 18:00"
+    BuildNumber = "20260104.1800"
 }
 
 # Script-level variables

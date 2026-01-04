@@ -15,7 +15,8 @@
     .\devbox help          # Show this help
 
 .NOTES
-    DevBox Factory v2.0.0
+    DevBox Factory v3.0.0
+    Build: 20260104.1800
     https://github.com/velocityeu/devbox-factory
 #>
 
@@ -27,8 +28,9 @@ param(
     [string[]]$Arguments
 )
 
-$Script:Version = "2.0.0"
-$Script:Build = "20260104.002"
+$Script:Version = "3.0.0"
+$Script:Build = "20260104.1800"
+$Script:BuildDate = "2026-01-04 18:00"
 
 function Show-Banner {
     Write-Host ""
