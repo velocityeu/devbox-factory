@@ -54,6 +54,20 @@ $Script:ISOSearchPaths = @(
     "D:\ISOs"
 )
 
+function Ensure-TlsProtocols {
+    $tls12 = 3072
+    $tls13 = 12288
+    try {
+        $current = [System.Net.ServicePointManager]::SecurityProtocol
+        $desired = $current -bor $tls12 -bor $tls13
+        if ($current -ne $desired) {
+            [System.Net.ServicePointManager]::SecurityProtocol = $desired
+        }
+    } catch {
+        [System.Net.ServicePointManager]::SecurityProtocol = $tls12
+    }
+}
+
 # Import download helper module if available (not available when running via irm | iex)
 $Script:DownloadHelpersAvailable = $false
 if (-not [string]::IsNullOrWhiteSpace($PSScriptRoot)) {
@@ -159,6 +173,7 @@ function Get-RemoteVersion {
         Fetches the latest version info from GitHub
     #>
     try {
+        Ensure-TlsProtocols
         $versionUrl = "$Script:GitHubBaseUrl/Initialize-DevBox.ps1"
         $webClient = New-Object System.Net.WebClient
         $webClient.Headers.Add("User-Agent", "DevBox-Factory/$($Script:DevBoxVersion.Major).$($Script:DevBoxVersion.Minor)")
@@ -665,6 +680,8 @@ function Download-DevBoxFiles {
         [Parameter(Mandatory)]
         [string]$DestinationPath
     )
+
+    Ensure-TlsProtocols
 
     $results = @{
         Downloaded = @()

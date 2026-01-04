@@ -37,7 +37,7 @@
     Skip PostgreSQL, MongoDB, and Redis installation
 
 .PARAMETER SkipAITools
-    Skip Claude Code, Cursor, and VS Code installation
+    Skip Claude Code, Cursor, and VS Code AI extensions installation
 
 .PARAMETER SkipAzure
     Skip Azure development tools
@@ -421,7 +421,7 @@ function Set-ProfileConfiguration {
             $script:SkipDotNet = $true
             $script:SkipDocker = $true
             $script:SkipDatabases = $true
-            $script:SkipAITools = $false  # Still install VS Code
+            $script:SkipAITools = $true
             $script:SkipAzure = $true
             $script:SkipVSCodeExtensions = $true
         }
@@ -479,6 +479,37 @@ function Set-CustomConfiguration {
 
     # VS Code is always installed (part of core)
     $script:SkipAITools = $script:SkipAITools -and (-not $Script:Config.InstallAI)
+}
+
+function Apply-ManualOverrides {
+    if ($SkipAITools) {
+        $Script:Config.InstallAI = $false
+        $script:SkipAITools = $true
+    }
+    if ($SkipNodeJS) {
+        $script:SkipNodeJS = $true
+    }
+    if ($SkipPython) {
+        $script:SkipPython = $true
+    }
+    if ($SkipDotNet) {
+        $script:SkipDotNet = $true
+    }
+    if ($SkipDocker) {
+        $Script:Config.InstallDocker = $false
+        $script:SkipDocker = $true
+    }
+    if ($SkipDatabases) {
+        $Script:Config.InstallDatabases = $false
+        $script:SkipDatabases = $true
+    }
+    if ($SkipAzure) {
+        $Script:Config.InstallAzure = $false
+        $script:SkipAzure = $true
+    }
+    if ($SkipVSCodeExtensions) {
+        $script:SkipVSCodeExtensions = $true
+    }
 }
 
 function Show-SelectedComponents {
@@ -959,7 +990,7 @@ function Install-VSCodeExtensions {
     # Build extension list based on configuration
     $extensions = $Script:Config.VSCodeExtensionsBase.Clone()
 
-    if ($Script:Config.InstallAI) {
+    if (-not $script:SkipAITools -and $Script:Config.InstallAI) {
         $extensions += $Script:Config.VSCodeExtensionsAI
     }
     if ($Script:Config.InstallWeb -or (-not $script:SkipNodeJS) -or (-not $script:SkipPython)) {
@@ -1208,6 +1239,8 @@ function Start-DevBox-Installation {
         # Use specified profile
         Set-ProfileConfiguration -SelectedProfile $Profile
     }
+
+    Apply-ManualOverrides
 
     Show-Banner
     Write-Host ""
