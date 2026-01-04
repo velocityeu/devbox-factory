@@ -142,10 +142,10 @@ function Test-CoreTools {
     Write-Host "  CORE TOOLS" -ForegroundColor Cyan
     Write-Host "  ----------" -ForegroundColor DarkGray
 
-    Test-Command -Name "Git" -Command "git --version"
-    Test-Command -Name "VS Code" -Command "code --version"
-    Test-Path-Exists -Name "Windows Terminal" -Path "$env:LOCALAPPDATA\Microsoft\WindowsApps\wt.exe"
-    Test-Command -Name "PowerShell 7" -Command "pwsh --version"
+    $null = Test-Command -Name "Git" -Command "git --version"
+    $null = Test-Command -Name "VS Code" -Command "code --version"
+    $null = Test-Path-Exists -Name "Windows Terminal" -Path "$env:LOCALAPPDATA\Microsoft\WindowsApps\wt.exe"
+    $null = Test-Command -Name "PowerShell 7" -Command "pwsh --version"
 }
 
 function Test-AITools {
@@ -153,8 +153,8 @@ function Test-AITools {
     Write-Host "  AI CODING TOOLS" -ForegroundColor Cyan
     Write-Host "  ----------------" -ForegroundColor DarkGray
 
-    Test-Command -Name "Claude Code" -Command "claude --version"
-    Test-Path-Exists -Name "Cursor IDE" -Path "$env:LOCALAPPDATA\Programs\cursor\Cursor.exe"
+    $null = Test-Command -Name "Claude Code" -Command "claude --version"
+    $null = Test-Path-Exists -Name "Cursor IDE" -Path "$env:LOCALAPPDATA\Programs\cursor\Cursor.exe"
 
     # Check VS Code extensions
     Write-Host "  Checking VS Code AI extensions... " -NoNewline
@@ -182,12 +182,12 @@ function Test-Runtimes {
     Write-Host "  DEVELOPMENT RUNTIMES" -ForegroundColor Cyan
     Write-Host "  ---------------------" -ForegroundColor DarkGray
 
-    Test-Command -Name "Node.js" -Command "node --version"
-    Test-Command -Name "npm" -Command "npm --version"
-    Test-Command -Name "Python" -Command "python --version"
-    Test-Command -Name "pip" -Command "pip --version"
-    Test-Command -Name ".NET SDK" -Command "dotnet --version"
-    Test-Command -Name "pnpm" -Command "pnpm --version"
+    $null = Test-Command -Name "Node.js" -Command "node --version"
+    $null = Test-Command -Name "npm" -Command "npm --version"
+    $null = Test-Command -Name "Python" -Command "python --version"
+    $null = Test-Command -Name "pip" -Command "pip --version"
+    $null = Test-Command -Name ".NET SDK" -Command "dotnet --version"
+    $null = Test-Command -Name "pnpm" -Command "pnpm --version"
 }
 
 function Test-Docker {
@@ -195,10 +195,10 @@ function Test-Docker {
     Write-Host "  CONTAINERIZATION" -ForegroundColor Cyan
     Write-Host "  -----------------" -ForegroundColor DarkGray
 
-    Test-Command -Name "Docker" -Command "docker --version"
-    Test-Command -Name "Docker Compose" -Command "docker compose version"
-    Test-Command -Name "WSL" -Command "wsl --version"
-    Test-Service -Name "Docker Desktop Service" -ServiceName "com.docker.service"
+    $null = Test-Command -Name "Docker" -Command "docker --version"
+    $null = Test-Command -Name "Docker Compose" -Command "docker compose version"
+    $null = Test-Command -Name "WSL" -Command "wsl --version"
+    $null = Test-Service -Name "Docker Desktop Service" -ServiceName "com.docker.service"
 }
 
 function Test-HyperV {
@@ -224,9 +224,9 @@ function Test-HyperV {
         Write-Host "Requires admin" -ForegroundColor DarkGray
     }
 
-    Test-Service -Name "Hyper-V VM Management" -ServiceName "vmms"
-    Test-Path-Exists -Name "DevBox Templates" -Path "C:\HyperV\Templates"
-    Test-Path-Exists -Name "DevBox VMs" -Path "C:\HyperV\VMs"
+    $null = Test-Service -Name "Hyper-V VM Management" -ServiceName "vmms"
+    $null = Test-Path-Exists -Name "DevBox Templates" -Path "C:\HyperV\Templates"
+    $null = Test-Path-Exists -Name "DevBox VMs" -Path "C:\HyperV\VMs"
 }
 
 function Test-Network {
