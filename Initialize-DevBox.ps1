@@ -272,12 +272,16 @@ function Find-ExistingInstallation {
     #>
     $commonPaths = @(
         "C:\DevBox",
-        "$env:USERPROFILE\DevBox",
-        "$PSScriptRoot"
+        "$env:USERPROFILE\DevBox"
     )
 
+    # Add $PSScriptRoot only if it's not empty (empty when running via irm | iex)
+    if (-not [string]::IsNullOrWhiteSpace($PSScriptRoot)) {
+        $commonPaths += $PSScriptRoot
+    }
+
     foreach ($path in $commonPaths) {
-        if (Test-Path (Join-Path $path "devbox.ps1")) {
+        if (-not [string]::IsNullOrWhiteSpace($path) -and (Test-Path (Join-Path $path "devbox.ps1"))) {
             return $path
         }
     }
