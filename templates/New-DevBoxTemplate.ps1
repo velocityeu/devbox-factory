@@ -101,6 +101,11 @@ param(
     [ValidateSet('Lightweight', 'Standard', 'Performance', 'ServerClass', 'Custom')]
     [string]$Preset,
 
+    [ValidateSet('Full', 'AICoder', 'WebDev', 'Azure', 'Minimal', 'None')]
+    [string]$DevBoxProfile = "Full",
+
+    [switch]$SkipDevBoxTools,
+
     [switch]$Interactive
 )
 
@@ -499,11 +504,28 @@ function Show-ConfigurationSummary {
     Write-Host "    CPUs: $($Config.ProcessorCount) cores" -ForegroundColor White
     Write-Host "    Disk: $($Config.DiskSizeGB) GB" -ForegroundColor White
     Write-Host ""
+    Write-Host "  DevBox Tools Profile:" -ForegroundColor Cyan
+    $profileDesc = switch ($Config.DevBoxProfile) {
+        "Full"    { "Full - AI tools, Web Dev, Azure, Docker, Databases" }
+        "AICoder" { "AI Coder - Claude Code, Cursor, VS Code, Node.js, Python" }
+        "WebDev"  { "Web Developer - Node.js, Python, Docker, Databases" }
+        "Azure"   { "Azure Developer - Azure CLI, .NET SDK, Terraform" }
+        "Minimal" { "Minimal - Git, Windows Terminal, VS Code only" }
+        "None"    { "None - Clean Windows, no tools pre-installed" }
+        default   { $Config.DevBoxProfile }
+    }
+    Write-Host "    Profile: $profileDesc" -ForegroundColor White
+    if ($Config.DevBoxProfile -ne "None") {
+        Write-Host "    * Tools will be PRE-INSTALLED in template" -ForegroundColor Green
+        Write-Host "    * All cloned VMs will be READY TO CODE immediately" -ForegroundColor Green
+    }
+    Write-Host ""
     Write-Host "  Options:" -ForegroundColor Cyan
     Write-Host "    Skip Windows Updates: $(if($Config.SkipWindowsUpdates){'Yes'}else{'No'})" -ForegroundColor White
     Write-Host "    Time Zone: $($Config.TimeZone)" -ForegroundColor White
     Write-Host ""
-    Write-Host "  Estimated Time: 45-90 minutes" -ForegroundColor Yellow
+    $estTime = if ($Config.DevBoxProfile -eq "None") { "45-60" } else { "60-90" }
+    Write-Host "  Estimated Time: $estTime minutes" -ForegroundColor Yellow
     Write-Host "  Required Disk Space: ~150 GB" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "  +===========================================================+" -ForegroundColor Green
@@ -559,6 +581,53 @@ function Show-ExistingTemplates {
     Read-Host
 }
 
+function Show-DevBoxProfileMenu {
+    Show-Banner
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |              DEVBOX TOOLS PROFILE                          |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  Select which dev tools to PRE-INSTALL in the template:" -ForegroundColor White
+    Write-Host "  (All cloned VMs will have these tools ready to use)" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [1] Full (Recommended)" -ForegroundColor White
+    Write-Host "       AI tools, Web Dev, Azure, Docker, Databases" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [2] AI Coder" -ForegroundColor White
+    Write-Host "       Claude Code, Cursor, VS Code + AI extensions, Node.js, Python" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [3] Web Developer" -ForegroundColor White
+    Write-Host "       Node.js, Python, Docker, PostgreSQL, MongoDB, Redis" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [4] Azure Developer" -ForegroundColor White
+    Write-Host "       Azure CLI, Functions, .NET SDK, Terraform, Bicep" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [5] Minimal" -ForegroundColor White
+    Write-Host "       Git, Windows Terminal, VS Code only" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [6] None - Skip tool installation" -ForegroundColor White
+    Write-Host "       Clean Windows only (install tools manually later)" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [B] Back" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+    $choice = Read-Host "  Enter choice [1]"
+    if ([string]::IsNullOrWhiteSpace($choice)) { $choice = "1" }
+
+    switch ($choice.ToUpper()) {
+        'B' { return $null }
+        '1' { return "Full" }
+        '2' { return "AICoder" }
+        '3' { return "WebDev" }
+        '4' { return "Azure" }
+        '5' { return "Minimal" }
+        '6' { return "None" }
+        default { return "Full" }
+    }
+}
+
 function Invoke-InteractiveMode {
     $config = @{
         ISOPath = ""
@@ -571,6 +640,7 @@ function Invoke-InteractiveMode {
         SkipWindowsUpdates = $false
         WindowsEditionIndex = 6
         TimeZone = "Pacific Standard Time"
+        DevBoxProfile = "Full"
     }
 
     while ($true) {
@@ -636,7 +706,12 @@ function Invoke-InteractiveMode {
                 $config.ProcessorCount = 4
                 $config.DiskSizeGB = 127
 
-                # Step 3: Confirmation
+                # Step 3: DevBox Profile Selection
+                $profileChoice = Show-DevBoxProfileMenu
+                if ($null -eq $profileChoice) { continue }
+                $config.DevBoxProfile = $profileChoice
+
+                # Step 4: Confirmation
                 $summaryChoice = Show-ConfigurationSummary -Config $config
                 switch ($summaryChoice.ToUpper()) {
                     'P' { return $config }
@@ -709,12 +784,17 @@ function Invoke-InteractiveMode {
                 $config.ProcessorCount = $specs.ProcessorCount
                 $config.DiskSizeGB = $specs.DiskSizeGB
 
-                # Step 3: Additional Options
+                # Step 3: DevBox Profile Selection
+                $profileChoice = Show-DevBoxProfileMenu
+                if ($null -eq $profileChoice) { continue }
+                $config.DevBoxProfile = $profileChoice
+
+                # Step 4: Additional Options
                 Write-Host ""
                 $skipUpdates = Read-Host "  Skip Windows Updates? (y/N)"
                 $config.SkipWindowsUpdates = ($skipUpdates -eq 'y' -or $skipUpdates -eq 'Y')
 
-                # Step 4: Confirmation
+                # Step 5: Confirmation
                 $summaryChoice = Show-ConfigurationSummary -Config $config
                 switch ($summaryChoice.ToUpper()) {
                     'P' { return $config }
@@ -1231,6 +1311,137 @@ function Install-WindowsUpdates {
 
 #endregion
 
+#region DevBox Tools Installation
+
+function Install-DevBoxTools {
+    param(
+        [string]$Profile = "Full"
+    )
+
+    if ($Profile -eq "None" -or $SkipDevBoxTools) {
+        Write-Log "Skipping DevBox tools installation (profile: $Profile)" -Level Warning
+        return
+    }
+
+    Write-Log "Installing DevBox tools in template (profile: $Profile)..." -Level Header
+    Write-Log "This may take 20-40 minutes depending on the profile..." -Level Info
+
+    # Create credentials
+    $securePassword = if ($null -ne $AdminPassword) {
+        $AdminPassword
+    } else {
+        ConvertTo-SecureString "VibeDev123!" -AsPlainText -Force
+    }
+    $credential = New-Object System.Management.Automation.PSCredential("Administrator", $securePassword)
+
+    # Wait for PowerShell Direct to be available
+    $maxAttempts = 30
+    $attempt = 0
+    $session = $null
+
+    Write-Log "Connecting to VM via PowerShell Direct..." -Level Info
+    while ($attempt -lt $maxAttempts -and $null -eq $session) {
+        try {
+            $session = New-PSSession -VMName $Script:VMName -Credential $credential -ErrorAction Stop
+            Write-Log "PowerShell Direct connection established" -Level Success
+        } catch {
+            $attempt++
+            Write-Host "." -NoNewline
+            Start-Sleep -Seconds 10
+        }
+    }
+
+    Write-Host ""
+
+    if ($null -eq $session) {
+        Write-Log "Could not establish PowerShell Direct connection" -Level Warning
+        Write-Log "DevBox tools will need to be installed manually after VM creation" -Level Warning
+        return
+    }
+
+    try {
+        # Copy Install-DevBox.ps1 to VM
+        Write-Log "Copying Install-DevBox.ps1 to template VM..." -Level Info
+        $installScriptPath = Join-Path (Split-Path $Script:ScriptRoot -Parent) "Install-DevBox.ps1"
+
+        if (-not (Test-Path $installScriptPath)) {
+            Write-Log "Install-DevBox.ps1 not found at: $installScriptPath" -Level Error
+            return
+        }
+
+        # Create destination directory in VM
+        Invoke-Command -Session $session -ScriptBlock {
+            if (-not (Test-Path "C:\DevBox")) {
+                New-Item -Path "C:\DevBox" -ItemType Directory -Force | Out-Null
+            }
+        }
+
+        # Copy the script content (can't use Copy-Item directly to VM)
+        $scriptContent = Get-Content $installScriptPath -Raw
+        Invoke-Command -Session $session -ScriptBlock {
+            param($content)
+            $content | Out-File -FilePath "C:\DevBox\Install-DevBox.ps1" -Encoding UTF8 -Force
+        } -ArgumentList $scriptContent
+
+        Write-Log "Install-DevBox.ps1 copied to VM" -Level Success
+
+        # Run the installer with the selected profile
+        Write-Log "Running DevBox installer with profile: $Profile..." -Level Info
+        Write-Log "This is the key step - tools will be pre-installed in the template!" -Level Info
+
+        $installResult = Invoke-Command -Session $session -ScriptBlock {
+            param($profileName)
+
+            try {
+                Set-Location "C:\DevBox"
+
+                # Run installer in silent mode with the specified profile
+                $installArgs = @{
+                    Silent = $true
+                    Profile = $profileName
+                    NoReboot = $true
+                }
+
+                # Source the script and run
+                & "C:\DevBox\Install-DevBox.ps1" -Silent -Profile $profileName -NoReboot
+
+                return @{ Success = $true; Message = "Installation completed" }
+            } catch {
+                return @{ Success = $false; Message = $_.Exception.Message }
+            }
+        } -ArgumentList $Profile
+
+        if ($installResult.Success) {
+            Write-Log "DevBox tools installed successfully in template!" -Level Success
+        } else {
+            Write-Log "DevBox tools installation had issues: $($installResult.Message)" -Level Warning
+        }
+
+        # Clean up temporary files but keep the tools
+        Write-Log "Cleaning up temporary installation files..." -Level Info
+        Invoke-Command -Session $session -ScriptBlock {
+            # Clean temp files
+            Remove-Item -Path "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "C:\Windows\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+            # Clear WinGet cache
+            Remove-Item -Path "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_*\LocalState\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+            # Clear Chocolatey cache if it exists
+            if (Test-Path "C:\ProgramData\chocolatey\cache") {
+                Remove-Item -Path "C:\ProgramData\chocolatey\cache\*" -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        }
+
+        Write-Log "Template now has DevBox tools pre-installed!" -Level Success
+
+    } finally {
+        Remove-PSSession -Session $session -ErrorAction SilentlyContinue
+    }
+}
+
+#endregion
+
 #region Sysprep
 
 function Invoke-Sysprep {
@@ -1376,6 +1587,7 @@ function Main {
         $Script:SkipWindowsUpdates = $config.SkipWindowsUpdates
         $Script:WindowsEditionIndex = $config.WindowsEditionIndex
         $Script:TimeZone = $config.TimeZone
+        $Script:DevBoxProfile = $config.DevBoxProfile
 
         # Update local variables for use in this function
         $ISOPath = $config.ISOPath
@@ -1384,6 +1596,7 @@ function Main {
         $MemoryGB = $config.MemoryGB
         $ProcessorCount = $config.ProcessorCount
         $DiskSizeGB = $config.DiskSizeGB
+        $DevBoxProfile = $config.DevBoxProfile
 
         Clear-Host
         Show-Banner
@@ -1393,6 +1606,8 @@ function Main {
     Write-Log "ISO: $ISOPath" -Level Info
     Write-Log "Template: $TemplatePath\$TemplateName.vhdx" -Level Info
     Write-Log "VM Specs: ${MemoryGB}GB RAM, $ProcessorCount CPUs, ${DiskSizeGB}GB Disk" -Level Info
+    $profileDisplay = if ($Script:DevBoxProfile) { $Script:DevBoxProfile } elseif ($DevBoxProfile) { $DevBoxProfile } else { "Full" }
+    Write-Log "DevBox Profile: $profileDisplay (tools will be PRE-INSTALLED)" -Level Info
 
     try {
         # Step 1: Install prerequisites
@@ -1413,17 +1628,26 @@ function Main {
         # Step 6: Install Windows Updates
         Install-WindowsUpdates
 
-        # Step 7: Sysprep
+        # Step 7: Install DevBox Tools IN THE TEMPLATE
+        # This is the key step that makes VMs "ready to code" instantly!
+        $profileToInstall = if ($Script:DevBoxProfile) { $Script:DevBoxProfile } else { $DevBoxProfile }
+        if ([string]::IsNullOrEmpty($profileToInstall)) { $profileToInstall = "Full" }
+        Install-DevBoxTools -Profile $profileToInstall
+
+        # Step 8: Sysprep
         Invoke-Sysprep
 
-        # Step 8: Export template
+        # Step 9: Export template
         Export-Template
 
         $duration = (Get-Date) - $startTime
         Write-Log "Template creation completed in $([math]::Round($duration.TotalMinutes, 1)) minutes" -Level Success
         Write-Log "" -Level Info
-        Write-Log "Next step: Use New-DevBoxVM.ps1 to create development VMs from this template" -Level Info
-        Write-Log "Example: .\New-DevBoxVM.ps1 -VMName 'DevVM-01' -TemplatePath '$Script:VHDXPath'" -Level Info
+        Write-Log "TEMPLATE READY with DevBox tools PRE-INSTALLED!" -Level Success
+        Write-Log "" -Level Info
+        Write-Log "Next step: Create VMs from this template - they will be READY TO CODE instantly!" -Level Info
+        Write-Log "Command: .\devbox vm -VMName 'DevVM-01'" -Level Info
+        Write-Log "Or run: .\New-DevBoxVM.ps1 -VMName 'DevVM-01' -TemplatePath '$Script:VHDXPath'" -Level Info
 
     } catch {
         Write-Log "Template creation failed: $_" -Level Error

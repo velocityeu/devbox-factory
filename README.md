@@ -10,14 +10,48 @@ Professional-grade Windows 11 development environment automation. Create reprodu
 
 ## Features
 
-- **One-Line Bootstrap** - Download and setup from vanilla Windows 11
+- **One-Line Bootstrap** - Download and setup from vanilla Windows 11 or Server 2025
+- **Tools PRE-INSTALLED in Template** - VMs are ready to code in 2-3 minutes
 - **CLI Wrapper** - Human-friendly `.\devbox` commands
-- **Pre-configured Profiles** - Full, AI Coder, Web Dev, Azure, or Custom
+- **Pre-configured Profiles** - Full, AI Coder, Web Dev, Azure, or Minimal
 - **Hyper-V VM Factory** - Create identical dev VMs from golden templates
 - **Interactive Menus** - Guided wizards with file pickers
-- **Pre-flight Validation** - Checks prerequisites before changes
+- **Comprehensive Pre-flight Checks** - Validates Hyper-V, ISO, disk space upfront
 - **Health Checks** - Verify your environment with `.\devbox test`
 - **Idempotent** - Safe to run multiple times
+
+## The 3-Stage Workflow
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STAGE 0: BOOTSTRAP                              (.\devbox init)            │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • Checks Windows 11/Server 2025, Hyper-V, ISO, disk space                  │
+│  • Downloads all DevBox Factory scripts                                     │
+│  • Offers to enable Hyper-V if not enabled                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STAGE 1: CREATE TEMPLATE (one-time, ~60 min)    (.\devbox template)        │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • Select Windows ISO (Win11 or Server 2025)                                │
+│  • Select DevBox profile (Full/AICoder/WebDev/Azure/Minimal)                │
+│  • *** TOOLS ARE PRE-INSTALLED IN THE TEMPLATE ***                          │
+│  • Sysprep and export template VHDX                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STAGE 2: CREATE VMs (instant, ~2-3 min each)    (.\devbox vm)              │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • Clone template to new VM                                                 │
+│  • VM boots with ALL tools already installed                                │
+│  • *** READY TO CODE IMMEDIATELY ***                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Key Benefit:** Tools are installed ONCE in the template. Every VM cloned from it is instantly ready to use - no waiting 20-30 minutes for tool installation per VM!
 
 ## Quick Start
 
@@ -31,10 +65,12 @@ irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-
 ```
 
 This bootstrap script:
-- Checks Windows 11 22H2+ and Administrator privileges
-- Lets you choose installation directory (default: `C:\DevBox`)
+- Checks Windows 11 22H2+ or Server 2025 and Administrator privileges
+- Validates Hyper-V capability, CPU virtualization, and disk space
+- Scans for Windows ISO files in common locations
 - Downloads all scripts including Hyper-V VM automation
-- Offers to run the installer immediately
+- Offers to enable Hyper-V if not already enabled
+- Guides you to the next step based on system readiness
 
 ### Option 2: Direct Install
 
@@ -491,14 +527,19 @@ You can also run specific categories:
 
 ## Hyper-V VM Factory
 
-Create pre-configured Windows 11 development VMs with tools auto-installed.
+Create pre-configured Windows 11/Server 2025 development VMs with **tools PRE-INSTALLED in the template**.
 
 ### Two-Stage Process
 
-| Stage | Command | Purpose | Time |
-|-------|---------|---------|------|
-| **1. Template** | `.\devbox template` | Create sysprepped VHDX from ISO | 30-60 min (one-time) |
-| **2. VM** | `.\devbox vm` | Clone template to new VMs | 2-5 min each |
+| Stage | Command | What Happens | Time |
+|-------|---------|--------------|------|
+| **1. Template** | `.\devbox template` | Create VHDX with Windows + DevBox tools installed | 60-90 min (one-time) |
+| **2. VM** | `.\devbox vm` | Clone template → VM is **READY TO CODE** | 2-3 min each |
+
+**The key difference:** Tools are installed IN THE TEMPLATE, not after VM creation. This means:
+- Template creation takes longer (tools are installed once)
+- VM creation is instant (just clone and boot)
+- Every team member gets identical, ready-to-use environments
 
 ### ISO Files
 

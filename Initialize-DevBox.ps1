@@ -39,7 +39,17 @@ $Script:RequiredFiles = @(
     @{ Path = "templates/SetupComplete.ps1"; Required = $true },
     @{ Path = "templates/autounattend.xml"; Required = $true },
     @{ Path = "vms/New-DevBoxVM.ps1"; Required = $true },
-    @{ Path = "utils/Test-DevBoxHealth.ps1"; Required = $false }
+    @{ Path = "utils/Test-DevBoxHealth.ps1"; Required = $false },
+    @{ Path = "iso/README.md"; Required = $false }
+)
+
+# Minimum requirements
+$Script:MinDiskSpaceGB = 100
+$Script:ISOSearchPaths = @(
+    ".\iso",
+    "$env:USERPROFILE\Downloads",
+    "C:\ISOs",
+    "D:\ISOs"
 )
 
 #region Banner and UI
@@ -130,23 +140,30 @@ function Show-ErrorWithRemediation {
 function Test-Prerequisites {
     $checks = @()
 
-    # Check Windows version
+    # Check Windows version (Win11 22H2+ or Server 2025)
     Show-Message "Checking Windows version..." -Level Header
     $os = Get-CimInstance Win32_OperatingSystem
     $buildNumber = [int]$os.BuildNumber
     $isWin11 = $buildNumber -ge 22000
     $is22H2Plus = $buildNumber -ge 22621
+    $isServer2025 = $os.Caption -match "Server" -and $buildNumber -ge 26100
+
+    $validOS = $is22H2Plus -or $isServer2025
+    $osMessage = if ($isServer2025) {
+        "Windows Server 2025 (Build $buildNumber)"
+    } elseif ($is22H2Plus) {
+        "Windows 11 Build $buildNumber"
+    } elseif ($isWin11) {
+        "Windows 11 Build $buildNumber - needs 22H2+ (22621+)"
+    } else {
+        "Windows $buildNumber - requires Windows 11 or Server 2025"
+    }
 
     $checks += @{
-        Name = "Windows 11 22H2+"
-        Passed = $is22H2Plus
-        Message = if ($is22H2Plus) {
-            "Windows 11 Build $buildNumber"
-        } elseif ($isWin11) {
-            "Windows 11 Build $buildNumber - needs 22H2+ (22621+)"
-        } else {
-            "Windows $buildNumber - requires Windows 11"
-        }
+        Name = "Windows 11 22H2+ or Server 2025"
+        Passed = $validOS
+        Message = $osMessage
+        Critical = $true
     }
 
     # Check admin privileges
@@ -156,6 +173,7 @@ function Test-Prerequisites {
         Name = "Administrator privileges"
         Passed = $isAdmin
         Message = if ($isAdmin) { "Running as Administrator" } else { "Not running as Administrator" }
+        Critical = $true
     }
 
     # Check network connectivity
@@ -172,32 +190,246 @@ function Test-Prerequisites {
         Name = "Network connectivity"
         Passed = $canReachGitHub
         Message = if ($canReachGitHub) { "GitHub reachable" } else { "Cannot reach GitHub" }
+        Critical = $true
     }
 
     return $checks
 }
 
+function Test-HyperVPrerequisites {
+    $checks = @()
+
+    # Check CPU virtualization support
+    Show-Message "Checking CPU virtualization support..." -Level Header
+    $cpuVirt = $false
+    try {
+        $cpu = Get-CimInstance Win32_Processor
+        $vmFirmware = Get-CimInstance Win32_ComputerSystem
+        $cpuVirt = $vmFirmware.HypervisorPresent -or ($cpu.VirtualizationFirmwareEnabled -eq $true)
+
+        # Alternative check via systeminfo
+        if (-not $cpuVirt) {
+            $sysinfo = systeminfo /fo csv | ConvertFrom-Csv
+            $cpuVirt = $sysinfo.'Hyper-V Requirements' -notmatch "No"
+        }
+    } catch {
+        $cpuVirt = $true  # Assume supported if can't detect
+    }
+
+    $checks += @{
+        Name = "CPU Virtualization (VT-x/AMD-V)"
+        Passed = $cpuVirt
+        Message = if ($cpuVirt) { "Virtualization supported" } else { "Enable VT-x/AMD-V in BIOS" }
+        Critical = $false
+        CanFix = $false
+    }
+
+    # Check Hyper-V feature
+    Show-Message "Checking Hyper-V feature..." -Level Header
+    $hypervEnabled = $false
+    $hypervAvailable = $false
+
+    try {
+        # Check Windows client
+        $hypervFeature = Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -ErrorAction SilentlyContinue
+        if ($null -ne $hypervFeature) {
+            $hypervAvailable = $true
+            $hypervEnabled = $hypervFeature.State -eq 'Enabled'
+        }
+
+        # Check Windows Server
+        if (-not $hypervAvailable) {
+            $hypervRole = Get-WindowsFeature -Name Hyper-V -ErrorAction SilentlyContinue
+            if ($null -ne $hypervRole) {
+                $hypervAvailable = $true
+                $hypervEnabled = $hypervRole.InstallState -eq 'Installed'
+            }
+        }
+    } catch {
+        $hypervAvailable = $false
+    }
+
+    $hypervMessage = if ($hypervEnabled) {
+        "Hyper-V is enabled"
+    } elseif ($hypervAvailable) {
+        "Hyper-V available but not enabled"
+    } else {
+        "Hyper-V not available (requires Pro/Enterprise/Server)"
+    }
+
+    $checks += @{
+        Name = "Hyper-V Feature"
+        Passed = $hypervEnabled
+        Message = $hypervMessage
+        Critical = $false
+        CanFix = $hypervAvailable -and (-not $hypervEnabled)
+    }
+
+    # Check disk space
+    Show-Message "Checking disk space..." -Level Header
+    $systemDrive = $env:SystemDrive
+    $disk = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='$systemDrive'"
+    $freeGB = [math]::Round($disk.FreeSpace / 1GB, 0)
+    $hasDiskSpace = $freeGB -ge $Script:MinDiskSpaceGB
+
+    $checks += @{
+        Name = "Disk Space (min $($Script:MinDiskSpaceGB)GB)"
+        Passed = $hasDiskSpace
+        Message = "${freeGB}GB free on $systemDrive"
+        Critical = $false
+        CanFix = $false
+    }
+
+    return $checks
+}
+
+function Find-WindowsISO {
+    param([string]$BasePath = ".")
+
+    $isoFiles = @()
+
+    foreach ($searchPath in $Script:ISOSearchPaths) {
+        $fullPath = if ([System.IO.Path]::IsPathRooted($searchPath)) {
+            $searchPath
+        } else {
+            Join-Path $BasePath $searchPath
+        }
+
+        if (Test-Path $fullPath) {
+            $files = Get-ChildItem -Path $fullPath -Filter "*.iso" -ErrorAction SilentlyContinue |
+                     Where-Object { $_.Length -gt 3GB } |
+                     Select-Object FullName, Name, @{N='SizeGB';E={[math]::Round($_.Length/1GB,2)}}, LastWriteTime
+            $isoFiles += $files
+        }
+    }
+
+    return $isoFiles | Sort-Object LastWriteTime -Descending
+}
+
+function Test-ISOAvailability {
+    param([string]$BasePath = ".")
+
+    Show-Message "Checking for Windows ISO files..." -Level Header
+    $isoFiles = Find-WindowsISO -BasePath $BasePath
+
+    $hasISO = $isoFiles.Count -gt 0
+    $isoMessage = if ($hasISO) {
+        "Found $($isoFiles.Count) ISO file(s)"
+    } else {
+        "No ISO files found in iso/ folder"
+    }
+
+    return @{
+        Name = "Windows ISO File"
+        Passed = $hasISO
+        Message = $isoMessage
+        Critical = $false
+        CanFix = $false
+        ISOFiles = $isoFiles
+    }
+}
+
+function Enable-HyperVFeature {
+    Show-Message "Enabling Hyper-V feature..." -Level Header
+
+    try {
+        # Try Windows client method
+        $result = Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -NoRestart -All -ErrorAction Stop
+        if ($result.RestartNeeded) {
+            return @{ Success = $true; RebootRequired = $true }
+        }
+        return @{ Success = $true; RebootRequired = $false }
+    } catch {
+        # Try Windows Server method
+        try {
+            Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart:$false -ErrorAction Stop
+            return @{ Success = $true; RebootRequired = $true }
+        } catch {
+            return @{ Success = $false; Error = $_.Exception.Message }
+        }
+    }
+}
+
 function Show-PrerequisiteResults {
-    param([array]$Checks)
+    param(
+        [array]$Checks,
+        [string]$Title = "PREREQUISITES CHECK"
+    )
 
     Write-Host ""
     Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
-    Write-Host "  |                 PREREQUISITES CHECK                        |" -ForegroundColor Cyan
+    Write-Host "  |                 $($Title.PadRight(40))|" -ForegroundColor Cyan
     Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
     Write-Host ""
 
     $allPassed = $true
+    $criticalFailed = $false
+
     foreach ($check in $Checks) {
         $icon = if ($check.Passed) { "[+]" } else { "[X]" }
         $color = if ($check.Passed) { "Green" } else { "Red" }
-        Write-Host "  $icon $($check.Name)" -ForegroundColor $color
+
+        # Show fixable indicator
+        $fixable = ""
+        if (-not $check.Passed -and $check.CanFix) {
+            $fixable = " (can be installed)"
+            $color = "Yellow"
+            $icon = "[!]"
+        }
+
+        Write-Host "  $icon $($check.Name)$fixable" -ForegroundColor $color
         Write-Host "      $($check.Message)" -ForegroundColor Gray
 
-        if (-not $check.Passed) { $allPassed = $false }
+        if (-not $check.Passed) {
+            $allPassed = $false
+            if ($check.Critical) { $criticalFailed = $true }
+        }
     }
 
     Write-Host ""
-    return $allPassed
+    return @{ AllPassed = $allPassed; CriticalFailed = $criticalFailed }
+}
+
+function Show-HyperVPrerequisiteResults {
+    param(
+        [array]$Checks,
+        [hashtable]$ISOCheck
+    )
+
+    Write-Host ""
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |              HYPER-V VM PREREQUISITES                      |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+
+    foreach ($check in $Checks) {
+        $icon = if ($check.Passed) { "[+]" } else { "[X]" }
+        $color = if ($check.Passed) { "Green" } else { "Red" }
+
+        if (-not $check.Passed -and $check.CanFix) {
+            $color = "Yellow"
+            $icon = "[!]"
+        }
+
+        Write-Host "  $icon $($check.Name)" -ForegroundColor $color
+        Write-Host "      $($check.Message)" -ForegroundColor Gray
+    }
+
+    # Show ISO check
+    $isoIcon = if ($ISOCheck.Passed) { "[+]" } else { "[!]" }
+    $isoColor = if ($ISOCheck.Passed) { "Green" } else { "Yellow" }
+    Write-Host "  $isoIcon $($ISOCheck.Name)" -ForegroundColor $isoColor
+    Write-Host "      $($ISOCheck.Message)" -ForegroundColor Gray
+
+    if ($ISOCheck.Passed -and $ISOCheck.ISOFiles.Count -gt 0) {
+        Write-Host ""
+        Write-Host "  Found ISO files:" -ForegroundColor Cyan
+        foreach ($iso in $ISOCheck.ISOFiles | Select-Object -First 3) {
+            Write-Host "    - $($iso.Name) ($($iso.SizeGB)GB)" -ForegroundColor White
+        }
+    }
+
+    Write-Host ""
 }
 
 #endregion
@@ -374,7 +606,10 @@ function Show-DownloadSummary {
 #region Post-Bootstrap
 
 function Show-NextSteps {
-    param([string]$InstallPath)
+    param(
+        [string]$InstallPath,
+        [hashtable]$HyperVStatus = $null
+    )
 
     Write-Host ""
     Write-Host "  +===========================================================+" -ForegroundColor Green
@@ -383,65 +618,122 @@ function Show-NextSteps {
     Write-Host ""
     Write-Host "  All DevBox Factory scripts have been downloaded!" -ForegroundColor White
     Write-Host ""
-    Write-Host "  Next Steps:" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |                  3-STAGE WORKFLOW                          |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "  1. Install development tools on this PC:" -ForegroundColor White
+    Write-Host "  STAGE 0: Install tools on THIS PC (optional)" -ForegroundColor White
     Write-Host "     cd `"$InstallPath`"" -ForegroundColor Yellow
     Write-Host "     .\devbox install" -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "  2. Create Hyper-V template (requires Hyper-V host):" -ForegroundColor White
+    Write-Host "  STAGE 1: Create VM Template (one-time, ~45 min)" -ForegroundColor White
+    Write-Host "     - Place Windows ISO in: $InstallPath\iso\" -ForegroundColor Gray
+    Write-Host "     - Creates template with ALL dev tools pre-installed" -ForegroundColor Gray
     Write-Host "     .\devbox template" -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "  3. Create development VMs from template:" -ForegroundColor White
+    Write-Host "  STAGE 2: Create VMs (instant, ~2-3 min each)" -ForegroundColor White
+    Write-Host "     - Clone template to new VMs" -ForegroundColor Gray
+    Write-Host "     - VMs are READY TO CODE immediately" -ForegroundColor Gray
     Write-Host "     .\devbox vm" -ForegroundColor Yellow
     Write-Host ""
 }
 
 function Show-PostBootstrapMenu {
-    param([string]$InstallPath)
+    param(
+        [string]$InstallPath,
+        [bool]$HyperVReady = $false,
+        [bool]$ISOFound = $false
+    )
 
     Write-Host ""
     Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
     Write-Host "  |                   WHAT NEXT?                               |" -ForegroundColor Cyan
     Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "   [1] Run Install-DevBox.ps1 now" -ForegroundColor White
-    Write-Host "       Install development tools on this PC (Recommended)" -ForegroundColor Gray
+
+    # Show options based on system readiness
+    if ($HyperVReady -and $ISOFound) {
+        Write-Host "   [1] Create VM Template (Recommended)" -ForegroundColor White
+        Write-Host "       Create template with dev tools pre-installed" -ForegroundColor Gray
+        Write-Host ""
+    }
+
+    Write-Host "   [2] Install tools on THIS PC" -ForegroundColor White
+    Write-Host "       Setup this machine as a dev workstation" -ForegroundColor Gray
     Write-Host ""
-    Write-Host "   [2] Open installation folder" -ForegroundColor White
+
+    if (-not $HyperVReady) {
+        Write-Host "   [3] Enable Hyper-V" -ForegroundColor Yellow
+        Write-Host "       Required for VM template creation (needs reboot)" -ForegroundColor Gray
+        Write-Host ""
+    }
+
+    Write-Host "   [4] Open installation folder" -ForegroundColor White
     Write-Host "       View downloaded scripts in Explorer" -ForegroundColor Gray
     Write-Host ""
-    Write-Host "   [3] Exit" -ForegroundColor White
+    Write-Host "   [5] Run health check" -ForegroundColor White
+    Write-Host "       Verify system readiness" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [Q] Exit" -ForegroundColor White
     Write-Host "       Run scripts manually later" -ForegroundColor Gray
     Write-Host ""
     Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
 
-    $choice = Read-Host "  Enter choice [1]"
+    $defaultChoice = if ($HyperVReady -and $ISOFound) { "1" } else { "2" }
+    $choice = Read-Host "  Enter choice [$defaultChoice]"
+    if ([string]::IsNullOrWhiteSpace($choice)) { $choice = $defaultChoice }
 
-    switch ($choice) {
-        '' {
-            $scriptPath = Join-Path $InstallPath "Install-DevBox.ps1"
-            if (Test-Path $scriptPath) {
-                Set-Location $InstallPath
-                & $scriptPath
-            } else {
-                Show-Message "Install-DevBox.ps1 not found!" -Level Error
-            }
-        }
+    switch ($choice.ToUpper()) {
         '1' {
-            $scriptPath = Join-Path $InstallPath "Install-DevBox.ps1"
-            if (Test-Path $scriptPath) {
-                Set-Location $InstallPath
-                & $scriptPath
+            if ($HyperVReady -and $ISOFound) {
+                $scriptPath = Join-Path $InstallPath "templates\New-DevBoxTemplate.ps1"
+                if (Test-Path $scriptPath) {
+                    Set-Location $InstallPath
+                    & $scriptPath
+                } else {
+                    Show-Message "New-DevBoxTemplate.ps1 not found!" -Level Error
+                }
             } else {
-                Show-Message "Install-DevBox.ps1 not found!" -Level Error
+                Show-Message "Hyper-V and ISO required for template creation" -Level Warning
             }
         }
         '2' {
+            $scriptPath = Join-Path $InstallPath "Install-DevBox.ps1"
+            if (Test-Path $scriptPath) {
+                Set-Location $InstallPath
+                & $scriptPath
+            } else {
+                Show-Message "Install-DevBox.ps1 not found!" -Level Error
+            }
+        }
+        '3' {
+            if (-not $HyperVReady) {
+                $result = Enable-HyperVFeature
+                if ($result.Success) {
+                    if ($result.RebootRequired) {
+                        Show-Message "Hyper-V enabled! Please REBOOT and run '.\devbox template'" -Level Success
+                    } else {
+                        Show-Message "Hyper-V enabled successfully!" -Level Success
+                    }
+                } else {
+                    Show-Message "Failed to enable Hyper-V: $($result.Error)" -Level Error
+                }
+            }
+        }
+        '4' {
             explorer.exe $InstallPath
             Show-Message "Opened folder: $InstallPath" -Level Success
         }
-        '3' {
+        '5' {
+            $scriptPath = Join-Path $InstallPath "utils\Test-DevBoxHealth.ps1"
+            if (Test-Path $scriptPath) {
+                Set-Location $InstallPath
+                & $scriptPath
+            } else {
+                Show-Message "Test-DevBoxHealth.ps1 not found!" -Level Error
+            }
+        }
+        'Q' {
             Write-Host ""
             Show-Message "Bootstrap complete. Run scripts from: $InstallPath" -Level Info
         }
@@ -459,18 +751,18 @@ function Show-PostBootstrapMenu {
 function Main {
     Show-Banner
 
-    # Prerequisites check
+    # Prerequisites check (critical)
     $checks = Test-Prerequisites
-    $allPassed = Show-PrerequisiteResults -Checks $checks
+    $result = Show-PrerequisiteResults -Checks $checks -Title "CORE PREREQUISITES"
 
-    if (-not $allPassed) {
-        $failedChecks = $checks | Where-Object { -not $_.Passed }
+    if ($result.CriticalFailed) {
+        $failedChecks = $checks | Where-Object { -not $_.Passed -and $_.Critical }
 
         foreach ($check in $failedChecks) {
             switch ($check.Name) {
-                "Windows 11 22H2+" {
+                "Windows 11 22H2+ or Server 2025" {
                     Show-ErrorWithRemediation -ErrorCode "WIN11_REQUIRED" `
-                        -Message "Windows 11 version 22H2 or later is required." `
+                        -Message "Windows 11 22H2+ or Windows Server 2025 is required." `
                         -Steps @(
                             "Update Windows to version 22H2 or later",
                             "Go to Settings > Windows Update > Check for updates",
@@ -526,9 +818,30 @@ function Main {
         return
     }
 
+    # Check Hyper-V prerequisites (non-blocking)
+    Write-Host ""
+    Write-Host "  Checking VM creation prerequisites..." -ForegroundColor Cyan
+    $hypervChecks = Test-HyperVPrerequisites
+    $isoCheck = Test-ISOAvailability -BasePath $installPath
+    Show-HyperVPrerequisiteResults -Checks $hypervChecks -ISOCheck $isoCheck
+
+    # Determine readiness
+    $hypervReady = ($hypervChecks | Where-Object { $_.Name -eq "Hyper-V Feature" }).Passed
+    $isoFound = $isoCheck.Passed
+
+    # Show status summary
+    if ($hypervReady -and $isoFound) {
+        Write-Host "  [+] System ready for VM template creation!" -ForegroundColor Green
+    } elseif (-not $hypervReady) {
+        Write-Host "  [!] Hyper-V not enabled - enable it to create VM templates" -ForegroundColor Yellow
+    }
+    if (-not $isoFound) {
+        Write-Host "  [!] No ISO found - place Windows ISO in: $installPath\iso\" -ForegroundColor Yellow
+    }
+
     # Success - show next steps
     Show-NextSteps -InstallPath $installPath
-    Show-PostBootstrapMenu -InstallPath $installPath
+    Show-PostBootstrapMenu -InstallPath $installPath -HyperVReady $hypervReady -ISOFound $isoFound
 }
 
 # Run bootstrap
