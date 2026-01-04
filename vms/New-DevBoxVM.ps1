@@ -126,7 +126,7 @@ $Script:LogPath = Join-Path $env:USERPROFILE "DevBox-VM.log"
 $Script:ScriptRoot = $PSScriptRoot
 $Script:ParentRoot = Split-Path $PSScriptRoot -Parent
 $Script:InstallDevBoxPath = Join-Path $Script:ParentRoot "Install-DevBox.ps1"
-$Script:PresetsPath = Join-Path $PSScriptRoot "Presets.json"
+$Script:PresetsPath = Join-Path $Script:ParentRoot "config\\presets.json"
 $Script:CreatedVMs = @()
 $Script:Presets = $null
 
