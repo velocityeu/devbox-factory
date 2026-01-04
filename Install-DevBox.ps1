@@ -200,9 +200,9 @@ $Script:Config = @{
 }
 
 # Version Information
-$Script:Version = "3.0.0"
-$Script:Build = "20260104.1800"
-$Script:BuildDate = "2026-01-04 18:00"
+$Script:Version = "3.0.1"
+$Script:Build = "20260105.0100"
+$Script:BuildDate = "2026-01-05 01:00"
 
 # Import download helper module if available
 $Script:DownloadHelpersAvailable = $false

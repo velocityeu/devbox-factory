@@ -77,7 +77,7 @@ param(
     [switch]$Clean
 )
 
-$Script:Version = "3.0.0"
+$Script:Version = "3.0.1"
 $Script:DependenciesPath = Join-Path $PSScriptRoot "dependencies"
 $Script:ManifestPath = Join-Path $Script:DependenciesPath "manifest.json"
 $Script:ModulesPath = Join-Path $PSScriptRoot "modules"
