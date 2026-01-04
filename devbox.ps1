@@ -113,8 +113,14 @@ function Invoke-Command {
     & $ScriptPath @Args
 }
 
+$normalizedCommand = if ([string]::IsNullOrWhiteSpace($Command)) {
+    ""
+} else {
+    $Command.ToLower()
+}
+
 # Main command router
-switch ($Command.ToLower()) {
+switch ($normalizedCommand) {
     "init" {
         Invoke-Command -ScriptPath "$PSScriptRoot\Initialize-DevBox.ps1" -Args $Arguments
     }
