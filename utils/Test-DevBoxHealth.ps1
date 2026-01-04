@@ -18,7 +18,7 @@
 
 .NOTES
     DevBox Factory v2.0.0
-    https://github.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra
+    https://github.com/velocityeu/devbox-factory
 #>
 
 [CmdletBinding()]

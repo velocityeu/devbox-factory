@@ -66,7 +66,7 @@
 
 .NOTES
     Requires: Windows 10/11 Pro or Server with Hyper-V capability
-    DevBox Factory - https://github.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra
+    DevBox Factory - https://github.com/velocityeu/devbox-factory
     Version: 2.0.0
     Build: 2026-01-04
 #>
