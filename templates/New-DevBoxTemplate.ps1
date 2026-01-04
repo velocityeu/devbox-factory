@@ -719,11 +719,12 @@ function Invoke-InteractiveMode {
 
                 # Step 4: Confirmation
                 $summaryChoice = Show-ConfigurationSummary -Config $config
-                switch ($summaryChoice.ToUpper()) {
-                    'P' { return $config }
-                    'E' { continue }
-                    'C' { continue }
+                if ($summaryChoice -eq 'P' -or $summaryChoice -eq 'p') {
+                    return $config
+                } elseif ($summaryChoice -eq 'C' -or $summaryChoice -eq 'c') {
+                    continue
                 }
+                # 'E' or anything else continues to edit
             }
             '2' {
                 # Custom Configuration
@@ -802,11 +803,12 @@ function Invoke-InteractiveMode {
 
                 # Step 5: Confirmation
                 $summaryChoice = Show-ConfigurationSummary -Config $config
-                switch ($summaryChoice.ToUpper()) {
-                    'P' { return $config }
-                    'E' { continue }
-                    'C' { continue }
+                if ($summaryChoice -eq 'P' -or $summaryChoice -eq 'p') {
+                    return $config
+                } elseif ($summaryChoice -eq 'C' -or $summaryChoice -eq 'c') {
+                    continue
                 }
+                # 'E' or anything else continues to edit
             }
             '3' {
                 Show-ExistingTemplates
@@ -1582,8 +1584,15 @@ function Main {
             return
         }
 
-        # Validate config has required properties
-        if (-not $config.ContainsKey('ISOPath') -or [string]::IsNullOrEmpty($config.ISOPath)) {
+        # Validate config is a hashtable with required properties
+        if ($config -isnot [hashtable]) {
+            Write-Host ""
+            Write-Host "  [ERROR] Invalid configuration returned (expected hashtable, got $($config.GetType().Name))." -ForegroundColor Red
+            Write-Host ""
+            return
+        }
+
+        if (-not $config.ContainsKey('ISOPath') -or [string]::IsNullOrEmpty($config['ISOPath'])) {
             Write-Host ""
             Write-Host "  [ERROR] No ISO path specified in configuration." -ForegroundColor Red
             Write-Host ""
