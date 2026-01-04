@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Creates a sysprepped Windows 11 VHDX template for VibeDev development VMs.
+    Creates a sysprepped Windows 11 VHDX template for DevBox Factory development VMs.
 
 .DESCRIPTION
-    Stage 1 of VibeDev VM automation. This script:
+    Stage 1 of DevBox Factory VM automation. This script:
     1. Installs prerequisites (Hyper-V, Windows ADK)
     2. Creates a bootable VHDX from Windows 11 ISO
     3. Creates a Gen2 VM with TPM and Secure Boot
@@ -55,18 +55,18 @@
     Launch interactive menu mode (default if no ISOPath provided)
 
 .EXAMPLE
-    .\New-VibeDevTemplate.ps1
+    .\New-DevBoxTemplate.ps1
     # Launches interactive menu
 
 .EXAMPLE
-    .\New-VibeDevTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso"
+    .\New-DevBoxTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso"
 
 .EXAMPLE
-    .\New-VibeDevTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso" -Preset Performance -SkipWindowsUpdates
+    .\New-DevBoxTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso" -Preset Performance -SkipWindowsUpdates
 
 .NOTES
     Requires: Windows 10/11 Pro or Server with Hyper-V capability
-    Author: VibeDev Team
+    DevBox Factory - https://github.com/velocityeu/devbox-factory
     Version: 2.0.0
     Build: 2026-01-04
 #>

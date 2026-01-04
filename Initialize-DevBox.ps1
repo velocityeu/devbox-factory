@@ -1,28 +1,28 @@
 <#
 .SYNOPSIS
-    VibeDev Bootstrap - Downloads and sets up VibeDev scripts on vanilla Windows 11
+    DevBox Factory - Bootstrap installer for vanilla Windows 11
 
 .DESCRIPTION
     Self-contained bootstrapper that:
     1. Verifies Windows 11 22H2+ and administrator privileges
     2. Checks network connectivity to GitHub
     3. Prompts for installation directory
-    4. Downloads all VibeDev scripts from GitHub
+    4. Downloads all DevBox Factory scripts from GitHub
     5. Validates downloads
-    6. Optionally runs Install-VibeDev.ps1
+    6. Optionally runs Install-DevBox.ps1
 
 .EXAMPLE
-    irm https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main/VibeDevBootstrap.ps1 | iex
+    irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex
 
 .NOTES
     Version: 2.0.0
     Build: 2026-01-04
-    Author: VibeDev Team
+    DevBox Factory - https://github.com/velocityeu/devbox-factory
 #>
 
 #Requires -Version 5.1
 
-$Script:VibeDevVersion = @{
+$Script:DevBoxVersion = @{
     Major       = 2
     Minor       = 0
     Patch       = 0
@@ -30,43 +30,44 @@ $Script:VibeDevVersion = @{
     BuildNumber = "20260104.001"
 }
 
-$Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main"
+$Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/devbox-factory/main"
 $Script:RequiredFiles = @(
-    @{ Path = "Install-VibeDev.ps1"; Required = $true },
+    @{ Path = "Install-DevBox.ps1"; Required = $true },
+    @{ Path = "devbox.ps1"; Required = $true },
     @{ Path = "README.md"; Required = $false },
-    @{ Path = "HyperV/New-VibeDevTemplate.ps1"; Required = $true },
-    @{ Path = "HyperV/New-VibeDevVM.ps1"; Required = $true },
-    @{ Path = "HyperV/SetupComplete.ps1"; Required = $true },
-    @{ Path = "HyperV/autounattend.xml"; Required = $true },
-    @{ Path = "HyperV/Presets.json"; Required = $true },
-    @{ Path = "HyperV/README.md"; Required = $false }
+    @{ Path = "config/presets.json"; Required = $true },
+    @{ Path = "templates/New-DevBoxTemplate.ps1"; Required = $true },
+    @{ Path = "templates/SetupComplete.ps1"; Required = $true },
+    @{ Path = "templates/autounattend.xml"; Required = $true },
+    @{ Path = "vms/New-DevBoxVM.ps1"; Required = $true },
+    @{ Path = "utils/Test-DevBoxHealth.ps1"; Required = $false }
 )
 
 #region Banner and UI
 
 function Get-VersionString {
-    return "v$($Script:VibeDevVersion.Major).$($Script:VibeDevVersion.Minor).$($Script:VibeDevVersion.Patch)"
+    return "v$($Script:DevBoxVersion.Major).$($Script:DevBoxVersion.Minor).$($Script:DevBoxVersion.Patch)"
 }
 
 function Show-Banner {
     Clear-Host
     $version = Get-VersionString
-    $build = $Script:VibeDevVersion.BuildDate
+    $build = $Script:DevBoxVersion.BuildDate
 
     Write-Host ""
     Write-Host "  +===============================================================+" -ForegroundColor Magenta
     Write-Host "  |                                                               |" -ForegroundColor Magenta
-    Write-Host "  |   ██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗   |" -ForegroundColor Magenta
-    Write-Host "  |   ██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║   |" -ForegroundColor Magenta
-    Write-Host "  |   ██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║   |" -ForegroundColor Magenta
-    Write-Host "  |   ╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝   |" -ForegroundColor Magenta
-    Write-Host "  |    ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝    |" -ForegroundColor Magenta
-    Write-Host "  |     ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝     |" -ForegroundColor Magenta
+    Write-Host "  |   ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗          |" -ForegroundColor Cyan
+    Write-Host "  |   ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝          |" -ForegroundColor Cyan
+    Write-Host "  |   ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝           |" -ForegroundColor Cyan
+    Write-Host "  |   ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗           |" -ForegroundColor Cyan
+    Write-Host "  |   ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗          |" -ForegroundColor Cyan
+    Write-Host "  |   ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝          |" -ForegroundColor Cyan
+    Write-Host "  |                      F A C T O R Y                            |" -ForegroundColor Yellow
     Write-Host "  |                                                               |" -ForegroundColor Magenta
     Write-Host "  +===============================================================+" -ForegroundColor Magenta
-    Write-Host "  |              BOOTSTRAP INSTALLER                              |" -ForegroundColor Cyan
-    Write-Host "  |                                                               |" -ForegroundColor Cyan
-    Write-Host "  |   Version: $version                        Build: $build   |" -ForegroundColor Cyan
+    Write-Host "  |   BOOTSTRAP INSTALLER           $version    Build: $build   |" -ForegroundColor White
+    Write-Host "  |   One command. Identical dev environments. Every time.        |" -ForegroundColor DarkGray
     Write-Host "  +===============================================================+" -ForegroundColor Magenta
     Write-Host ""
 }
@@ -206,7 +207,7 @@ function Show-PrerequisiteResults {
 #region Directory Selection
 
 function Get-InstallationDirectory {
-    $defaultPath = "C:\VibeDev"
+    $defaultPath = "C:\DevBox"
 
     Write-Host ""
     Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
@@ -240,7 +241,7 @@ function Get-InstallationDirectory {
         '3' {
             Add-Type -AssemblyName System.Windows.Forms
             $dialog = New-Object System.Windows.Forms.FolderBrowserDialog
-            $dialog.Description = "Select VibeDev installation folder"
+            $dialog.Description = "Select DevBox Factory installation folder"
             $dialog.ShowNewFolderButton = $true
             $dialog.RootFolder = [System.Environment+SpecialFolder]::MyComputer
 
@@ -259,7 +260,7 @@ function Get-InstallationDirectory {
 
 #region Download
 
-function Download-VibeDevFiles {
+function Download-DevBoxFiles {
     param(
         [Parameter(Mandatory)]
         [string]$DestinationPath
@@ -311,7 +312,7 @@ function Download-VibeDevFiles {
 
         try {
             $webClient = New-Object System.Net.WebClient
-            $webClient.Headers.Add("User-Agent", "VibeDev-Bootstrap/2.0")
+            $webClient.Headers.Add("User-Agent", "DevBox-Factory/2.0")
             $webClient.DownloadFile($url, $destFile)
 
             if (Test-Path $destFile) {
@@ -382,19 +383,19 @@ function Show-NextSteps {
     Write-Host "  |              BOOTSTRAP COMPLETE                            |" -ForegroundColor Green
     Write-Host "  +===========================================================+" -ForegroundColor Green
     Write-Host ""
-    Write-Host "  All VibeDev scripts have been downloaded successfully!" -ForegroundColor White
+    Write-Host "  All DevBox Factory scripts have been downloaded!" -ForegroundColor White
     Write-Host ""
     Write-Host "  Next Steps:" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "  1. Install VibeDev tools on this PC:" -ForegroundColor White
+    Write-Host "  1. Install development tools on this PC:" -ForegroundColor White
     Write-Host "     cd `"$InstallPath`"" -ForegroundColor Yellow
-    Write-Host "     .\Install-VibeDev.ps1" -ForegroundColor Yellow
+    Write-Host "     .\devbox install" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "  2. Create Hyper-V template (requires Hyper-V host):" -ForegroundColor White
-    Write-Host "     .\HyperV\New-VibeDevTemplate.ps1" -ForegroundColor Yellow
+    Write-Host "     .\devbox template" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "  3. Create development VMs from template:" -ForegroundColor White
-    Write-Host "     .\HyperV\New-VibeDevVM.ps1" -ForegroundColor Yellow
+    Write-Host "     .\devbox vm" -ForegroundColor Yellow
     Write-Host ""
 }
 
@@ -406,7 +407,7 @@ function Show-PostBootstrapMenu {
     Write-Host "  |                   WHAT NEXT?                               |" -ForegroundColor Cyan
     Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "   [1] Run Install-VibeDev.ps1 now" -ForegroundColor White
+    Write-Host "   [1] Run Install-DevBox.ps1 now" -ForegroundColor White
     Write-Host "       Install development tools on this PC (Recommended)" -ForegroundColor Gray
     Write-Host ""
     Write-Host "   [2] Open installation folder" -ForegroundColor White
@@ -421,21 +422,21 @@ function Show-PostBootstrapMenu {
 
     switch ($choice) {
         '' {
-            $scriptPath = Join-Path $InstallPath "Install-VibeDev.ps1"
+            $scriptPath = Join-Path $InstallPath "Install-DevBox.ps1"
             if (Test-Path $scriptPath) {
                 Set-Location $InstallPath
                 & $scriptPath
             } else {
-                Show-Message "Install-VibeDev.ps1 not found!" -Level Error
+                Show-Message "Install-DevBox.ps1 not found!" -Level Error
             }
         }
         '1' {
-            $scriptPath = Join-Path $InstallPath "Install-VibeDev.ps1"
+            $scriptPath = Join-Path $InstallPath "Install-DevBox.ps1"
             if (Test-Path $scriptPath) {
                 Set-Location $InstallPath
                 & $scriptPath
             } else {
-                Show-Message "Install-VibeDev.ps1 not found!" -Level Error
+                Show-Message "Install-DevBox.ps1 not found!" -Level Error
             }
         }
         '2' {
@@ -510,7 +511,7 @@ function Main {
     $installPath = Get-InstallationDirectory
 
     # Download files
-    $downloadResults = Download-VibeDevFiles -DestinationPath $installPath
+    $downloadResults = Download-DevBoxFiles -DestinationPath $installPath
     Show-DownloadSummary -Results $downloadResults -InstallPath $installPath
 
     # Check for critical failures
@@ -522,7 +523,7 @@ function Main {
                 "Check your internet connection",
                 "Try running the bootstrap again",
                 "If problem persists, download manually from:",
-                "https://github.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra"
+                "https://github.com/velocityeu/devbox-factory"
             )
         return
     }

@@ -1,73 +1,80 @@
-# Install-ClaudeCode-VibeDev-Ultra
+# DevBox Factory
 
-Ultimate Windows 11 development environment setup for AI-powered "vibe coding" with Claude Code, Cursor, Azure tools, and full-stack development.
+**One command. Identical dev environments. Every time.**
 
-> Create Automatically VibeCoding Environment on vanilla Windows 11 22H2+ PC
+Professional-grade Windows 11 development environment automation. Create reproducible dev boxes with AI tools, full-stack runtimes, and Hyper-V VM templates.
+
+> Built by [Velocity EU](https://velocity.eu) - Eliminating "works on my machine" since day one.
 
 ## Features
 
-- **Bootstrap Script** - One-liner to download everything on vanilla Windows 11
-- **Interactive Menus** - Guided wizards with file pickers, no parameters needed
+- **One-Line Bootstrap** - Download and setup from vanilla Windows 11
+- **CLI Wrapper** - Human-friendly `.\devbox` commands
 - **Pre-configured Profiles** - Full, AI Coder, Web Dev, Azure, or Custom
-- **Azure Development** - Complete Azure toolchain for cloud developers
-- **Hyper-V VM Automation** - Create dev VMs with interactive template/VM wizards
-- **Version Control** - All scripts show version (v2.0.0) and build date
-- **Pre-flight Validation** - Checks disk space, prerequisites before changes
+- **Hyper-V VM Factory** - Create identical dev VMs from golden templates
+- **Interactive Menus** - Guided wizards with file pickers
+- **Pre-flight Validation** - Checks prerequisites before changes
+- **Health Checks** - Verify your environment with `.\devbox test`
 - **Idempotent** - Safe to run multiple times
-- **Smart Fallbacks** - WinGet primary, Chocolatey backup
 
 ## Quick Start
 
-### Option 1: Bootstrap (Recommended for Vanilla Windows 11)
+### Option 1: Bootstrap (Recommended)
 
-Download all VibeDev scripts to your PC, then run the installer interactively:
+Download all DevBox Factory scripts to your PC:
 
 ```powershell
 # Run as Administrator
-irm https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main/VibeDevBootstrap.ps1 | iex
+irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex
 ```
 
 This bootstrap script:
 - Checks Windows 11 22H2+ and Administrator privileges
-- Lets you choose installation directory (default: `C:\VibeDev`)
+- Lets you choose installation directory (default: `C:\DevBox`)
 - Downloads all scripts including Hyper-V VM automation
-- Offers to run the installer immediately or later
+- Offers to run the installer immediately
 
-### Option 2: Direct Install (One-Line)
+### Option 2: Direct Install
 
 Run the installer directly without downloading files:
 
 ```powershell
 # Run as Administrator
-irm https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main/Install-VibeDev.ps1 | iex
+irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Install-DevBox.ps1 | iex
 ```
 
-### Option 3: Local Install
-
-If you've already cloned the repository:
+### Option 3: Clone and Run
 
 ```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force
-.\Install-VibeDev.ps1
+git clone https://github.com/velocityeu/devbox-factory.git
+cd devbox-factory
+.\devbox install
+```
+
+## CLI Commands
+
+DevBox Factory provides a human-friendly CLI wrapper:
+
+```powershell
+.\devbox init          # Download and initialize DevBox Factory
+.\devbox install       # Install development tools (interactive menu)
+.\devbox template      # Create VM template from Windows ISO
+.\devbox vm            # Create VM from template
+.\devbox test          # Run health checks
+.\devbox help          # Show help
 ```
 
 ## Interactive Menu
 
-Simply run the script with no parameters to see the menu:
+Run `.\devbox install` with no parameters:
 
 ```
-  ╔═══════════════════════════════════════════════════════════════╗
-  ║   ██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗   ║
-  ║   ██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║   ║
-  ║   ██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║   ║
-  ║   ╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝   ║
-  ║    ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝    ║
-  ║     ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝     ║
-  ╚═══════════════════════════════════════════════════════════════╝
+  +=================================================================+
+  |  DEVBOX FACTORY                       v2.0.0  Build: 2026-01-04  |
+  |  One command. Identical dev environments. Every time.            |
+  +=================================================================+
 
-  ┌─────────────────────────────────────────────────────────────┐
-  │                    SELECT INSTALLATION                      │
-  └─────────────────────────────────────────────────────────────┘
+  SELECT INSTALLATION PROFILE
 
    [1] Full Installation (Recommended)
        Everything: AI tools, Web dev, Docker, Databases, Azure
@@ -90,22 +97,6 @@ Simply run the script with no parameters to see the menu:
    [Q] Quit
 ```
 
-### Custom Installation Menu
-
-Option `[5]` lets you pick specific components:
-
-```
-   [1] Core Tools - Git, Windows Terminal, VS Code (Always included)
-   [2] AI Coding Tools - Claude Code, Cursor, AI extensions
-   [3] Node.js Environment - NVM, Node.js, npm, pnpm, yarn, bun
-   [4] Python - Python 3.12 with pip
-   [5] Docker & Containers - WSL2, Docker Desktop
-   [6] Databases - PostgreSQL, MongoDB, Redis
-   [7] Azure Development - Azure CLI, Functions, .NET, Terraform
-
-  Example: 2,3,4 (AI tools + Node.js + Python)
-```
-
 ## Installation Profiles
 
 | Profile | What's Included |
@@ -113,7 +104,7 @@ Option `[5]` lets you pick specific components:
 | **Full** | Everything: AI, Web Dev, Azure, Docker, Databases |
 | **AICoder** | Claude Code, Cursor, VS Code + AI extensions, Node.js, Python |
 | **WebDev** | Node.js, Python, Docker, PostgreSQL, MongoDB, Redis |
-| **Azure** | Azure CLI, Functions, .NET SDK, Terraform, Bicep, Docker, AI tools |
+| **Azure** | Azure CLI, Functions, .NET SDK, Terraform, Bicep, Docker |
 | **Minimal** | Git, Windows Terminal, VS Code only |
 
 ## What Gets Installed
@@ -153,32 +144,84 @@ Option `[5]` lets you pick specific components:
 - Terraform
 - .NET SDK 8
 - Az PowerShell Module
-- VS Code Extensions: Azure Functions, Resources, Storage, CosmosDB, Docker, C#, Terraform
+
+## Hyper-V VM Factory
+
+Create pre-configured Windows 11 development VMs with tools auto-installed.
+
+### Interactive Mode
+
+```powershell
+# Stage 1: Create template with interactive wizard
+.\devbox template
+
+# Stage 2: Create VMs with interactive wizard
+.\devbox vm
+```
+
+Features:
+- **File picker dialogs** for ISO and template selection
+- **VM presets** (Lightweight, Standard, Performance, Server-class)
+- **Pre-flight validation** before any changes
+- **Live naming preview** for batch VM creation
+- **Back/Cancel** on every screen
+
+### Command-Line Mode
+
+```powershell
+# Stage 1: Create template from Windows 11 ISO (one-time, ~30-60 min)
+.\devbox template -ISOPath "C:\ISOs\Win11_23H2.iso"
+
+# Stage 2: Create dev VMs (fast, ~2-5 min each)
+.\devbox vm -VMName "DevVM-01" -InstallMode Automatic -StartVM
+```
+
+### Installation Modes
+
+| Mode | Behavior |
+|------|----------|
+| **Automatic** | Auto-login, run installer silently on first boot |
+| **SemiAutomatic** | Auto-login, desktop shortcut for installer |
+| **Manual** | Just Windows, no auto-install |
+
+### VM Examples
+
+```powershell
+# AI Coder VM
+.\devbox vm -VMName "AI-Dev" -VibeDevProfile AICoder -StartVM
+
+# Team of 5 VMs
+.\devbox vm -VMName "TeamDev" -Count 5 -MemoryGB 16 -StartVM
+
+# High-spec Azure development
+.\devbox vm -VMName "Azure-Dev" -VibeDevProfile Azure -MemoryGB 16 -ProcessorCount 8 -StartVM
+```
+
+### Default VM Credentials
+
+| Username | Password |
+|----------|----------|
+| Admin | VibeDev123! |
 
 ## Command-Line Parameters
 
-For automation/scripting, use parameters instead of the menu:
-
-### Profile Parameter
+For automation/scripting:
 
 ```powershell
-# Full installation (silent)
-.\Install-VibeDev.ps1 -Silent -Profile Full
+# Full silent installation
+.\Install-DevBox.ps1 -Silent -Profile Full
 
 # AI Coder setup
-.\Install-VibeDev.ps1 -Silent -Profile AICoder
+.\Install-DevBox.ps1 -Silent -Profile AICoder
 
 # Azure developer setup
-.\Install-VibeDev.ps1 -Silent -Profile Azure
+.\Install-DevBox.ps1 -Silent -Profile Azure
 
-# Web developer setup
-.\Install-VibeDev.ps1 -Silent -Profile WebDev
-
-# Minimal setup
-.\Install-VibeDev.ps1 -Silent -Profile Minimal
+# Custom: skip databases and Docker
+.\Install-DevBox.ps1 -SkipDatabases -SkipDocker
 ```
 
-### Skip Parameters
+### Parameters
 
 | Parameter | Description |
 |-----------|-------------|
@@ -195,26 +238,56 @@ For automation/scripting, use parameters instead of the menu:
 | `-NoReboot` | Don't prompt for reboot |
 | `-LogPath` | Custom log file path |
 
-### Examples
+## Health Check
+
+Verify your environment:
 
 ```powershell
-# Interactive menu (default)
-.\Install-VibeDev.ps1
+.\devbox test
+```
 
-# Full silent installation
-.\Install-VibeDev.ps1 -Silent -Profile Full
+Output:
+```
+  +=================================================================+
+  |  DEVBOX FACTORY - HEALTH CHECK      v2.0.0  Build: 2026-01-04  |
+  +=================================================================+
 
-# AI tools without databases
-.\Install-VibeDev.ps1 -Silent -Profile AICoder
+  CORE TOOLS
+  ----------
+  Checking Git... [PASS] 2.43.0
+  Checking VS Code... [PASS] 1.85.0
+  Checking Windows Terminal... [PASS]
+  Checking PowerShell 7... [PASS] 7.4.0
 
-# Azure developer with custom log
-.\Install-VibeDev.ps1 -Silent -Profile Azure -LogPath "C:\Logs\install.log"
+  AI CODING TOOLS
+  ----------------
+  Checking Claude Code... [PASS] 1.0.0
+  Checking Cursor IDE... [PASS]
 
-# Custom: skip databases and Docker
-.\Install-VibeDev.ps1 -SkipDatabases -SkipDocker
+  SUMMARY
+  Results: 15 passed, 1 warnings, 0 failed (of 16 checks)
 
-# Web dev without AI tools
-.\Install-VibeDev.ps1 -Silent -Profile WebDev
+  [OK] DevBox environment is healthy!
+```
+
+## Project Structure
+
+```
+devbox-factory/
+├── Initialize-DevBox.ps1      # Bootstrap entry point
+├── Install-DevBox.ps1         # Main installer
+├── devbox.ps1                 # CLI wrapper
+├── config/
+│   └── presets.json           # VM presets and profiles
+├── templates/
+│   ├── New-DevBoxTemplate.ps1 # VHDX template creation
+│   ├── autounattend.xml       # Unattended Windows install
+│   └── SetupComplete.ps1      # Post-install configuration
+├── vms/
+│   └── New-DevBoxVM.ps1       # VM provisioning
+├── utils/
+│   └── Test-DevBoxHealth.ps1  # Health verification
+└── README.md
 ```
 
 ## Requirements
@@ -223,30 +296,20 @@ For automation/scripting, use parameters instead of the menu:
 - **Privileges**: Administrator
 - **Internet**: Required for downloads
 - **Disk Space**: ~15GB for full installation
+- **Hyper-V**: For VM features (Windows Pro/Enterprise/Education)
 
 ## Post-Installation
 
 ### Verify Installation
 
 ```powershell
-# Core tools
+.\devbox test
+
+# Or manually:
 git --version
 node --version
 python --version
-
-# AI tools
 claude --version
-
-# Package managers
-pnpm --version
-yarn --version
-bun --version
-
-# Azure tools
-az --version
-func --version
-azd version
-terraform --version
 ```
 
 ### Authenticate Services
@@ -258,7 +321,7 @@ claude
 # Azure CLI
 az login
 
-# GitHub CLI (if needed)
+# GitHub CLI
 gh auth login
 ```
 
@@ -268,109 +331,6 @@ gh auth login
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
-
-## Hyper-V VM Automation
-
-Create pre-configured Windows 11 development VMs with VibeDev tools auto-installed.
-
-### Interactive Mode (v2.0+)
-
-Run either script without parameters to launch the guided interactive menu:
-
-```powershell
-# Stage 1: Create template with interactive wizard
-.\HyperV\New-VibeDevTemplate.ps1
-
-# Stage 2: Create VMs with interactive wizard
-.\HyperV\New-VibeDevVM.ps1
-```
-
-Features:
-- **File picker dialogs** for ISO and template selection
-- **VM presets** (Lightweight, Standard, Performance, Server-class)
-- **Pre-flight validation** before any changes
-- **Live naming preview** for batch VM creation
-- **Back/Cancel** on every screen
-
-### Command-Line Quick Start
-
-```powershell
-# Stage 1: Create template from Windows 11 ISO (one-time, ~30-60 min)
-.\HyperV\New-VibeDevTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso"
-
-# Stage 2: Create dev VMs (fast, ~2-5 min each)
-.\HyperV\New-VibeDevVM.ps1 -VMName "DevVM-01" -InstallMode Automatic -StartVM
-```
-
-### Installation Modes
-
-| Mode | Behavior |
-|------|----------|
-| **Automatic** | Auto-login, run Install-VibeDev.ps1 silently on first boot |
-| **SemiAutomatic** | Auto-login, desktop shortcut for VibeDev installer |
-| **Manual** | Just Windows, no auto-install |
-
-### Examples
-
-```powershell
-# AI Coder VM
-.\HyperV\New-VibeDevVM.ps1 -VMName "AI-Dev" -VibeDevProfile AICoder -StartVM
-
-# Team of 5 VMs
-.\HyperV\New-VibeDevVM.ps1 -VMName "TeamDev" -Count 5 -MemoryGB 16 -StartVM
-
-# High-spec Azure development
-.\HyperV\New-VibeDevVM.ps1 -VMName "Azure-Dev" -VibeDevProfile Azure `
-    -MemoryGB 16 -ProcessorCount 8 -StartVM
-```
-
-### Default VM Credentials
-
-| Username | Password |
-|----------|----------|
-| Admin | VibeDev123! |
-
-See [HyperV/README.md](HyperV/README.md) for detailed documentation.
-
-## VS Code Extensions by Category
-
-### Base Extensions
-| Extension | ID |
-|-----------|-----|
-| ESLint | `dbaeumer.vscode-eslint` |
-| Prettier | `esbenp.prettier-vscode` |
-| GitLens | `eamodio.gitlens` |
-| PowerShell | `ms-vscode.powershell` |
-
-### AI Extensions
-| Extension | ID |
-|-----------|-----|
-| GitHub Copilot | `GitHub.copilot` |
-| GitHub Copilot Chat | `GitHub.copilot-chat` |
-| Claude Code | `anthropic.claude-code` |
-| Continue | `Continue.continue` |
-| Cline | `saoudrizwan.claude-dev` |
-
-### Web Development Extensions
-| Extension | ID |
-|-----------|-----|
-| Python | `ms-python.python` |
-| Pylance | `ms-python.vscode-pylance` |
-| Tailwind CSS | `bradlc.vscode-tailwindcss` |
-| ES7 React Snippets | `dsznajder.es7-react-js-snippets` |
-| Prisma | `Prisma.prisma` |
-
-### Azure Extensions
-| Extension | ID |
-|-----------|-----|
-| Azure Functions | `ms-azuretools.vscode-azurefunctions` |
-| Azure Resources | `ms-azuretools.vscode-azureresourcegroups` |
-| Azure Storage | `ms-azuretools.vscode-azurestorage` |
-| Azure CosmosDB | `ms-azuretools.vscode-cosmosdb` |
-| Docker | `ms-azuretools.vscode-docker` |
-| C# | `ms-dotnettools.csharp` |
-| Azure Account | `ms-vscode.azure-account` |
-| Terraform | `hashicorp.terraform` |
 
 ## Troubleshooting
 
@@ -387,7 +347,6 @@ Update Windows or install "App Installer" from Microsoft Store.
 
 ### Azure CLI login issues
 ```powershell
-# Clear cached credentials
 az account clear
 az login
 ```
@@ -397,7 +356,11 @@ Install manually: `Ctrl+Shift+X` in VS Code
 
 ## Log File
 
-Installation logs: `%USERPROFILE%\VibeDev-Install.log`
+Installation logs: `%USERPROFILE%\DevBox-Install.log`
+
+## Why DevBox Factory?
+
+> At Velocity EU, we've spent years watching teams burn weeks on environment setup—configuration drift, dependency conflicts, "but it worked on staging" disasters. DevBox Factory is the internal tool we built to eliminate that waste. One reproducible template, unlimited identical environments, zero setup meetings. We're open-sourcing it because consistent dev environments shouldn't be a competitive advantage—they should be table stakes.
 
 ## License
 
@@ -409,7 +372,11 @@ Pull requests welcome! Test on a clean Windows 11 VM before submitting.
 
 ## Resources
 
-- [Claude Code Documentation](https://code.claude.com/docs/en/setup)
+- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
 - [Azure CLI Documentation](https://learn.microsoft.com/en-us/cli/azure/)
 - [WinGet Documentation](https://learn.microsoft.com/en-us/windows/package-manager/winget/)
-- [Chocolatey Documentation](https://docs.chocolatey.org/)
+- [Hyper-V Documentation](https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/)
+
+---
+
+**DevBox Factory v2.0.0** | Built by [Velocity EU](https://velocity.eu) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
