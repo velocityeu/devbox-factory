@@ -9,6 +9,7 @@ Ultimate Windows 11 development environment setup for AI-powered "vibe coding" w
 - **Interactive Menu** - No need to remember parameters, just pick an option
 - **Pre-configured Profiles** - Full, AI Coder, Web Dev, Azure, or Custom
 - **Azure Development** - Complete Azure toolchain for cloud developers
+- **Hyper-V VM Automation** - Create dev VMs with VibeDev pre-installed
 - **Idempotent** - Safe to run multiple times
 - **Smart Fallbacks** - WinGet primary, Chocolatey backup
 
@@ -244,6 +245,50 @@ gh auth login
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
+
+## Hyper-V VM Automation
+
+Create pre-configured Windows 11 development VMs with VibeDev tools auto-installed.
+
+### Quick Start
+
+```powershell
+# Stage 1: Create template from Windows 11 ISO (one-time, ~30-60 min)
+.\HyperV\New-VibeDevTemplate.ps1 -ISOPath "C:\ISOs\Win11_23H2.iso"
+
+# Stage 2: Create dev VMs (fast, ~2-5 min each)
+.\HyperV\New-VibeDevVM.ps1 -VMName "DevVM-01" -InstallMode Automatic -StartVM
+```
+
+### Installation Modes
+
+| Mode | Behavior |
+|------|----------|
+| **Automatic** | Auto-login, run Install-VibeDev.ps1 silently on first boot |
+| **SemiAutomatic** | Auto-login, desktop shortcut for VibeDev installer |
+| **Manual** | Just Windows, no auto-install |
+
+### Examples
+
+```powershell
+# AI Coder VM
+.\HyperV\New-VibeDevVM.ps1 -VMName "AI-Dev" -VibeDevProfile AICoder -StartVM
+
+# Team of 5 VMs
+.\HyperV\New-VibeDevVM.ps1 -VMName "TeamDev" -Count 5 -MemoryGB 16 -StartVM
+
+# High-spec Azure development
+.\HyperV\New-VibeDevVM.ps1 -VMName "Azure-Dev" -VibeDevProfile Azure `
+    -MemoryGB 16 -ProcessorCount 8 -StartVM
+```
+
+### Default VM Credentials
+
+| Username | Password |
+|----------|----------|
+| Admin | VibeDev123! |
+
+See [HyperV/README.md](HyperV/README.md) for detailed documentation.
 
 ## VS Code Extensions by Category
 
