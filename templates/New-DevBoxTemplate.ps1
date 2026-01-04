@@ -353,7 +353,7 @@ function Show-ISOScanResults {
         Write-Host "   No ISO files found in common locations." -ForegroundColor Yellow
         Write-Host ""
         Write-Host "   Press Enter to go back..." -ForegroundColor Gray
-        Read-Host
+        $null = Read-Host
         return $null
     }
 
@@ -411,7 +411,7 @@ function Show-ISOValidation {
 
     Write-Host ""
     Write-Host "  Press Enter to continue..." -ForegroundColor Gray
-    Read-Host
+    $null = Read-Host
 }
 
 function Show-PresetMenu {
@@ -560,7 +560,7 @@ function Show-ExistingTemplates {
         Write-Host "   Path: $templateDir" -ForegroundColor Gray
         Write-Host ""
         Write-Host "   Press Enter to go back..." -ForegroundColor Gray
-        Read-Host
+        $null = Read-Host
         return
     }
 
@@ -584,7 +584,7 @@ function Show-ExistingTemplates {
     Write-Host ""
     Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
     Write-Host "  Press Enter to go back..." -ForegroundColor Gray
-    Read-Host
+    $null = Read-Host
 }
 
 function Show-DevBoxProfileMenu {
