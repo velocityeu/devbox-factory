@@ -2,6 +2,8 @@
 
 Ultimate Windows 11 development environment setup for AI-powered "vibe coding" with Claude Code, Cursor, and full-stack tools.
 
+> Create Automatically VibeCoding Environment on vanilla Windows 11 22H2+ PC
+
 ## What Gets Installed
 
 | Category | Tools |
