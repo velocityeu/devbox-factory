@@ -28,19 +28,42 @@ param(
 )
 
 $Script:Version = "2.0.0"
-$Script:BuildDate = "2026-01-04"
+$Script:Build = "20260104.002"
 
 function Show-Banner {
     Write-Host ""
-    Write-Host "  +=================================================================+" -ForegroundColor Magenta
-    Write-Host "  |  " -ForegroundColor Magenta -NoNewline
-    Write-Host "DEVBOX FACTORY" -ForegroundColor Cyan -NoNewline
-    Write-Host "                       v$Script:Version  Build: $Script:BuildDate" -ForegroundColor DarkGray -NoNewline
-    Write-Host "  |" -ForegroundColor Magenta
-    Write-Host "  |  " -ForegroundColor Magenta -NoNewline
-    Write-Host "One command. Identical dev environments. Every time." -ForegroundColor White -NoNewline
-    Write-Host "             |" -ForegroundColor Magenta
-    Write-Host "  +=================================================================+" -ForegroundColor Magenta
+    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  One command. Identical dev environments. Every time." -ForegroundColor White -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
+    Write-Host "                          v$Script:Version " -ForegroundColor DarkGray -NoNewline
+    Write-Host "build $Script:Build" -ForegroundColor DarkYellow -NoNewline
+    Write-Host "  ║" -ForegroundColor DarkCyan
+    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
     Write-Host ""
 }
 

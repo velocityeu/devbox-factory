@@ -118,7 +118,7 @@ $Script:DevBoxVersion = @{
     Minor = 0
     Patch = 0
     BuildDate = "2026-01-04"
-    BuildNumber = "20260104.001"
+    BuildNumber = "20260104.002"
 }
 
 # Script-level variables
@@ -184,36 +184,42 @@ function Write-Log {
 
 function Show-Banner {
     $version = Get-VersionString
-    $build = $Script:DevBoxVersion.BuildDate
+    $build = $Script:DevBoxVersion.BuildNumber
     Clear-Host
     Write-Host ""
-    Write-Host "  +===============================================================+" -ForegroundColor Magenta
-    Write-Host "  |                                                               |" -ForegroundColor Magenta
-    Write-Host "  |   " -ForegroundColor Magenta -NoNewline
-    Write-Host "██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗" -ForegroundColor Cyan -NoNewline
-    Write-Host "   |" -ForegroundColor Magenta
-    Write-Host "  |   " -ForegroundColor Magenta -NoNewline
-    Write-Host "██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║" -ForegroundColor Cyan -NoNewline
-    Write-Host "   |" -ForegroundColor Magenta
-    Write-Host "  |   " -ForegroundColor Magenta -NoNewline
-    Write-Host "██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║" -ForegroundColor Cyan -NoNewline
-    Write-Host "   |" -ForegroundColor Magenta
-    Write-Host "  |   " -ForegroundColor Magenta -NoNewline
-    Write-Host "╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝" -ForegroundColor Cyan -NoNewline
-    Write-Host "   |" -ForegroundColor Magenta
-    Write-Host "  |   " -ForegroundColor Magenta -NoNewline
-    Write-Host " ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝ " -ForegroundColor Cyan -NoNewline
-    Write-Host "   |" -ForegroundColor Magenta
-    Write-Host "  |   " -ForegroundColor Magenta -NoNewline
-    Write-Host "  ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝  " -ForegroundColor Cyan -NoNewline
-    Write-Host "   |" -ForegroundColor Magenta
-    Write-Host "  |                                                               |" -ForegroundColor Magenta
-    Write-Host "  +===============================================================+" -ForegroundColor Magenta
-    Write-Host "  |   " -ForegroundColor Magenta -NoNewline
-    Write-Host "VM CREATOR" -ForegroundColor White -NoNewline
-    Write-Host "                        $version    Build: $build" -ForegroundColor DarkGray -NoNewline
-    Write-Host "   |" -ForegroundColor Magenta
-    Write-Host "  +===============================================================+" -ForegroundColor Magenta
+    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  VM CREATOR" -ForegroundColor White -NoNewline
+    Write-Host "              Create Dev VMs from Template - Stage 2" -ForegroundColor DarkGray -NoNewline
+    Write-Host "  ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
+    Write-Host "                            $version " -ForegroundColor DarkGray -NoNewline
+    Write-Host "build $build" -ForegroundColor DarkYellow -NoNewline
+    Write-Host "  ║" -ForegroundColor DarkCyan
+    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
     Write-Host ""
 }
 

@@ -199,6 +199,10 @@ $Script:Config = @{
     InstallDatabases = $true
 }
 
+# Version Information
+$Script:Version = "2.0.0"
+$Script:Build = "20260104.002"
+
 # ============================================================================
 # MENU SYSTEM
 # ============================================================================
@@ -206,18 +210,39 @@ $Script:Config = @{
 function Show-Banner {
     Clear-Host
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Magenta
-    Write-Host "  ║                                                               ║" -ForegroundColor Magenta
-    Write-Host "  ║   ██╗   ██╗██╗██████╗ ███████╗    ██████╗ ███████╗██╗   ██╗   ║" -ForegroundColor Magenta
-    Write-Host "  ║   ██║   ██║██║██╔══██╗██╔════╝    ██╔══██╗██╔════╝██║   ██║   ║" -ForegroundColor Magenta
-    Write-Host "  ║   ██║   ██║██║██████╔╝█████╗      ██║  ██║█████╗  ██║   ██║   ║" -ForegroundColor Magenta
-    Write-Host "  ║   ╚██╗ ██╔╝██║██╔══██╗██╔══╝      ██║  ██║██╔══╝  ╚██╗ ██╔╝   ║" -ForegroundColor Magenta
-    Write-Host "  ║    ╚████╔╝ ██║██████╔╝███████╗    ██████╔╝███████╗ ╚████╔╝    ║" -ForegroundColor Magenta
-    Write-Host "  ║     ╚═══╝  ╚═╝╚═════╝ ╚══════╝    ╚═════╝ ╚══════╝  ╚═══╝     ║" -ForegroundColor Magenta
-    Write-Host "  ║                                                               ║" -ForegroundColor Magenta
-    Write-Host "  ║        Windows 11 Ultimate Developer Environment              ║" -ForegroundColor Cyan
-    Write-Host "  ║                                                               ║" -ForegroundColor Magenta
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Magenta
+    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  TOOL INSTALLER" -ForegroundColor White -NoNewline
+    Write-Host "            Windows 11 Development Environment" -ForegroundColor DarkGray -NoNewline
+    Write-Host "  ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
+    Write-Host "                          v$Script:Version " -ForegroundColor DarkGray -NoNewline
+    Write-Host "build $Script:Build" -ForegroundColor DarkYellow -NoNewline
+    Write-Host "  ║" -ForegroundColor DarkCyan
+    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
     Write-Host ""
 }
 

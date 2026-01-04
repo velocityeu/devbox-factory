@@ -1,5 +1,7 @@
 # DevBox Factory
 
+![Version](https://img.shields.io/badge/version-2.0.0-blue) ![Build](https://img.shields.io/badge/build-20260104.002-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
+
 **One command. Identical dev environments. Every time.**
 
 Professional-grade Windows 11 development environment automation. Create reproducible dev boxes with AI tools, full-stack runtimes, and Hyper-V VM templates.

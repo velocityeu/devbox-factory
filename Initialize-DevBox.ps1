@@ -26,8 +26,7 @@ $Script:DevBoxVersion = @{
     Major       = 2
     Minor       = 0
     Patch       = 0
-    BuildDate   = "2026-01-04"
-    BuildNumber = "20260104.001"
+    Build       = "20260104.002"
 }
 
 $Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/devbox-factory/main"
@@ -52,23 +51,44 @@ function Get-VersionString {
 function Show-Banner {
     Clear-Host
     $version = Get-VersionString
-    $build = $Script:DevBoxVersion.BuildDate
+    $build = $Script:DevBoxVersion.Build
 
     Write-Host ""
-    Write-Host "  +===============================================================+" -ForegroundColor Magenta
-    Write-Host "  |                                                               |" -ForegroundColor Magenta
-    Write-Host "  |   ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗          |" -ForegroundColor Cyan
-    Write-Host "  |   ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝          |" -ForegroundColor Cyan
-    Write-Host "  |   ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝           |" -ForegroundColor Cyan
-    Write-Host "  |   ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗           |" -ForegroundColor Cyan
-    Write-Host "  |   ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗          |" -ForegroundColor Cyan
-    Write-Host "  |   ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝          |" -ForegroundColor Cyan
-    Write-Host "  |                      F A C T O R Y                            |" -ForegroundColor Yellow
-    Write-Host "  |                                                               |" -ForegroundColor Magenta
-    Write-Host "  +===============================================================+" -ForegroundColor Magenta
-    Write-Host "  |   BOOTSTRAP INSTALLER           $version    Build: $build   |" -ForegroundColor White
-    Write-Host "  |   One command. Identical dev environments. Every time.        |" -ForegroundColor DarkGray
-    Write-Host "  +===============================================================+" -ForegroundColor Magenta
+    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██████╗ ███████╗██╗   ██╗██████╗  ██████╗ ██╗  ██╗" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔═══██╗╚██╗██╔╝" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██║  ██║█████╗  ██║   ██║██████╔╝██║   ██║ ╚███╔╝ " -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██╗██║   ██║ ██╔██╗ " -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ██████╔╝███████╗ ╚████╔╝ ██████╔╝╚██████╔╝██╔╝ ██╗" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  ╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "                     F A C T O R Y                  " -ForegroundColor Yellow -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  BOOTSTRAP INSTALLER" -ForegroundColor White -NoNewline
+    Write-Host "                                              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  One command. Identical dev environments. Every time." -ForegroundColor Gray -NoNewline
+    Write-Host "              ║" -ForegroundColor DarkCyan
+    Write-Host "  ║" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  by Velocity EU" -ForegroundColor DarkGray -NoNewline
+    Write-Host "                          $version " -ForegroundColor DarkGray -NoNewline
+    Write-Host "build $build" -ForegroundColor DarkYellow -NoNewline
+    Write-Host "  ║" -ForegroundColor DarkCyan
+    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor DarkCyan
     Write-Host ""
 }
 
