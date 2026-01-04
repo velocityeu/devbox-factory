@@ -188,13 +188,13 @@ Features:
 
 ```powershell
 # AI Coder VM
-.\devbox vm -VMName "AI-Dev" -VibeDevProfile AICoder -StartVM
+.\devbox vm -VMName "AI-Dev" -DevBoxProfile AICoder -StartVM
 
 # Team of 5 VMs
 .\devbox vm -VMName "TeamDev" -Count 5 -MemoryGB 16 -StartVM
 
 # High-spec Azure development
-.\devbox vm -VMName "Azure-Dev" -VibeDevProfile Azure -MemoryGB 16 -ProcessorCount 8 -StartVM
+.\devbox vm -VMName "Azure-Dev" -DevBoxProfile Azure -MemoryGB 16 -ProcessorCount 8 -StartVM
 ```
 
 ### Default VM Credentials

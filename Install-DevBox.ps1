@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    Install-VibeDev.ps1 - Ultimate Windows 11 Vibe Development Environment Setup
+    Install-DevBox.ps1 - DevBox Factory Windows 11 Development Environment Setup
 
 .DESCRIPTION
     Sets up a complete "vibe development" environment on Windows 11 22H2+ with:
@@ -49,26 +49,26 @@
     Don't prompt for reboot even if required
 
 .PARAMETER LogPath
-    Custom path for log file (default: $env:USERPROFILE\VibeDev-Install.log)
+    Custom path for log file (default: $env:USERPROFILE\DevBox-Install.log)
 
 .EXAMPLE
-    .\Install-VibeDev.ps1
+    .\Install-DevBox.ps1
     Launch interactive menu
 
 .EXAMPLE
-    .\Install-VibeDev.ps1 -Silent -Profile Full
+    .\Install-DevBox.ps1 -Silent -Profile Full
     Full installation without prompts
 
 .EXAMPLE
-    .\Install-VibeDev.ps1 -Silent -Profile AICoder
+    .\Install-DevBox.ps1 -Silent -Profile AICoder
     AI development tools only
 
 .EXAMPLE
-    .\Install-VibeDev.ps1 -Silent -Profile Azure
+    .\Install-DevBox.ps1 -Silent -Profile Azure
     Azure developer environment
 
 .EXAMPLE
-    .\Install-VibeDev.ps1 -SkipDatabases -SkipDocker
+    .\Install-DevBox.ps1 -SkipDatabases -SkipDocker
     Custom install skipping specific components
 #>
 
@@ -86,7 +86,7 @@ param(
     [switch]$SkipAzure,
     [switch]$SkipVSCodeExtensions,
     [switch]$NoReboot,
-    [string]$LogPath = "$env:USERPROFILE\VibeDev-Install.log"
+    [string]$LogPath = "$env:USERPROFILE\DevBox-Install.log"
 )
 
 # ============================================================================
@@ -1136,7 +1136,7 @@ function Show-Summary {
 # MAIN ORCHESTRATION
 # ============================================================================
 
-function Start-VibeDev-Installation {
+function Start-DevBox-Installation {
     # Initialize log
     "=" * 60 | Out-File $LogPath
     "Vibe Dev Installation - $(Get-Date)" | Out-File $LogPath -Append
@@ -1249,7 +1249,7 @@ function Start-VibeDev-Installation {
 # ============================================================================
 
 try {
-    Start-VibeDev-Installation
+    Start-DevBox-Installation
 }
 catch {
     Write-Host ""

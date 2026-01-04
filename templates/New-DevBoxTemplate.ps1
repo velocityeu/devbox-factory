@@ -21,7 +21,7 @@
     Directory to store the template VHDX. Default: C:\HyperV\Templates
 
 .PARAMETER TemplateName
-    Name for the template. Default: Win11-VibeDev-Template
+    Name for the template. Default: Win11-DevBox-Template
 
 .PARAMETER MemoryGB
     Memory allocation for template VM during creation. Default: 8
@@ -76,7 +76,7 @@ param(
     [string]$ISOPath,
 
     [string]$TemplatePath = "C:\HyperV\Templates",
-    [string]$TemplateName = "Win11-VibeDev-Template",
+    [string]$TemplateName = "Win11-DevBox-Template",
 
     [ValidateRange(4, 64)]
     [int]$MemoryGB = 8,
@@ -111,7 +111,7 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
 # Version information
-$Script:VibeDevVersion = @{
+$Script:DevBoxVersion = @{
     Major       = 2
     Minor       = 0
     Patch       = 0
@@ -120,7 +120,7 @@ $Script:VibeDevVersion = @{
 }
 
 # Script-level variables
-$Script:LogPath = Join-Path $env:USERPROFILE "VibeDev-Template.log"
+$Script:LogPath = Join-Path $env:USERPROFILE "DevBox-Template.log"
 $Script:RequiresReboot = $false
 $Script:VMName = "$TemplateName-Build"
 $Script:InteractiveMode = $false
@@ -170,12 +170,12 @@ function Write-Log {
 }
 
 function Get-VersionString {
-    return "v$($Script:VibeDevVersion.Major).$($Script:VibeDevVersion.Minor).$($Script:VibeDevVersion.Patch)"
+    return "v$($Script:DevBoxVersion.Major).$($Script:DevBoxVersion.Minor).$($Script:DevBoxVersion.Patch)"
 }
 
 function Show-Banner {
     $version = Get-VersionString
-    $build = $Script:VibeDevVersion.BuildDate
+    $build = $Script:DevBoxVersion.BuildDate
 
     Clear-Host
     Write-Host ""
@@ -565,7 +565,7 @@ function Invoke-InteractiveMode {
     $config = @{
         ISOPath = ""
         TemplatePath = "C:\HyperV\Templates"
-        TemplateName = "Win11-VibeDev-Template"
+        TemplateName = "Win11-DevBox-Template"
         MemoryGB = 8
         ProcessorCount = 4
         DiskSizeGB = 127
@@ -1391,7 +1391,7 @@ function Main {
         Show-Banner
     }
 
-    Write-Log "VibeDev Template Creator started" -Level Header
+    Write-Log "DevBox Template Creator started" -Level Header
     Write-Log "ISO: $ISOPath" -Level Info
     Write-Log "Template: $TemplatePath\$TemplateName.vhdx" -Level Info
     Write-Log "VM Specs: ${MemoryGB}GB RAM, $ProcessorCount CPUs, ${DiskSizeGB}GB Disk" -Level Info
@@ -1424,8 +1424,8 @@ function Main {
         $duration = (Get-Date) - $startTime
         Write-Log "Template creation completed in $([math]::Round($duration.TotalMinutes, 1)) minutes" -Level Success
         Write-Log "" -Level Info
-        Write-Log "Next step: Use New-VibeDevVM.ps1 to create development VMs from this template" -Level Info
-        Write-Log "Example: .\New-VibeDevVM.ps1 -VMName 'DevVM-01' -TemplatePath '$Script:VHDXPath'" -Level Info
+        Write-Log "Next step: Use New-DevBoxVM.ps1 to create development VMs from this template" -Level Info
+        Write-Log "Example: .\New-DevBoxVM.ps1 -VMName 'DevVM-01' -TemplatePath '$Script:VHDXPath'" -Level Info
 
     } catch {
         Write-Log "Template creation failed: $_" -Level Error

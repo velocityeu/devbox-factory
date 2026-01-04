@@ -41,37 +41,37 @@
   "vmScenarios": {
     "DevWorkstation": {
       "Preset": "Standard",
-      "VibeDevProfile": "Full",
+      "DevBoxProfile": "Full",
       "InstallMode": "Automatic",
       "Description": "Single developer workstation with all tools"
     },
     "TeamVM": {
       "Preset": "Standard",
-      "VibeDevProfile": "Full",
+      "DevBoxProfile": "Full",
       "InstallMode": "SemiAutomatic",
       "Description": "Team member VMs with desktop shortcut"
     },
     "TestLab": {
       "Preset": "Lightweight",
-      "VibeDevProfile": "Minimal",
+      "DevBoxProfile": "Minimal",
       "InstallMode": "Manual",
       "Description": "Testing and experiments"
     },
     "AIWorkstation": {
       "Preset": "Performance",
-      "VibeDevProfile": "AICoder",
+      "DevBoxProfile": "AICoder",
       "InstallMode": "Automatic",
       "Description": "AI/ML development with Claude Code"
     },
     "AzureDev": {
       "Preset": "Standard",
-      "VibeDevProfile": "Azure",
+      "DevBoxProfile": "Azure",
       "InstallMode": "Automatic",
       "Description": "Azure cloud development"
     },
     "WebDev": {
       "Preset": "Standard",
-      "VibeDevProfile": "WebDev",
+      "DevBoxProfile": "WebDev",
       "InstallMode": "Automatic",
       "Description": "Full-stack web development"
     }
@@ -128,7 +128,7 @@
     }
   },
 
-  "vibeDevProfiles": {
+  "devBoxProfiles": {
     "Full": {
       "Description": "Everything: AI tools, Web Dev, Azure, Docker, Databases",
       "Components": ["Core", "AI", "NodeJS", "Python", "Docker", "Databases", "Azure"],
@@ -154,13 +154,13 @@
 
   "installModes": {
     "Automatic": {
-      "Description": "Auto-login and run Install-VibeDev.ps1 silently on first boot",
+      "Description": "Auto-login and run Install-DevBox.ps1 silently on first boot",
       "AutoLogin": true,
       "SilentInstall": true,
       "IsDefault": true
     },
     "SemiAutomatic": {
-      "Description": "Auto-login with desktop shortcut for VibeDev installer",
+      "Description": "Auto-login with desktop shortcut for DevBox installer",
       "AutoLogin": true,
       "SilentInstall": false,
       "CreateShortcut": true
@@ -183,7 +183,7 @@
 
   "templateDefaults": {
     "TemplatePath": "C:\\HyperV\\Templates",
-    "TemplateName": "Win11-VibeDev-Template",
+    "TemplateName": "Win11-DevBox-Template",
     "VMPath": "C:\\HyperV\\VMs",
     "SwitchName": "Default Switch",
     "TimeZone": "Pacific Standard Time"
@@ -216,9 +216,9 @@
       ]
     },
     "TEMPLATE_NOT_FOUND": {
-      "Message": "VibeDev template VHDX not found",
+      "Message": "DevBox template VHDX not found",
       "Steps": [
-        "Run New-VibeDevTemplate.ps1 to create a template first",
+        "Run New-DevBoxTemplate.ps1 to create a template first",
         "Check template path is correct",
         "Verify template was not deleted"
       ]

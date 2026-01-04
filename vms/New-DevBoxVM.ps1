@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-    Creates development VMs from the VibeDev Windows 11 template.
+    Creates development VMs from the DevBox Windows 11 template.
 
 .DESCRIPTION
-    Stage 2 of VibeDev VM automation. This script:
+    Stage 2 of DevBox VM automation. This script:
     1. Clones the sysprepped Windows 11 template VHDX
     2. Injects computer name and configuration
-    3. Optionally copies VibeDev installation scripts
+    3. Optionally copies DevBox installation scripts
     4. Creates a Gen2 VM with TPM and Secure Boot
     5. Starts the VM with chosen installation mode
 
@@ -14,7 +14,7 @@
     Name for the new VM (required)
 
 .PARAMETER TemplatePath
-    Path to the template VHDX file. Default: C:\HyperV\Templates\Win11-VibeDev-Template.vhdx
+    Path to the template VHDX file. Default: C:\HyperV\Templates\Win11-DevBox-Template.vhdx
 
 .PARAMETER VMPath
     Directory to store VM files. Default: C:\HyperV\VMs
@@ -35,13 +35,13 @@
     Hyper-V virtual switch name. Default: Default Switch
 
 .PARAMETER InstallMode
-    VibeDev installation mode:
-    - Automatic: Auto-login and run Install-VibeDev.ps1 silently
+    DevBox installation mode:
+    - Automatic: Auto-login and run Install-DevBox.ps1 silently
     - SemiAutomatic: Auto-login with desktop shortcut for installer
     - Manual: Just create VM, no auto-install
 
-.PARAMETER VibeDevProfile
-    VibeDev installation profile: Full, AICoder, WebDev, Azure, Minimal
+.PARAMETER DevBoxProfile
+    DevBox installation profile: Full, AICoder, WebDev, Azure, Minimal
 
 .PARAMETER Count
     Number of VMs to create. Default: 1
@@ -56,17 +56,17 @@
     Secure password for local Admin account
 
 .EXAMPLE
-    .\New-VibeDevVM.ps1 -VMName "DevVM-01" -StartVM
+    .\New-DevBoxVM.ps1 -VMName "DevVM-01" -StartVM
 
 .EXAMPLE
-    .\New-VibeDevVM.ps1 -VMName "AI-Dev" -InstallMode Automatic -VibeDevProfile AICoder -StartVM
+    .\New-DevBoxVM.ps1 -VMName "AI-Dev" -InstallMode Automatic -DevBoxProfile AICoder -StartVM
 
 .EXAMPLE
-    .\New-VibeDevVM.ps1 -VMName "TeamDev" -Count 5 -MemoryGB 16 -StartVM
+    .\New-DevBoxVM.ps1 -VMName "TeamDev" -Count 5 -MemoryGB 16 -StartVM
 
 .NOTES
-    Requires: VibeDev template created by New-VibeDevTemplate.ps1
-    Author: VibeDev Team
+    Requires: DevBox template created by New-DevBoxTemplate.ps1
+    Author: DevBox Factory Team
     Version: 2.0.0
 #>
 
@@ -75,7 +75,7 @@ param(
     [Parameter(Mandatory = $false)]
     [string]$VMName,
 
-    [string]$TemplatePath = "C:\HyperV\Templates\Win11-VibeDev-Template.vhdx",
+    [string]$TemplatePath = "C:\HyperV\Templates\Win11-DevBox-Template.vhdx",
     [string]$VMPath = "C:\HyperV\VMs",
 
     [ValidateRange(4, 64)]
@@ -95,7 +95,7 @@ param(
     [string]$InstallMode = "Automatic",
 
     [ValidateSet("Full", "AICoder", "WebDev", "Azure", "Minimal")]
-    [string]$VibeDevProfile = "Full",
+    [string]$DevBoxProfile = "Full",
 
     [ValidateRange(1, 100)]
     [int]$Count = 1,
@@ -113,7 +113,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 # Version Information
-$Script:VibeDevVersion = @{
+$Script:DevBoxVersion = @{
     Major = 2
     Minor = 0
     Patch = 0
@@ -122,10 +122,10 @@ $Script:VibeDevVersion = @{
 }
 
 # Script-level variables
-$Script:LogPath = Join-Path $env:USERPROFILE "VibeDev-VM.log"
+$Script:LogPath = Join-Path $env:USERPROFILE "DevBox-VM.log"
 $Script:ScriptRoot = $PSScriptRoot
 $Script:ParentRoot = Split-Path $PSScriptRoot -Parent
-$Script:InstallVibeDevPath = Join-Path $Script:ParentRoot "Install-VibeDev.ps1"
+$Script:InstallDevBoxPath = Join-Path $Script:ParentRoot "Install-DevBox.ps1"
 $Script:PresetsPath = Join-Path $PSScriptRoot "Presets.json"
 $Script:CreatedVMs = @()
 $Script:Presets = $null
@@ -140,7 +140,7 @@ if (Test-Path $Script:PresetsPath) {
 }
 
 function Get-VersionString {
-    return "v$($Script:VibeDevVersion.Major).$($Script:VibeDevVersion.Minor).$($Script:VibeDevVersion.Patch)"
+    return "v$($Script:DevBoxVersion.Major).$($Script:DevBoxVersion.Minor).$($Script:DevBoxVersion.Patch)"
 }
 
 #region Logging Functions
@@ -184,7 +184,7 @@ function Write-Log {
 
 function Show-Banner {
     $version = Get-VersionString
-    $build = $Script:VibeDevVersion.BuildDate
+    $build = $Script:DevBoxVersion.BuildDate
     Clear-Host
     Write-Host ""
     Write-Host "  +===============================================================+" -ForegroundColor Magenta
@@ -226,7 +226,7 @@ Add-Type -AssemblyName System.Windows.Forms
 function Show-VHDXFilePicker {
     $dialog = New-Object System.Windows.Forms.OpenFileDialog
     $dialog.Filter = "VHDX Files (*.vhdx)|*.vhdx|All Files (*.*)|*.*"
-    $dialog.Title = "Select VibeDev Template VHDX"
+    $dialog.Title = "Select DevBox Template VHDX"
     $dialog.InitialDirectory = "C:\HyperV\Templates"
 
     if (Test-Path "C:\HyperV\Templates") {
@@ -393,7 +393,7 @@ function Show-MainMenu {
     Write-Host ""
     Write-Host "   [4] " -ForegroundColor Yellow -NoNewline
     Write-Host "List Existing VMs" -ForegroundColor White
-    Write-Host "       View and manage VibeDev VMs" -ForegroundColor DarkGray
+    Write-Host "       View and manage DevBox VMs" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [Q] " -ForegroundColor Red -NoNewline
     Write-Host "Quit" -ForegroundColor White
@@ -433,7 +433,7 @@ function Show-TemplateScanResults {
     if ($Templates.Count -eq 0) {
         Write-Host ""
         Write-Host "  No VHDX templates found in common locations." -ForegroundColor Yellow
-        Write-Host "  Run New-VibeDevTemplate.ps1 to create one first." -ForegroundColor DarkGray
+        Write-Host "  Run New-DevBoxTemplate.ps1 to create one first." -ForegroundColor DarkGray
         Write-Host ""
         Read-Host "  Press Enter to continue"
         return $null
@@ -500,7 +500,7 @@ function Show-ProfileSelectionMenu {
     Write-Host "       Git, Windows Terminal, VS Code only" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [N] " -ForegroundColor DarkYellow -NoNewline
-    Write-Host "None - skip VibeDev installation" -ForegroundColor White
+    Write-Host "None - skip DevBox installation" -ForegroundColor White
     Write-Host ""
     Write-Host "   [B] " -ForegroundColor DarkYellow -NoNewline
     Write-Host "Back" -ForegroundColor White
@@ -520,7 +520,7 @@ function Show-InstallModeMenu {
     Write-Host "   [1] " -ForegroundColor Yellow -NoNewline
     Write-Host "Automatic                      " -ForegroundColor White -NoNewline
     Write-Host "* Recommended" -ForegroundColor Green
-    Write-Host "       Auto-login and install VibeDev silently on first boot" -ForegroundColor DarkGray
+    Write-Host "       Auto-login and install DevBox silently on first boot" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [2] " -ForegroundColor Yellow -NoNewline
     Write-Host "Semi-Automatic" -ForegroundColor White
@@ -738,12 +738,12 @@ function Show-PreFlightChecks {
         $allPassed = $false
     }
 
-    # Check Install-VibeDev.ps1
+    # Check Install-DevBox.ps1
     if ($Config.InstallMode -ne "Manual") {
-        if (Test-Path $Script:InstallVibeDevPath) {
-            Write-Host "   [+] Install-VibeDev.ps1 found (will copy to VM)" -ForegroundColor Green
+        if (Test-Path $Script:InstallDevBoxPath) {
+            Write-Host "   [+] Install-DevBox.ps1 found (will copy to VM)" -ForegroundColor Green
         } else {
-            Write-Host "   [!] Install-VibeDev.ps1 not found (auto-install unavailable)" -ForegroundColor Yellow
+            Write-Host "   [!] Install-DevBox.ps1 not found (auto-install unavailable)" -ForegroundColor Yellow
         }
     }
 
@@ -795,9 +795,9 @@ function Show-ConfigurationSummary {
     Write-Host "     Disk: $($Config.DiskSizeGB) GB" -ForegroundColor White
     Write-Host ""
 
-    Write-Host "   VibeDev Settings:" -ForegroundColor Cyan
+    Write-Host "   DevBox Settings:" -ForegroundColor Cyan
     Write-Host "     Install Mode: $($Config.InstallMode)" -ForegroundColor White
-    Write-Host "     Profile: $($Config.VibeDevProfile)" -ForegroundColor White
+    Write-Host "     Profile: $($Config.DevBoxProfile)" -ForegroundColor White
     Write-Host "     Start VM: $(if ($Config.StartVM) { 'Yes' } else { 'No' })" -ForegroundColor White
     Write-Host ""
 
@@ -855,14 +855,14 @@ function Show-ExistingVMs {
 function Invoke-InteractiveMode {
     $config = @{
         VMName = ""
-        TemplatePath = "C:\HyperV\Templates\Win11-VibeDev-Template.vhdx"
+        TemplatePath = "C:\HyperV\Templates\Win11-DevBox-Template.vhdx"
         VMPath = "C:\HyperV\VMs"
         MemoryGB = 8
         ProcessorCount = 4
         DiskSizeGB = 127
         SwitchName = "Default Switch"
         InstallMode = "Automatic"
-        VibeDevProfile = "Full"
+        DevBoxProfile = "Full"
         Count = 1
         NamePattern = "-{0:D2}"
         StartVM = $true
@@ -940,13 +940,13 @@ function Invoke-InteractiveMode {
                 $profileChoice = Show-ProfileSelectionMenu
                 switch ($profileChoice.ToUpper()) {
                     'B' { continue }
-                    '1' { $config.VibeDevProfile = "Full"; $config.InstallMode = "Automatic" }
-                    '2' { $config.VibeDevProfile = "AICoder"; $config.InstallMode = "Automatic" }
-                    '3' { $config.VibeDevProfile = "WebDev"; $config.InstallMode = "Automatic" }
-                    '4' { $config.VibeDevProfile = "Azure"; $config.InstallMode = "Automatic" }
-                    '5' { $config.VibeDevProfile = "Minimal"; $config.InstallMode = "Automatic" }
-                    'N' { $config.InstallMode = "Manual"; $config.VibeDevProfile = "Full" }
-                    default { $config.VibeDevProfile = "Full"; $config.InstallMode = "Automatic" }
+                    '1' { $config.DevBoxProfile = "Full"; $config.InstallMode = "Automatic" }
+                    '2' { $config.DevBoxProfile = "AICoder"; $config.InstallMode = "Automatic" }
+                    '3' { $config.DevBoxProfile = "WebDev"; $config.InstallMode = "Automatic" }
+                    '4' { $config.DevBoxProfile = "Azure"; $config.InstallMode = "Automatic" }
+                    '5' { $config.DevBoxProfile = "Minimal"; $config.InstallMode = "Automatic" }
+                    'N' { $config.InstallMode = "Manual"; $config.DevBoxProfile = "Full" }
+                    default { $config.DevBoxProfile = "Full"; $config.InstallMode = "Automatic" }
                 }
 
                 # Ask to start VM
@@ -1048,13 +1048,13 @@ function Invoke-InteractiveMode {
                 $profileChoice = Show-ProfileSelectionMenu
                 switch ($profileChoice.ToUpper()) {
                     'B' { continue }
-                    '1' { $config.VibeDevProfile = "Full"; $config.InstallMode = "Automatic" }
-                    '2' { $config.VibeDevProfile = "AICoder"; $config.InstallMode = "Automatic" }
-                    '3' { $config.VibeDevProfile = "WebDev"; $config.InstallMode = "Automatic" }
-                    '4' { $config.VibeDevProfile = "Azure"; $config.InstallMode = "Automatic" }
-                    '5' { $config.VibeDevProfile = "Minimal"; $config.InstallMode = "Automatic" }
+                    '1' { $config.DevBoxProfile = "Full"; $config.InstallMode = "Automatic" }
+                    '2' { $config.DevBoxProfile = "AICoder"; $config.InstallMode = "Automatic" }
+                    '3' { $config.DevBoxProfile = "WebDev"; $config.InstallMode = "Automatic" }
+                    '4' { $config.DevBoxProfile = "Azure"; $config.InstallMode = "Automatic" }
+                    '5' { $config.DevBoxProfile = "Minimal"; $config.InstallMode = "Automatic" }
                     'N' { $config.InstallMode = "Manual" }
-                    default { $config.VibeDevProfile = "Full"; $config.InstallMode = "Automatic" }
+                    default { $config.DevBoxProfile = "Full"; $config.InstallMode = "Automatic" }
                 }
 
                 # VM Preset
@@ -1175,13 +1175,13 @@ function Invoke-InteractiveMode {
                     $profileChoice = Show-ProfileSelectionMenu
                     switch ($profileChoice.ToUpper()) {
                         'B' { continue }
-                        '1' { $config.VibeDevProfile = "Full" }
-                        '2' { $config.VibeDevProfile = "AICoder" }
-                        '3' { $config.VibeDevProfile = "WebDev" }
-                        '4' { $config.VibeDevProfile = "Azure" }
-                        '5' { $config.VibeDevProfile = "Minimal" }
+                        '1' { $config.DevBoxProfile = "Full" }
+                        '2' { $config.DevBoxProfile = "AICoder" }
+                        '3' { $config.DevBoxProfile = "WebDev" }
+                        '4' { $config.DevBoxProfile = "Azure" }
+                        '5' { $config.DevBoxProfile = "Minimal" }
                         'N' { $config.InstallMode = "Manual" }
-                        default { $config.VibeDevProfile = "Full" }
+                        default { $config.DevBoxProfile = "Full" }
                     }
                 }
 
@@ -1219,13 +1219,13 @@ function Test-Prerequisites {
 
     # Check Hyper-V
     if (-not (Get-Module -ListAvailable -Name Hyper-V)) {
-        throw "Hyper-V PowerShell module not available. Please run New-VibeDevTemplate.ps1 first."
+        throw "Hyper-V PowerShell module not available. Please run New-DevBoxTemplate.ps1 first."
     }
     Import-Module Hyper-V
 
     # Check template exists
     if (-not (Test-Path $TemplatePath)) {
-        throw "Template not found: $TemplatePath`nPlease run New-VibeDevTemplate.ps1 first."
+        throw "Template not found: $TemplatePath`nPlease run New-DevBoxTemplate.ps1 first."
     }
     Write-Log "Template found: $TemplatePath" -Level Success
 
@@ -1236,13 +1236,13 @@ function Test-Prerequisites {
     }
     Write-Log "Virtual switch '$SwitchName' available" -Level Success
 
-    # Check Install-VibeDev.ps1 for non-Manual modes
+    # Check Install-DevBox.ps1 for non-Manual modes
     if ($InstallMode -ne "Manual") {
-        if (-not (Test-Path $Script:InstallVibeDevPath)) {
-            Write-Log "Install-VibeDev.ps1 not found at $Script:InstallVibeDevPath" -Level Warning
-            Write-Log "VibeDev auto-installation will be skipped" -Level Warning
+        if (-not (Test-Path $Script:InstallDevBoxPath)) {
+            Write-Log "Install-DevBox.ps1 not found at $Script:InstallDevBoxPath" -Level Warning
+            Write-Log "DevBox auto-installation will be skipped" -Level Warning
         } else {
-            Write-Log "Install-VibeDev.ps1 found" -Level Success
+            Write-Log "Install-DevBox.ps1 found" -Level Success
         }
     }
 
@@ -1391,12 +1391,12 @@ function Set-VMSpecializeSettings {
                     <Description>Enable PowerShell scripts</Description>
                 </SynchronousCommand>
 "@
-            if ($InstallMode -eq "Automatic" -and (Test-Path $Script:InstallVibeDevPath)) {
+            if ($InstallMode -eq "Automatic" -and (Test-Path $Script:InstallDevBoxPath)) {
                 $unattendContent += @"
                 <SynchronousCommand wcm:action="add">
                     <Order>2</Order>
-                    <CommandLine>powershell.exe -ExecutionPolicy Bypass -File "C:\VibeDev\Install-VibeDev.ps1" -Silent -Profile $VibeDevProfile</CommandLine>
-                    <Description>Install VibeDev tools</Description>
+                    <CommandLine>powershell.exe -ExecutionPolicy Bypass -File "C:\DevBox\Install-DevBox.ps1" -Silent -Profile $DevBoxProfile</CommandLine>
+                    <Description>Install DevBox tools</Description>
                 </SynchronousCommand>
 "@
             }
@@ -1418,26 +1418,26 @@ function Set-VMSpecializeSettings {
         }
         $unattendContent | Out-File -FilePath "$pantherPath\unattend.xml" -Encoding utf8 -Force
 
-        # Copy Install-VibeDev.ps1 if needed
-        if ($InstallMode -ne "Manual" -and (Test-Path $Script:InstallVibeDevPath)) {
-            Write-Log "Copying VibeDev installation scripts..." -Level Info
-            $vibeDevDir = "${winLetter}:\VibeDev"
-            if (-not (Test-Path $vibeDevDir)) {
-                New-Item -Path $vibeDevDir -ItemType Directory -Force | Out-Null
+        # Copy Install-DevBox.ps1 if needed
+        if ($InstallMode -ne "Manual" -and (Test-Path $Script:InstallDevBoxPath)) {
+            Write-Log "Copying DevBox installation scripts..." -Level Info
+            $devBoxDir = "${winLetter}:\DevBox"
+            if (-not (Test-Path $devBoxDir)) {
+                New-Item -Path $devBoxDir -ItemType Directory -Force | Out-Null
             }
-            Copy-Item -Path $Script:InstallVibeDevPath -Destination "$vibeDevDir\Install-VibeDev.ps1" -Force
+            Copy-Item -Path $Script:InstallDevBoxPath -Destination "$devBoxDir\Install-DevBox.ps1" -Force
 
             # Create desktop shortcut for SemiAutomatic mode
             if ($InstallMode -eq "SemiAutomatic") {
                 $publicDesktop = "${winLetter}:\Users\Public\Desktop"
                 $shortcutContent = @"
 @echo off
-echo Starting VibeDev Installation...
-powershell.exe -ExecutionPolicy Bypass -File "C:\VibeDev\Install-VibeDev.ps1"
+echo Starting DevBox Installation...
+powershell.exe -ExecutionPolicy Bypass -File "C:\DevBox\Install-DevBox.ps1"
 pause
 "@
-                $shortcutContent | Out-File -FilePath "$publicDesktop\Install-VibeDev.cmd" -Encoding ascii -Force
-                Write-Log "Created desktop shortcut for VibeDev installer" -Level Info
+                $shortcutContent | Out-File -FilePath "$publicDesktop\Install-DevBox.cmd" -Encoding ascii -Force
+                Write-Log "Created desktop shortcut for DevBox installer" -Level Info
             }
         }
 
@@ -1453,7 +1453,7 @@ pause
 
 #region VM Creation
 
-function New-VibeDevVM {
+function New-DevBoxVM {
     param(
         [string]$NewVMName,
         [string]$VHDXPath
@@ -1540,7 +1540,7 @@ function Main {
         $Script:DiskSizeGB = $config.DiskSizeGB
         $Script:SwitchName = $config.SwitchName
         $Script:InstallMode = $config.InstallMode
-        $Script:VibeDevProfile = $config.VibeDevProfile
+        $Script:DevBoxProfile = $config.DevBoxProfile
         $Script:Count = $config.Count
         $Script:NamePattern = $config.NamePattern
         $Script:StartVM = $config.StartVM
@@ -1554,7 +1554,7 @@ function Main {
         $DiskSizeGB = $config.DiskSizeGB
         $SwitchName = $config.SwitchName
         $InstallMode = $config.InstallMode
-        $VibeDevProfile = $config.VibeDevProfile
+        $DevBoxProfile = $config.DevBoxProfile
         $Count = $config.Count
         $NamePattern = $config.NamePattern
         $StartVM = $config.StartVM
@@ -1563,10 +1563,10 @@ function Main {
         Show-Banner
     }
 
-    Write-Log "VibeDev VM Creator started" -Level Header
+    Write-Log "DevBox VM Creator started" -Level Header
     Write-Log "Base Name: $VMName" -Level Info
     Write-Log "Count: $Count" -Level Info
-    Write-Log "Profile: $VibeDevProfile" -Level Info
+    Write-Log "Profile: $DevBoxProfile" -Level Info
     Write-Log "Install Mode: $InstallMode" -Level Info
     Write-Log "VM Specs: ${MemoryGB}GB RAM, $ProcessorCount CPUs" -Level Info
 
@@ -1592,7 +1592,7 @@ function Main {
             Set-VMSpecializeSettings -VHDXPath $vhdxPath -ComputerName $name
 
             # Create VM
-            $vm = New-VibeDevVM -NewVMName $name -VHDXPath $vhdxPath
+            $vm = New-DevBoxVM -NewVMName $name -VHDXPath $vhdxPath
 
             $Script:CreatedVMs += @{
                 Name = $name
@@ -1628,11 +1628,11 @@ function Main {
 
         if ($InstallMode -eq "Automatic") {
             Write-Host ""
-            Write-Host "VibeDev tools will be installed automatically on first login." -ForegroundColor Cyan
-            Write-Host "Profile: $VibeDevProfile" -ForegroundColor Cyan
+            Write-Host "DevBox tools will be installed automatically on first login." -ForegroundColor Cyan
+            Write-Host "Profile: $DevBoxProfile" -ForegroundColor Cyan
         } elseif ($InstallMode -eq "SemiAutomatic") {
             Write-Host ""
-            Write-Host "Run 'Install-VibeDev.cmd' from the desktop to install VibeDev tools." -ForegroundColor Cyan
+            Write-Host "Run 'Install-DevBox.cmd' from the desktop to install DevBox tools." -ForegroundColor Cyan
         }
 
         if (-not $StartVM) {

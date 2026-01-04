@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Post-installation configuration script for VibeDev Windows 11 template.
+    Post-installation configuration script for DevBox Windows 11 template.
 
 .DESCRIPTION
     This script runs after Windows installation to:
@@ -26,7 +26,7 @@ function Write-Log {
     Write-Host $logMessage
 }
 
-Write-Log "VibeDev SetupComplete.ps1 started"
+Write-Log "DevBox SetupComplete.ps1 started"
 
 #region Developer Configuration
 
@@ -247,7 +247,7 @@ try {
 Write-Log "Creating template marker..."
 
 try {
-    $markerPath = "C:\VibeDev"
+    $markerPath = "C:\DevBox"
     if (-not (Test-Path $markerPath)) {
         New-Item -Path $markerPath -ItemType Directory -Force | Out-Null
     }
@@ -256,7 +256,7 @@ try {
         TemplateVersion = "1.0"
         CreatedDate = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
         WindowsBuild = (Get-CimInstance Win32_OperatingSystem).BuildNumber
-        TemplateName = "Win11-VibeDev-Template"
+        TemplateName = "Win11-DevBox-Template"
     }
 
     $markerContent | ConvertTo-Json | Out-File -FilePath "$markerPath\template-info.json" -Encoding utf8 -Force
@@ -292,10 +292,10 @@ try {
 
 #endregion
 
-Write-Log "VibeDev SetupComplete.ps1 finished"
+Write-Log "DevBox SetupComplete.ps1 finished"
 Write-Log "System may require a reboot to complete feature installation"
 
 # Create flag file to indicate setup is complete
-"SetupComplete" | Out-File -FilePath "C:\VibeDev\.setup-complete" -Encoding ascii -Force
+"SetupComplete" | Out-File -FilePath "C:\DevBox\.setup-complete" -Encoding ascii -Force
 
 Write-Log "Setup complete flag created"
