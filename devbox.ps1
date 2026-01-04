@@ -16,7 +16,7 @@
 
 .NOTES
     DevBox Factory v2.0.0
-    https://github.com/velocityeu/devbox-factory
+    https://github.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra
 #>
 
 param(
@@ -71,7 +71,7 @@ function Show-Help {
     Write-Host "    .\devbox vm -VMName DevVM-01 -StartVM" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  MORE INFO:" -ForegroundColor Cyan
-    Write-Host "    https://github.com/velocityeu/devbox-factory" -ForegroundColor Blue
+    Write-Host "    https://github.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra" -ForegroundColor Blue
     Write-Host ""
 }
 

@@ -25,7 +25,7 @@ Download all DevBox Factory scripts to your PC:
 
 ```powershell
 # Run as Administrator
-irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex
+irm https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main/Initialize-DevBox.ps1 | iex
 ```
 
 This bootstrap script:
@@ -40,13 +40,13 @@ Run the installer directly without downloading files:
 
 ```powershell
 # Run as Administrator
-irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Install-DevBox.ps1 | iex
+irm https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main/Install-DevBox.ps1 | iex
 ```
 
 ### Option 3: Clone and Run
 
 ```powershell
-git clone https://github.com/velocityeu/devbox-factory.git
+git clone https://github.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra.git
 cd devbox-factory
 .\devbox install
 ```
@@ -379,4 +379,4 @@ Pull requests welcome! Test on a clean Windows 11 VM before submitting.
 
 ---
 
-**DevBox Factory v2.0.0** | Built by [Velocity EU](https://velocity.eu) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
+**DevBox Factory v2.0.0** | Built by [Velocity EU](https://velocity.eu) | [Report Issues](https://github.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/issues)

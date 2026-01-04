@@ -30,7 +30,7 @@ $Script:DevBoxVersion = @{
     BuildNumber = "20260104.001"
 }
 
-$Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/devbox-factory/main"
+$Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/Install-ClaudeCode-VibeDev-Ultra/main"
 $Script:RequiredFiles = @(
     @{ Path = "Install-DevBox.ps1"; Required = $true },
     @{ Path = "devbox.ps1"; Required = $true },
