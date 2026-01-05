@@ -17,8 +17,8 @@
 
 #Requires -Version 5.1
 
-$Script:Version = "3.5.0"
-$Script:Build = "20260105.1000"
+$Script:Version = "3.5.1"
+$Script:Build = "20260105.1200"
 $Script:ModuleRoot = $PSScriptRoot
 $Script:ConfigRoot = Join-Path (Split-Path $PSScriptRoot -Parent) "config"
 
