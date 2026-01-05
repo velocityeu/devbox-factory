@@ -4,12 +4,11 @@ import { ReactNode } from 'react'
 
 interface ButtonProps {
   children: ReactNode
-  variant?: 'primary' | 'secondary'
-  size?: 'default' | 'large'
+  variant?: 'primary' | 'secondary' | 'ghost'
+  size?: 'sm' | 'default' | 'lg'
   href?: string
   onClick?: () => void
   className?: string
-  glow?: boolean
 }
 
 export default function Button({
@@ -19,21 +18,39 @@ export default function Button({
   href,
   onClick,
   className = '',
-  glow = false,
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-300 active:scale-95'
+  const baseStyles = `
+    inline-flex items-center justify-center gap-2
+    font-medium rounded-full
+    transition-all duration-300 ease-apple
+    active:scale-[0.97]
+    disabled:opacity-50 disabled:cursor-not-allowed
+  `
 
   const variants = {
-    primary: 'bg-gradient-primary text-white hover:shadow-lg hover:shadow-accent-primary/25 hover:-translate-y-0.5',
-    secondary: 'bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-accent-primary/50',
+    primary: `
+      bg-[var(--color-accent)] text-white
+      hover:brightness-110
+      shadow-sm hover:shadow-md hover:shadow-[var(--color-accent)]/20
+    `,
+    secondary: `
+      bg-[var(--color-bg)] text-[var(--color-accent)]
+      border border-[var(--color-border)]
+      hover:bg-[var(--color-bg-secondary)] hover:border-[var(--color-accent)]
+    `,
+    ghost: `
+      text-[var(--color-accent)]
+      hover:bg-[var(--color-bg-secondary)]
+    `,
   }
 
   const sizes = {
-    default: 'px-6 py-3 text-sm md:text-base',
-    large: 'px-8 py-4 text-base md:text-lg',
+    sm: 'px-4 py-2 text-sm',
+    default: 'px-6 py-3 text-sm',
+    lg: 'px-8 py-4 text-base',
   }
 
-  const classes = `${baseStyles} ${variants[variant]} ${sizes[size]} ${glow ? 'btn-glow' : ''} ${className}`
+  const classes = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`
 
   if (href) {
     return (

@@ -1,15 +1,12 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from '@/components/ThemeProvider'
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -36,18 +33,36 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-sans">
-        {/* Background effects */}
-        <div className="fixed inset-0 -z-30 bg-gradient-to-b from-background-secondary to-background" />
-        <div className="fixed inset-0 -z-20 bg-grid opacity-50" />
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        {/* Prevent flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="font-sans antialiased">
+        <ThemeProvider>
+          {/* Subtle background gradient */}
+          <div className="fixed inset-0 -z-10 bg-secondary" />
+          <div className="fixed inset-0 -z-10 bg-gradient-to-b from-transparent via-transparent to-[var(--color-bg-secondary)] opacity-50" />
 
-        {/* Floating glow orbs */}
-        <div className="fixed -z-10 w-[600px] h-[600px] -top-48 -right-24 rounded-full bg-accent-primary/20 blur-[100px] animate-float" />
-        <div className="fixed -z-10 w-[400px] h-[400px] bottom-1/4 -left-24 rounded-full bg-accent-cyan/20 blur-[100px] animate-float" style={{ animationDelay: '-7s' }} />
-        <div className="fixed -z-10 w-[500px] h-[500px] -bottom-48 right-1/4 rounded-full bg-accent-secondary/20 blur-[100px] animate-float" style={{ animationDelay: '-14s' }} />
+          {/* Subtle animated orbs - only in dark mode */}
+          <div className="fixed -z-10 w-[500px] h-[500px] -top-32 -right-32 rounded-full bg-primary-500/5 dark:bg-primary-500/10 blur-3xl animate-float pointer-events-none" />
+          <div className="fixed -z-10 w-[400px] h-[400px] top-1/2 -left-32 rounded-full bg-purple-500/5 dark:bg-purple-500/10 blur-3xl animate-float pointer-events-none" style={{ animationDelay: '-10s' }} />
 
-        {children}
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -4,109 +4,95 @@ import { motion } from 'framer-motion'
 import Card from './ui/Card'
 import CopyButton from './ui/CopyButton'
 
-const installOptions = [
+const options = [
   {
     title: 'One-Line Install',
-    description: 'Fastest way to get started. Run this in PowerShell as Admin:',
-    command: 'irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Install-DevBox.ps1 | iex',
-    note: 'Installs tools directly on your current machine',
-    noteIcon: '&#128161;',
+    desc: 'Run in PowerShell as Admin:',
+    cmd: 'irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Install-DevBox.ps1 | iex',
+    note: 'Installs on current machine',
     featured: true,
-    badge: '&#9889; Recommended',
   },
   {
     title: 'Full Bootstrap',
-    description: 'Includes VM creation capabilities for team environments:',
-    command: 'irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex',
-    note: 'Creates reproducible VM templates for your team',
-    noteIcon: '&#127970;',
+    desc: 'With VM template creation:',
+    cmd: 'irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex',
+    note: 'For team environments',
   },
   {
     title: 'Clone & Explore',
-    description: 'Want to see the code first? Totally fair:',
-    command: 'git clone https://github.com/velocityeu/devbox-factory && cd devbox-factory && .\\devbox install',
-    note: 'Full source code. MIT licensed. Star us while you\'re there!',
-    noteIcon: '&#128064;',
+    desc: 'See the code first:',
+    cmd: 'git clone https://github.com/velocityeu/devbox-factory && cd devbox-factory && .\\devbox install',
+    note: 'MIT licensed',
   },
-]
-
-const requirements = [
-  { icon: '&#128187;', text: 'Windows 11 (22H2+) or Server 2025' },
-  { icon: '&#128081;', text: 'Administrator privileges' },
-  { icon: '&#127760;', text: 'Internet connection' },
-  { icon: '&#128190;', text: '~15GB free disk space' },
 ]
 
 export default function QuickStart() {
   return (
-    <section id="quickstart" className="py-20 md:py-32 px-4 bg-background-secondary/50">
-      <div className="max-w-6xl mx-auto">
+    <section id="quickstart" className="py-24 md:py-32 px-5 bg-secondary">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12 md:mb-16"
+          className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-1.5 mb-4 bg-white/5 border border-white/10 rounded-full text-sm text-accent-primary">
-            Let&apos;s Go
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4">
-            Ready in <span className="gradient-text">60 Seconds</span>
+          <span className="section-badge mb-4">Get Started</span>
+          <h2 className="text-display text-primary mb-4">
+            Ready in <span className="gradient-text">60 seconds</span>
           </h2>
-          <p className="text-zinc-400 max-w-xl mx-auto">
-            No signup. No credit card. No BS. Just copy and paste.
-          </p>
+          <p className="text-secondary">No signup. No credit card. Just copy and paste.</p>
         </motion.div>
 
-        {/* Install Options */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
-          {installOptions.map((option, index) => (
+        {/* Options */}
+        <div className="grid md:grid-cols-3 gap-4 mb-12">
+          {options.map((opt, i) => (
             <Card
-              key={option.title}
-              delay={index * 0.1}
-              className={`${option.featured ? 'border-accent-primary bg-gradient-to-br from-accent-primary/10 to-transparent' : ''}`}
+              key={opt.title}
+              delay={i * 0.1}
+              padding="lg"
+              className={opt.featured ? 'border-[var(--color-accent)]/30 ring-1 ring-[var(--color-accent)]/10' : ''}
             >
-              {option.badge && (
-                <div
-                  className="inline-block px-3 py-1 mb-4 bg-gradient-primary rounded-full text-xs font-bold"
-                  dangerouslySetInnerHTML={{ __html: option.badge }}
-                />
+              {opt.featured && (
+                <span className="inline-block px-2 py-1 mb-3 bg-[var(--color-accent)] text-white text-xs font-medium rounded">
+                  Recommended
+                </span>
               )}
-              <h3 className="text-lg font-bold mb-2">{option.title}</h3>
-              <p className="text-zinc-400 text-sm mb-4">{option.description}</p>
+              <h3 className="font-semibold text-primary mb-1">{opt.title}</h3>
+              <p className="text-tertiary text-sm mb-4">{opt.desc}</p>
 
-              {/* Code Block */}
-              <div className="flex items-center gap-2 p-3 bg-background rounded-xl border border-white/10 mb-4 overflow-hidden">
-                <code className="flex-1 text-xs text-accent-cyan font-mono overflow-x-auto whitespace-nowrap">
-                  {option.command}
+              <div className="flex items-center gap-2 p-3 bg-gray-900 rounded-lg mb-3">
+                <code className="flex-1 text-xs text-[#2997ff] font-mono overflow-x-auto whitespace-nowrap">
+                  {opt.cmd}
                 </code>
-                <CopyButton text={option.command} />
+                <CopyButton text={opt.cmd} />
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-zinc-500">
-                <span dangerouslySetInnerHTML={{ __html: option.noteIcon }} />
-                <span>{option.note}</span>
-              </div>
+              <p className="text-xs text-tertiary">💡 {opt.note}</p>
             </Card>
           ))}
         </div>
 
         {/* Requirements */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="glass-card p-6 md:p-8"
+          className="card p-6"
         >
-          <h4 className="text-lg font-bold mb-6">&#128203; System Requirements</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {requirements.map((req) => (
-              <div key={req.text} className="flex items-center gap-3 text-zinc-400">
-                <span className="text-xl" dangerouslySetInnerHTML={{ __html: req.icon }} />
-                <span className="text-sm">{req.text}</span>
+          <h4 className="font-semibold text-primary mb-4">📋 Requirements</h4>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { icon: '💻', text: 'Windows 11 or Server 2025' },
+              { icon: '👑', text: 'Admin privileges' },
+              { icon: '🌐', text: 'Internet connection' },
+              { icon: '💾', text: '~15GB free space' },
+            ].map((req) => (
+              <div key={req.text} className="flex items-center gap-3 text-secondary text-sm">
+                <span>{req.icon}</span>
+                <span>{req.text}</span>
               </div>
             ))}
           </div>

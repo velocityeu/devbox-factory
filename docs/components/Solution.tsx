@@ -9,115 +9,104 @@ const beforeItems = [
   'Endless Stack Overflow tabs',
   '3 attempts to get Docker running',
   'Frustration and lost motivation',
-  'Inconsistent environments across machines',
-  'Hope that it works next time',
 ]
 
 const afterItems = [
-  { text: '2 minutes to start coding', highlight: true },
-  { text: 'Zero configuration needed', highlight: true },
-  { text: 'One command, everything works', highlight: true },
-  { text: 'Pre-tested tool combinations', highlight: true },
-  { text: 'Excitement preserved', highlight: true },
-  { text: 'Identical environments guaranteed', highlight: true },
-  { text: 'Certainty it works every time', highlight: true },
-]
-
-const valueProps = [
-  { icon: '&#128176;', title: 'Save $500+ Per Developer', description: '2 days of setup time = real money. Multiply by your team size.' },
-  { icon: '&#129504;', title: 'Preserve Your Energy', description: 'Spend your mental energy on building, not battling your tools.' },
-  { icon: '&#9889;', title: 'Immediate Productivity', description: 'From zero to vibe coding in the time it takes to make coffee.' },
+  '2 minutes to start coding',
+  'Zero configuration needed',
+  'One command, everything works',
+  'Pre-tested tool combinations',
+  'Excitement preserved',
 ]
 
 export default function Solution() {
   return (
-    <section id="solution" className="py-20 md:py-32 px-4 bg-background-secondary/50">
+    <section id="solution" className="py-24 md:py-32 px-5 bg-secondary">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12 md:mb-16"
+          className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-1.5 mb-4 bg-white/5 border border-white/10 rounded-full text-sm text-accent-primary">
-            The Solution
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4">
-            What If Setup Just... <span className="gradient-text">Worked?</span>
+          <span className="section-badge mb-4">The Solution</span>
+          <h2 className="text-display text-primary mb-4">
+            What if setup just <span className="gradient-text">worked?</span>
           </h2>
-          <p className="text-zinc-400 max-w-xl mx-auto">
-            DevBox Factory is the missing piece. One command gives you a battle-tested,
-            production-ready dev environment with everything pre-configured correctly.
+          <p className="text-secondary max-w-xl mx-auto">
+            DevBox Factory gives you a battle-tested, production-ready dev environment
+            with everything pre-configured correctly.
           </p>
         </motion.div>
 
         {/* Comparison */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16 relative">
+        <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-6 items-stretch mb-16">
           {/* Before */}
-          <Card hover={false} className="border-red-500/30">
+          <Card hover={false} className="border-red-500/20 dark:border-red-500/30">
             <div className="flex items-center gap-3 mb-6">
-              <span className="text-2xl">&#10060;</span>
-              <h3 className="text-xl font-bold">Without DevBox Factory</h3>
+              <span className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 text-lg">✗</span>
+              <h3 className="text-lg font-semibold text-primary">Without DevBox Factory</h3>
             </div>
             <ul className="space-y-3 mb-6">
               {beforeItems.map((item) => (
-                <li key={item} className="flex items-center gap-3 py-2 border-b border-white/5 text-zinc-400">
-                  <span className="text-white font-medium">{item.split(' ')[0]}</span>
-                  <span>{item.split(' ').slice(1).join(' ')}</span>
+                <li key={item} className="flex items-center gap-3 text-secondary text-sm py-2 border-b border-[var(--color-border-light)] last:border-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                  {item}
                 </li>
               ))}
             </ul>
-            <div className="flex items-center gap-3 p-4 bg-red-500/10 rounded-xl">
-              <span className="text-2xl">&#128553;</span>
-              <span className="font-semibold">Still debugging setup at midnight</span>
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/5 border border-red-500/10">
+              <span className="text-xl">😩</span>
+              <span className="text-sm font-medium text-primary">Still debugging at midnight</span>
             </div>
           </Card>
 
-          {/* VS Badge - Desktop */}
-          <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-            <span className="px-4 py-2 bg-gradient-primary rounded-full font-extrabold text-sm">VS</span>
+          {/* VS */}
+          <div className="hidden lg:flex items-center justify-center">
+            <span className="px-4 py-2 rounded-full bg-[var(--color-bg-secondary)] text-tertiary text-sm font-medium border border-[var(--color-border)]">
+              vs
+            </span>
           </div>
-
-          {/* VS Badge - Mobile */}
-          <div className="flex lg:hidden justify-center -my-3 z-10">
-            <span className="px-4 py-2 bg-gradient-primary rounded-full font-extrabold text-sm">VS</span>
+          <div className="lg:hidden flex justify-center -my-2">
+            <span className="px-4 py-2 rounded-full bg-[var(--color-bg-secondary)] text-tertiary text-sm font-medium border border-[var(--color-border)]">
+              vs
+            </span>
           </div>
 
           {/* After */}
-          <Card hover={false} className="border-green-500/30 bg-gradient-to-br from-green-500/5 to-transparent">
+          <Card hover={false} className="border-emerald-500/20 dark:border-emerald-500/30">
             <div className="flex items-center gap-3 mb-6">
-              <span className="text-2xl">&#9989;</span>
-              <h3 className="text-xl font-bold">With DevBox Factory</h3>
+              <span className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 text-lg">✓</span>
+              <h3 className="text-lg font-semibold text-primary">With DevBox Factory</h3>
             </div>
             <ul className="space-y-3 mb-6">
               {afterItems.map((item) => (
-                <li key={item.text} className="flex items-center gap-3 py-2 border-b border-white/5 text-zinc-400">
-                  <span className={item.highlight ? 'text-green-400 font-medium' : 'text-white font-medium'}>
-                    {item.text.split(' ')[0]}
-                  </span>
-                  <span>{item.text.split(' ').slice(1).join(' ')}</span>
+                <li key={item} className="flex items-center gap-3 text-secondary text-sm py-2 border-b border-[var(--color-border-light)] last:border-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  {item}
                 </li>
               ))}
             </ul>
-            <div className="flex items-center gap-3 p-4 bg-green-500/10 rounded-xl">
-              <span className="text-2xl">&#128640;</span>
-              <span className="font-semibold">Already shipping features</span>
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+              <span className="text-xl">🚀</span>
+              <span className="text-sm font-medium text-primary">Already shipping features</span>
             </div>
           </Card>
         </div>
 
         {/* Value Props */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          {valueProps.map((prop, index) => (
-            <Card key={prop.title} delay={index * 0.1} className="text-center">
-              <div
-                className="text-4xl mb-4"
-                dangerouslySetInnerHTML={{ __html: prop.icon }}
-              />
-              <h4 className="text-lg font-bold mb-2">{prop.title}</h4>
-              <p className="text-zinc-400 text-sm">{prop.description}</p>
+        <div className="grid md:grid-cols-3 gap-4">
+          {[
+            { icon: '💰', title: 'Save $500+ Per Developer', desc: '2 days of setup = real money.' },
+            { icon: '🧠', title: 'Preserve Your Energy', desc: 'Build, don\'t battle tools.' },
+            { icon: '⚡', title: 'Immediate Productivity', desc: 'Zero to coding in 2 minutes.' },
+          ].map((prop, i) => (
+            <Card key={prop.title} delay={i * 0.1} className="text-center">
+              <span className="text-3xl mb-3 block">{prop.icon}</span>
+              <h4 className="font-semibold text-primary mb-1">{prop.title}</h4>
+              <p className="text-secondary text-sm">{prop.desc}</p>
             </Card>
           ))}
         </div>

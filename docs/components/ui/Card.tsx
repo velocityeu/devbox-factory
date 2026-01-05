@@ -8,6 +8,7 @@ interface CardProps {
   className?: string
   hover?: boolean
   delay?: number
+  padding?: 'sm' | 'default' | 'lg'
 }
 
 export default function Card({
@@ -15,16 +16,23 @@ export default function Card({
   className = '',
   hover = true,
   delay = 0,
+  padding = 'default',
 }: CardProps) {
+  const paddingStyles = {
+    sm: 'p-4 md:p-5',
+    default: 'p-5 md:p-6',
+    lg: 'p-6 md:p-8',
+  }
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, delay }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.4, delay, ease: [0.25, 0.1, 0.25, 1] }}
       className={`
-        glass-card p-6 md:p-8
-        ${hover ? 'transition-all duration-300 hover:border-accent-primary/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-primary/5' : ''}
+        card ${paddingStyles[padding]}
+        ${hover ? 'hover:border-[var(--color-accent)]/20' : ''}
         ${className}
       `}
     >

@@ -34,26 +34,24 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
-    <section id="faq" className="py-20 md:py-32 px-4 bg-background-secondary/50">
+    <section id="faq" className="py-24 md:py-32 px-5 bg-secondary">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-1.5 mb-4 bg-white/5 border border-white/10 rounded-full text-sm text-accent-primary">
-            Got Questions?
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold">
-            Frequently Asked <span className="gradient-text">Questions</span>
+          <span className="section-badge mb-4">Got Questions?</span>
+          <h2 className="text-display text-primary">
+            Frequently asked <span className="gradient-text">questions</span>
           </h2>
         </motion.div>
 
         {/* FAQ Items */}
-        <div className="space-y-2">
+        <div className="space-y-1">
           {faqs.map((faq, index) => (
             <motion.div
               key={faq.question}
@@ -61,17 +59,17 @@ export default function FAQ() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="border-b border-white/10"
+              className="border-b border-[var(--color-border-light)]"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 className="w-full flex items-center justify-between py-5 text-left group"
               >
-                <span className="text-base md:text-lg font-semibold group-hover:text-accent-primary transition-colors pr-4">
+                <span className="text-base font-medium text-primary group-hover:text-accent transition-colors pr-4">
                   {faq.question}
                 </span>
                 <span
-                  className={`text-xl text-accent-primary transition-transform duration-300 shrink-0 ${
+                  className={`w-6 h-6 flex items-center justify-center rounded-full bg-[var(--color-bg-secondary)] text-accent text-sm font-medium transition-transform duration-300 shrink-0 ${
                     openIndex === index ? 'rotate-45' : ''
                   }`}
                 >
@@ -87,7 +85,7 @@ export default function FAQ() {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <p className="pb-5 text-zinc-400 leading-relaxed">{faq.answer}</p>
+                    <p className="pb-5 text-secondary text-sm leading-relaxed">{faq.answer}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
