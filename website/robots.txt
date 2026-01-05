@@ -1,0 +1,6 @@
+# DevBox Factory - robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://velocityeu.github.io/devbox-factory/sitemap.xml

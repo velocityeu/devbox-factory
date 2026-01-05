@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DevBox Factory - Stop wasting days on dev environment setup. Get identical, production-ready dev environments in 2 minutes. Perfect for Claude Code, Cursor, and AI-powered vibe coding.">
+    <meta name="keywords" content="vibe coding, Claude Code, Cursor IDE, AI coding, development environment, Windows dev setup, DevBox, automated setup, coding productivity">
+    <meta name="author" content="Velocity EU">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="DevBox Factory - Vibe Code in 2 Minutes, Not 2 Days">
+    <meta property="og:description" content="The missing piece every AI coder needs. One command. Perfect dev environment. Every time.">
+    <meta property="og:image" content="assets/og-image.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="DevBox Factory - Vibe Code in 2 Minutes">
+    <meta name="twitter:description" content="Stop wrestling with environment setup. Start shipping code.">
+
+    <title>DevBox Factory - Vibe Code in 2 Minutes, Not 2 Days</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-glow glow-3"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">DevBox<span class="logo-accent">Factory</span></span>
+            </a>
+            <div class="nav-links" id="nav-links">
+                <a href="#problem" class="nav-link">The Problem</a>
+                <a href="#solution" class="nav-link">Solution</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#profiles" class="nav-link">Profiles</a>
+                <a href="#quickstart" class="nav-link">Quick Start</a>
+                <a href="https://github.com/velocityeu/devbox-factory" class="nav-cta" target="_blank">
+                    <span class="github-icon">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    </span>
+                    Star on GitHub
+                </a>
+            </div>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge animate-fade-in">
+                <span class="badge-icon">🔥</span>
+                <span class="badge-text">Built for Vibe Coders</span>
+                <span class="badge-new">v3.5</span>
+            </div>
+
+            <h1 class="hero-title animate-fade-in-up">
+                Stop Watching Tutorials.<br>
+                <span class="gradient-text">Start Shipping Code.</span>
+            </h1>
+
+            <p class="hero-subtitle animate-fade-in-up delay-1">
+                You've watched 47 YouTube videos on setting up Claude Code. Read 23 conflicting articles.
+                Spent 3 days debugging PATH issues. <strong>Sound familiar?</strong>
+            </p>
+
+            <p class="hero-highlight animate-fade-in-up delay-2">
+                <span class="highlight-icon">⚡</span>
+                One command. 2 minutes. Perfect dev environment. <em>Every. Single. Time.</em>
+            </p>
+
+            <div class="hero-cta animate-fade-in-up delay-3">
+                <a href="#quickstart" class="btn btn-primary btn-glow">
+                    <span class="btn-icon">🚀</span>
+                    Get Started Now
+                </a>
+                <a href="#demo" class="btn btn-secondary">
+                    <span class="btn-icon">▶️</span>
+                    Watch Demo
+                </a>
+            </div>
+
+            <div class="hero-stats animate-fade-in-up delay-4">
+                <div class="stat">
+                    <span class="stat-number">2-3</span>
+                    <span class="stat-label">Minutes to code</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">20+</span>
+                    <span class="stat-label">Tools pre-configured</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Reproducible</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual animate-fade-in delay-2">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="terminal-btn red"></span>
+                        <span class="terminal-btn yellow"></span>
+                        <span class="terminal-btn green"></span>
+                    </div>
+                    <span class="terminal-title">PowerShell</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-line">
+                        <span class="prompt">PS C:\&gt;</span>
+                        <span class="command typing" id="hero-command">irm devbox.run | iex</span>
+                    </div>
+                    <div class="terminal-output" id="terminal-output">
+                        <div class="output-line success">✓ Checking system requirements...</div>
+                        <div class="output-line success">✓ Downloading DevBox Factory v3.5...</div>
+                        <div class="output-line success">✓ Installing Claude Code CLI...</div>
+                        <div class="output-line success">✓ Configuring VS Code + AI extensions...</div>
+                        <div class="output-line success">✓ Setting up Node.js, Python, Docker...</div>
+                        <div class="output-line highlight">
+                            <span class="sparkle">✨</span> Ready to vibe code in 2 minutes!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-scroll">
+            <a href="#problem" class="scroll-indicator">
+                <span class="scroll-text">Scroll to learn more</span>
+                <span class="scroll-arrow">↓</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Problem Section -->
+    <section class="section problem-section" id="problem">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">The Reality Check</span>
+                <h2 class="section-title">
+                    We've All Been There. <span class="gradient-text">It Sucks.</span>
+                </h2>
+            </div>
+
+            <div class="problem-grid">
+                <div class="problem-card glass-card animate-on-scroll">
+                    <div class="problem-icon">😤</div>
+                    <h3>The Tutorial Hell Loop</h3>
+                    <p>
+                        "Just follow these 47 simple steps..." Three hours later, you're debugging
+                        why Node.js won't recognize npm even though you swear you installed it correctly.
+                    </p>
+                </div>
+
+                <div class="problem-card glass-card animate-on-scroll">
+                    <div class="problem-icon">🤯</div>
+                    <h3>The Conflicting Advice Maze</h3>
+                    <p>
+                        One guide says use NVM. Another says use Volta. That Stack Overflow answer from 2019
+                        says just install Node directly. Which one is right? <em>Spoiler: They're all outdated.</em>
+                    </p>
+                </div>
+
+                <div class="problem-card glass-card animate-on-scroll">
+                    <div class="problem-icon">💀</div>
+                    <h3>The "Works on My Machine" Curse</h3>
+                    <p>
+                        Your teammate's code runs perfectly. On your machine? Cryptic errors. Different Python version.
+                        Missing environment variables. Welcome to dependency hell.
+                    </p>
+                </div>
+
+                <div class="problem-card glass-card animate-on-scroll">
+                    <div class="problem-icon">⏰</div>
+                    <h3>The Time Vampire</h3>
+                    <p>
+                        You wanted to learn Claude Code and ship something cool this weekend.
+                        Instead, you spent 6 hours configuring WSL2 and still can't get Docker to work.
+                    </p>
+                </div>
+
+                <div class="problem-card glass-card animate-on-scroll">
+                    <div class="problem-icon">🔥</div>
+                    <h3>The Missing 0.1%</h3>
+                    <p>
+                        Every tutorial assumes you already know the ONE crucial thing they didn't mention.
+                        That environment variable. That PATH entry. That config file that makes everything work.
+                    </p>
+                </div>
+
+                <div class="problem-card glass-card animate-on-scroll">
+                    <div class="problem-icon">😭</div>
+                    <h3>The Motivation Killer</h3>
+                    <p>
+                        You were hyped to vibe code with AI. Now you're questioning your life choices
+                        while reading error messages about missing DLLs. The excitement is gone.
+                    </p>
+                </div>
+            </div>
+
+            <div class="problem-quote animate-on-scroll">
+                <blockquote>
+                    <p>"I just wanted to try Claude Code. Two days later, I've reinstalled Windows twice."</p>
+                    <cite>— Every developer at least once</cite>
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="section solution-section" id="solution">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">The Solution</span>
+                <h2 class="section-title">
+                    What If Setup Just... <span class="gradient-text">Worked?</span>
+                </h2>
+                <p class="section-subtitle">
+                    DevBox Factory is the missing piece. One command gives you a battle-tested,
+                    production-ready dev environment with everything pre-configured correctly.
+                </p>
+            </div>
+
+            <div class="comparison-container animate-on-scroll">
+                <div class="comparison-card before">
+                    <div class="comparison-header">
+                        <span class="comparison-icon">❌</span>
+                        <h3>Without DevBox Factory</h3>
+                    </div>
+                    <ul class="comparison-list">
+                        <li><span class="time">2+ days</span> wrestling with setup</li>
+                        <li><span class="time">Hours</span> debugging PATH issues</li>
+                        <li><span class="time">Endless</span> Stack Overflow tabs</li>
+                        <li><span class="time">3 attempts</span> to get Docker running</li>
+                        <li><span class="time">Frustration</span> and lost motivation</li>
+                        <li><span class="time">Inconsistent</span> environments across machines</li>
+                        <li><span class="time">Hope</span> that it works next time</li>
+                    </ul>
+                    <div class="comparison-result sad">
+                        <span class="result-icon">😩</span>
+                        <span class="result-text">Still debugging setup at midnight</span>
+                    </div>
+                </div>
+
+                <div class="comparison-vs">
+                    <span>VS</span>
+                </div>
+
+                <div class="comparison-card after">
+                    <div class="comparison-header">
+                        <span class="comparison-icon">✅</span>
+                        <h3>With DevBox Factory</h3>
+                    </div>
+                    <ul class="comparison-list">
+                        <li><span class="time highlight">2 minutes</span> to start coding</li>
+                        <li><span class="time highlight">Zero</span> configuration needed</li>
+                        <li><span class="time highlight">One</span> command, everything works</li>
+                        <li><span class="time highlight">Pre-tested</span> tool combinations</li>
+                        <li><span class="time highlight">Excitement</span> preserved</li>
+                        <li><span class="time highlight">Identical</span> environments guaranteed</li>
+                        <li><span class="time highlight">Certainty</span> it works every time</li>
+                    </ul>
+                    <div class="comparison-result happy">
+                        <span class="result-icon">🚀</span>
+                        <span class="result-text">Already shipping features</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="value-props">
+                <div class="value-card animate-on-scroll">
+                    <div class="value-icon">💰</div>
+                    <h4>Save $500+ Per Developer</h4>
+                    <p>2 days of setup time = real money. Multiply by your team size.</p>
+                </div>
+                <div class="value-card animate-on-scroll">
+                    <div class="value-icon">🧠</div>
+                    <h4>Preserve Your Energy</h4>
+                    <p>Spend your mental energy on building, not battling your tools.</p>
+                </div>
+                <div class="value-card animate-on-scroll">
+                    <div class="value-icon">⚡</div>
+                    <h4>Immediate Productivity</h4>
+                    <p>From zero to vibe coding in the time it takes to make coffee.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Everything You Need</span>
+                <h2 class="section-title">
+                    Built for <span class="gradient-text">AI-Powered Development</span>
+                </h2>
+                <p class="section-subtitle">
+                    Every tool, extension, and configuration that modern vibe coders actually use.
+                    Pre-installed. Pre-configured. Pre-tested together.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card glass-card animate-on-scroll">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Coding Tools</h3>
+                    <ul class="feature-list">
+                        <li>Claude Code CLI (fully configured)</li>
+                        <li>Cursor IDE</li>
+                        <li>GitHub Copilot</li>
+                        <li>Continue & Cline extensions</li>
+                        <li>VS Code AI workspace ready</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card glass-card animate-on-scroll">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Dev Essentials</h3>
+                    <ul class="feature-list">
+                        <li>Git (configured correctly)</li>
+                        <li>Windows Terminal</li>
+                        <li>PowerShell 7</li>
+                        <li>VS Code + extensions</li>
+                        <li>SSH keys ready</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card glass-card animate-on-scroll">
+                    <div class="feature-icon">📦</div>
+                    <h3>Runtimes & Package Managers</h3>
+                    <ul class="feature-list">
+                        <li>Node.js via NVM (multiple versions)</li>
+                        <li>Python 3.12</li>
+                        <li>npm, pnpm, yarn, bun</li>
+                        <li>.NET SDK 8</li>
+                        <li>All PATH issues solved</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card glass-card animate-on-scroll">
+                    <div class="feature-icon">🐳</div>
+                    <h3>Containers & Databases</h3>
+                    <ul class="feature-list">
+                        <li>WSL2 (properly configured)</li>
+                        <li>Docker Desktop</li>
+                        <li>PostgreSQL 16</li>
+                        <li>MongoDB & Redis</li>
+                        <li>Everything networked correctly</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card glass-card animate-on-scroll">
+                    <div class="feature-icon">☁️</div>
+                    <h3>Cloud & DevOps</h3>
+                    <ul class="feature-list">
+                        <li>Azure CLI & Functions</li>
+                        <li>Terraform & Bicep</li>
+                        <li>Azure Data Studio</li>
+                        <li>Storage Explorer</li>
+                        <li>Ready for deployment</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card glass-card animate-on-scroll">
+                    <div class="feature-icon">🎛️</div>
+                    <h3>Windows Optimized</h3>
+                    <ul class="feature-list">
+                        <li>Bloatware removed</li>
+                        <li>Privacy optimized</li>
+                        <li>Dev-focused settings</li>
+                        <li>Performance tuned</li>
+                        <li>Clean, fast environment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-highlight animate-on-scroll">
+                <div class="highlight-content">
+                    <h3>🎯 The Secret Sauce: Template-Based Cloning</h3>
+                    <p>
+                        Create a perfect template once (~60 min). Clone identical VMs in 2-3 minutes, forever.
+                        Every team member gets <em>exactly</em> the same environment. No drift. No surprises. No "works on my machine."
+                    </p>
+                    <div class="highlight-stats">
+                        <div class="h-stat">
+                            <span class="h-number">1x</span>
+                            <span class="h-label">Template creation</span>
+                        </div>
+                        <div class="h-arrow">→</div>
+                        <div class="h-stat">
+                            <span class="h-number">∞</span>
+                            <span class="h-label">Identical VMs</span>
+                        </div>
+                        <div class="h-arrow">→</div>
+                        <div class="h-stat">
+                            <span class="h-number">0</span>
+                            <span class="h-label">Setup headaches</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profiles Section -->
+    <section class="section profiles-section" id="profiles">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Choose Your Path</span>
+                <h2 class="section-title">
+                    Profiles for Every <span class="gradient-text">Type of Builder</span>
+                </h2>
+                <p class="section-subtitle">
+                    Not everyone needs everything. Pick the profile that matches your vibe.
+                </p>
+            </div>
+
+            <div class="profiles-grid">
+                <div class="profile-card animate-on-scroll" data-profile="ai">
+                    <div class="profile-badge hot">🔥 Most Popular</div>
+                    <div class="profile-icon">🤖</div>
+                    <h3>AI Coder</h3>
+                    <p class="profile-desc">For vibe coders using Claude, Cursor, and AI-powered development</p>
+                    <ul class="profile-tools">
+                        <li>Claude Code CLI</li>
+                        <li>Cursor IDE</li>
+                        <li>VS Code + AI Extensions</li>
+                        <li>Node.js & Python</li>
+                        <li>Git & Terminal</li>
+                    </ul>
+                    <div class="profile-time">
+                        <span class="time-icon">⏱️</span>
+                        <span>~15 min install</span>
+                    </div>
+                </div>
+
+                <div class="profile-card animate-on-scroll" data-profile="web">
+                    <div class="profile-icon">🌐</div>
+                    <h3>Web Developer</h3>
+                    <p class="profile-desc">Full-stack web development with modern tooling</p>
+                    <ul class="profile-tools">
+                        <li>Node.js & multiple package managers</li>
+                        <li>Python 3.12</li>
+                        <li>Docker Desktop</li>
+                        <li>PostgreSQL, MongoDB, Redis</li>
+                        <li>VS Code configured</li>
+                    </ul>
+                    <div class="profile-time">
+                        <span class="time-icon">⏱️</span>
+                        <span>~25 min install</span>
+                    </div>
+                </div>
+
+                <div class="profile-card animate-on-scroll" data-profile="azure">
+                    <div class="profile-icon">☁️</div>
+                    <h3>Azure Developer</h3>
+                    <p class="profile-desc">Cloud-native development on Microsoft Azure</p>
+                    <ul class="profile-tools">
+                        <li>Azure CLI & Functions</li>
+                        <li>.NET SDK 8</li>
+                        <li>Terraform & Bicep</li>
+                        <li>Azure Data Studio</li>
+                        <li>Storage Explorer</li>
+                    </ul>
+                    <div class="profile-time">
+                        <span class="time-icon">⏱️</span>
+                        <span>~20 min install</span>
+                    </div>
+                </div>
+
+                <div class="profile-card animate-on-scroll" data-profile="full">
+                    <div class="profile-badge">💪 Complete</div>
+                    <div class="profile-icon">🚀</div>
+                    <h3>Full Stack</h3>
+                    <p class="profile-desc">Everything included. The ultimate dev environment.</p>
+                    <ul class="profile-tools">
+                        <li>All AI coding tools</li>
+                        <li>All runtimes & databases</li>
+                        <li>Docker & containers</li>
+                        <li>Azure & cloud tools</li>
+                        <li>Every extension</li>
+                    </ul>
+                    <div class="profile-time">
+                        <span class="time-icon">⏱️</span>
+                        <span>~45 min install</span>
+                    </div>
+                </div>
+
+                <div class="profile-card animate-on-scroll" data-profile="minimal">
+                    <div class="profile-icon">🎯</div>
+                    <h3>Minimal</h3>
+                    <p class="profile-desc">Just the essentials. Light and fast.</p>
+                    <ul class="profile-tools">
+                        <li>Git</li>
+                        <li>Windows Terminal</li>
+                        <li>VS Code</li>
+                        <li>PowerShell 7</li>
+                        <li>That's it!</li>
+                    </ul>
+                    <div class="profile-time">
+                        <span class="time-icon">⏱️</span>
+                        <span>~5 min install</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="section demo-section" id="demo">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">See It In Action</span>
+                <h2 class="section-title">
+                    From Zero to <span class="gradient-text">Vibe Coding</span>
+                </h2>
+            </div>
+
+            <div class="demo-container animate-on-scroll">
+                <div class="demo-steps">
+                    <div class="demo-step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Run One Command</h4>
+                            <p>Copy, paste, press Enter. That's it.</p>
+                        </div>
+                    </div>
+                    <div class="demo-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Pick Your Profile</h4>
+                            <p>Interactive menu. No config files to edit.</p>
+                        </div>
+                    </div>
+                    <div class="demo-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Grab Coffee</h4>
+                            <p>Watch the progress bars while tools install automatically.</p>
+                        </div>
+                    </div>
+                    <div class="demo-step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Start Building</h4>
+                            <p>Everything works. Claude Code is ready. Ship something cool.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-terminal">
+                    <div class="terminal-window large">
+                        <div class="terminal-header">
+                            <div class="terminal-buttons">
+                                <span class="terminal-btn red"></span>
+                                <span class="terminal-btn yellow"></span>
+                                <span class="terminal-btn green"></span>
+                            </div>
+                            <span class="terminal-title">DevBox Factory</span>
+                        </div>
+                        <div class="terminal-body" id="demo-terminal-body">
+                            <pre class="demo-output">
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║     ⚡ DevBox Factory v3.5.2                                     ║
+║     One command. Perfect dev environment. Every time.            ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+? Select installation profile:
+
+  ❯ 🤖 AI Coder      - Claude Code, Cursor, VS Code + AI extensions
+    🌐 Web Developer - Node.js, Python, Docker, Databases
+    ☁️  Azure Developer - Azure CLI, .NET, Terraform
+    🚀 Full Stack    - Everything included
+    🎯 Minimal       - Git, Terminal, VS Code only
+
+  ↑/↓: Navigate  Enter: Select  Esc: Cancel
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="section quickstart-section" id="quickstart">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Let's Go</span>
+                <h2 class="section-title">
+                    Ready in <span class="gradient-text">60 Seconds</span>
+                </h2>
+                <p class="section-subtitle">
+                    No signup. No credit card. No BS. Just copy and paste.
+                </p>
+            </div>
+
+            <div class="quickstart-options">
+                <div class="quickstart-card primary animate-on-scroll">
+                    <div class="qs-header">
+                        <span class="qs-badge">⚡ Recommended</span>
+                        <h3>One-Line Install</h3>
+                        <p>Fastest way to get started. Run this in PowerShell as Admin:</p>
+                    </div>
+                    <div class="code-block">
+                        <code id="install-command">irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Install-DevBox.ps1 | iex</code>
+                        <button class="copy-btn" data-clipboard="install-command" aria-label="Copy to clipboard">
+                            <span class="copy-icon">📋</span>
+                            <span class="copy-text">Copy</span>
+                        </button>
+                    </div>
+                    <div class="qs-note">
+                        <span class="note-icon">💡</span>
+                        Installs tools directly on your current machine
+                    </div>
+                </div>
+
+                <div class="quickstart-card animate-on-scroll">
+                    <div class="qs-header">
+                        <h3>Full Bootstrap</h3>
+                        <p>Includes VM creation capabilities for team environments:</p>
+                    </div>
+                    <div class="code-block">
+                        <code id="bootstrap-command">irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex</code>
+                        <button class="copy-btn" data-clipboard="bootstrap-command" aria-label="Copy to clipboard">
+                            <span class="copy-icon">📋</span>
+                            <span class="copy-text">Copy</span>
+                        </button>
+                    </div>
+                    <div class="qs-note">
+                        <span class="note-icon">🏢</span>
+                        Creates reproducible VM templates for your team
+                    </div>
+                </div>
+
+                <div class="quickstart-card animate-on-scroll">
+                    <div class="qs-header">
+                        <h3>Clone & Explore</h3>
+                        <p>Want to see the code first? Totally fair:</p>
+                    </div>
+                    <div class="code-block">
+                        <code id="clone-command">git clone https://github.com/velocityeu/devbox-factory && cd devbox-factory && .\devbox install</code>
+                        <button class="copy-btn" data-clipboard="clone-command" aria-label="Copy to clipboard">
+                            <span class="copy-icon">📋</span>
+                            <span class="copy-text">Copy</span>
+                        </button>
+                    </div>
+                    <div class="qs-note">
+                        <span class="note-icon">👀</span>
+                        Full source code. MIT licensed. Star us while you're there!
+                    </div>
+                </div>
+            </div>
+
+            <div class="requirements-box animate-on-scroll">
+                <h4>📋 System Requirements</h4>
+                <div class="requirements-grid">
+                    <div class="req-item">
+                        <span class="req-icon">💻</span>
+                        <span class="req-text">Windows 11 (22H2+) or Server 2025</span>
+                    </div>
+                    <div class="req-item">
+                        <span class="req-icon">👑</span>
+                        <span class="req-text">Administrator privileges</span>
+                    </div>
+                    <div class="req-item">
+                        <span class="req-icon">🌐</span>
+                        <span class="req-text">Internet connection</span>
+                    </div>
+                    <div class="req-item">
+                        <span class="req-icon">💾</span>
+                        <span class="req-text">~15GB free disk space</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial/Social Proof Section -->
+    <section class="section social-section" id="social">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Join the Movement</span>
+                <h2 class="section-title">
+                    Built by Developers, <span class="gradient-text">For Developers</span>
+                </h2>
+            </div>
+
+            <div class="social-grid">
+                <div class="social-card animate-on-scroll">
+                    <div class="social-quote">
+                        "Finally, a tool that understands the pain of environment setup.
+                        Saved me hours on my new laptop setup."
+                    </div>
+                    <div class="social-author">
+                        <div class="author-avatar">👨‍💻</div>
+                        <div class="author-info">
+                            <span class="author-name">Vibe Coder</span>
+                            <span class="author-role">Building with Claude Code</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-card animate-on-scroll">
+                    <div class="social-quote">
+                        "Our team of 12 developers now has identical environments.
+                        No more 'works on my machine' excuses in PRs."
+                    </div>
+                    <div class="social-author">
+                        <div class="author-avatar">👩‍💼</div>
+                        <div class="author-info">
+                            <span class="author-name">Tech Lead</span>
+                            <span class="author-role">Enterprise Team</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-card animate-on-scroll">
+                    <div class="social-quote">
+                        "I went from 'what's a PATH variable' to shipping my first
+                        Claude Code project in one afternoon. This is how it should be."
+                    </div>
+                    <div class="social-author">
+                        <div class="author-avatar">🧑‍🎓</div>
+                        <div class="author-info">
+                            <span class="author-name">New Developer</span>
+                            <span class="author-role">Learning AI Development</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-banner animate-on-scroll">
+                <div class="cta-content">
+                    <h3>Ready to Skip the Setup Drama?</h3>
+                    <p>Join developers who chose productivity over frustration.</p>
+                </div>
+                <a href="#quickstart" class="btn btn-primary btn-glow">
+                    <span class="btn-icon">🚀</span>
+                    Get Started Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section faq-section" id="faq">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Got Questions?</span>
+                <h2 class="section-title">
+                    Frequently Asked <span class="gradient-text">Questions</span>
+                </h2>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        <span>Is this really free?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, 100% free and open source. MIT licensed. Use it for personal projects,
+                        startups, enterprise—whatever you're building. No catch. No "upgrade to pro."
+                        Just tools that work.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        <span>Will this mess up my current setup?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>DevBox Factory is designed to be idempotent—safe to run multiple times.
+                        It checks what's already installed and only adds what's missing. For maximum
+                        safety, use the VM template feature to create isolated dev environments.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        <span>Does it work with Mac or Linux?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Currently Windows-focused (Windows 11 and Server 2025). Why? Because Windows
+                        dev setup is notoriously the hardest to get right. Mac and Linux developers
+                        already have better tooling (homebrew, apt, etc.). We went where the pain is greatest.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        <span>What if I need different tool versions?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Node.js is installed via NVM, so you can switch versions instantly.
+                        The interactive installer lets you customize what gets installed.
+                        And you can always modify the templates for your specific needs.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        <span>Can I use this for my team?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely! That's one of the main use cases. Create a VM template once,
+                        then clone it for every team member. Everyone gets identical environments
+                        in 2-3 minutes. Onboarding new developers becomes trivial.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        <span>What about air-gapped or restricted networks?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>DevBox Factory supports offline installation. Pre-download all dependencies
+                        on a connected machine, transfer them, and install without internet.
+                        Perfect for enterprise environments with network restrictions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <section class="section final-cta">
+        <div class="container">
+            <div class="final-cta-content animate-on-scroll">
+                <h2>
+                    Stop Fighting Your Tools.<br>
+                    <span class="gradient-text">Start Building Something Amazing.</span>
+                </h2>
+                <p>
+                    Life's too short for environment setup. One command. Two minutes.
+                    Perfect dev environment. Every time.
+                </p>
+                <div class="final-cta-buttons">
+                    <a href="#quickstart" class="btn btn-primary btn-large btn-glow">
+                        <span class="btn-icon">⚡</span>
+                        Get DevBox Factory
+                    </a>
+                    <a href="https://github.com/velocityeu/devbox-factory" class="btn btn-secondary btn-large" target="_blank">
+                        <span class="btn-icon">⭐</span>
+                        Star on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="#" class="footer-logo">
+                        <span class="logo-icon">⚡</span>
+                        <span class="logo-text">DevBox<span class="logo-accent">Factory</span></span>
+                    </a>
+                    <p class="footer-tagline">One command. Perfect dev environment. Every time.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <a href="https://github.com/velocityeu/devbox-factory" target="_blank">GitHub</a>
+                        <a href="https://github.com/velocityeu/devbox-factory/issues" target="_blank">Report Issues</a>
+                        <a href="https://github.com/velocityeu/devbox-factory/blob/main/README.md" target="_blank">Documentation</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Related</h4>
+                        <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">Claude Code Docs</a>
+                        <a href="https://cursor.com" target="_blank">Cursor IDE</a>
+                        <a href="https://learn.microsoft.com/en-us/windows/wsl/" target="_blank">WSL Documentation</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Made with ⚡ by <a href="https://github.com/velocityeu" target="_blank">Velocity EU</a></p>
+                <p class="footer-license">MIT License • Open Source • Free Forever</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
