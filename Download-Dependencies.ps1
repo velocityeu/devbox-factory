@@ -49,7 +49,7 @@
     # Shows download status of all dependencies
 
 .NOTES
-    DevBox Factory v3.0.0
+    DevBox Factory v3.0.1
     https://github.com/velocityeu/devbox-factory
 #>
 

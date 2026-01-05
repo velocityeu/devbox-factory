@@ -1,6 +1,6 @@
 # DevBox Factory
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue) ![Build](https://img.shields.io/badge/build-20260104.1800-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
+![Version](https://img.shields.io/badge/version-3.0.1-blue) ![Build](https://img.shields.io/badge/build-20260105.0100-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
 
 **One command. Identical dev environments. Every time.**
 
@@ -12,6 +12,8 @@ Professional-grade Windows 11 development environment automation. Create reprodu
 
 - **One-Line Bootstrap** - Download and setup from vanilla Windows 11 or Server 2025
 - **Auto-Update** - Re-run bootstrap to check for updates and upgrade in-place
+- **Offline Installation** - Pre-download dependencies for air-gapped environments
+- **Download Progress** - Visual progress bars and spinners for all downloads
 - **Tools PRE-INSTALLED in Template** - VMs are ready to code in 2-3 minutes
 - **CLI Wrapper** - Human-friendly `.\devbox` commands
 - **Pre-configured Profiles** - Full, AI Coder, Web Dev, Azure, or Minimal
@@ -99,6 +101,7 @@ DevBox Factory provides a human-friendly CLI wrapper:
 .\devbox install       # Install development tools (interactive menu)
 .\devbox template      # Create VM template from Windows ISO
 .\devbox vm            # Create VM from template
+.\devbox deps          # Manage offline dependencies (download/status)
 .\devbox test          # Run health checks
 .\devbox help          # Show help
 ```
@@ -106,10 +109,11 @@ DevBox Factory provides a human-friendly CLI wrapper:
 ### Help Menu
 
 ```
-  +=================================================================+
-  |  DEVBOX FACTORY                       v3.0.0  Build: 20260104.1800  |
-  |  One command. Identical dev environments. Every time.            |
-  +=================================================================+
+  +=====================================================================+
+  |  DEVBOX FACTORY                                                     |
+  |  One command. Identical dev environments. Every time.               |
+  |  by Velocity EU                           v3.0.1 build 20260105.0100|
+  +=====================================================================+
 
   USAGE: .\devbox <command> [arguments]
 
@@ -119,6 +123,7 @@ DevBox Factory provides a human-friendly CLI wrapper:
     install     Install development tools (interactive menu)
     template    Create VM template from Windows ISO
     vm          Create development VM from template
+    deps        Manage offline dependencies (download/status)
     test        Run health checks and verify installation
     help        Show this help message
 
@@ -127,6 +132,7 @@ DevBox Factory provides a human-friendly CLI wrapper:
     .\devbox install
     .\devbox template -ISOPath C:\ISOs\Win11.iso
     .\devbox vm -VMName DevVM-01 -StartVM
+    .\devbox deps -Status
 
   MORE INFO:
     https://github.com/velocityeu/devbox-factory
@@ -151,7 +157,7 @@ All DevBox Factory scripts feature interactive menus with guided wizards. Simply
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  TOOL INSTALLER          Windows 11 Development Environment         |
-  |  by Velocity EU                           v3.0.0 build 20260104.1800  |
+  |  by Velocity EU                           v3.0.1 build 20260105.0100|
   +=====================================================================+
 
   SELECT INSTALLATION PROFILE
@@ -227,7 +233,7 @@ Stage 1 of VM automation - creates a sysprepped Windows 11 template VHDX.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  TEMPLATE CREATOR       Hyper-V Windows 11 Template - Stage 1       |
-  |  by Velocity EU                           v3.0.0 build 20260104.1800  |
+  |  by Velocity EU                           v3.0.1 build 20260105.0100|
   +=====================================================================+
 
   MAIN MENU
@@ -305,8 +311,8 @@ Stage 2 of VM automation - creates VMs from the template.
   |                                                                     |
   |                      F A C T O R Y                                  |
   +=====================================================================+
-  |  VM CREATOR             Create Dev VMs from Template - Stage 2     |
-  |  by Velocity EU                           v3.0.0 build 20260104.1800 |
+  |  VM CREATOR             Create Dev VMs from Template - Stage 2      |
+  |  by Velocity EU                           v3.0.1 build 20260105.0100|
   +=====================================================================+
 
   MAIN MENU
@@ -414,8 +420,8 @@ Stage 2 of VM automation - creates VMs from the template.
   |                                                                     |
   |                      F A C T O R Y                                  |
   +=====================================================================+
-  |  HEALTH CHECK            Verify Installation and Environment       |
-  |  by Velocity EU                           v3.0.0 build 20260104.1800 |
+  |  HEALTH CHECK            Verify Installation and Environment        |
+  |  by Velocity EU                           v3.0.1 build 20260105.0100|
   +=====================================================================+
 
   CORE TOOLS
@@ -656,8 +662,14 @@ devbox-factory/
 ├── Initialize-DevBox.ps1      # Bootstrap entry point
 ├── Install-DevBox.ps1         # Main installer
 ├── devbox.ps1                 # CLI wrapper
+├── Download-Dependencies.ps1  # Offline dependency manager
 ├── config/
 │   └── presets.json           # VM presets and profiles
+├── dependencies/              # Pre-downloaded installers (offline mode)
+│   ├── manifest.json          # Dependency definitions
+│   └── README.md              # Offline installation guide
+├── modules/
+│   └── DownloadHelpers.psm1   # Download progress functions
 ├── iso/                       # Place Windows ISOs here
 │   └── README.md              # ISO instructions
 ├── templates/
@@ -751,6 +763,71 @@ MIT License - Feel free to modify and distribute.
 
 Pull requests welcome! Test on a clean Windows 11 VM before submitting.
 
+## Offline Installation
+
+DevBox Factory supports pre-downloading dependencies for environments with limited or no internet access.
+
+### Pre-Download Dependencies
+
+```powershell
+# Download all dependencies (~1.5 GB)
+.\devbox deps -All
+
+# Download only core tools
+.\devbox deps -Category core
+
+# Download for specific profile
+.\devbox deps -Profile AICoder
+
+# Check download status
+.\devbox deps -Status
+```
+
+### Dependency Status Example
+
+```
+  DEPENDENCY STATUS
+  =================
+
+  Core Tools
+  ----------
+    [+] Git for Windows (60.1MB) - verified
+    [+] Visual Studio Code (90.6MB) - verified
+    [~] Windows Terminal - winget-only
+
+  Runtimes & SDKs
+  ---------------
+    [-] Node.js LTS (~28.6MB) - missing
+    [-] Python 3.12 (~23.8MB) - missing
+
+  SUMMARY
+  -------
+    Verified:    2
+    Downloaded:  0
+    Missing:     2
+    WinGet-only: 1
+```
+
+### How It Works
+
+1. **Online Mode**: Downloads dependencies with progress indicators, falls back to WinGet/Chocolatey
+2. **Offline Mode**: Uses pre-downloaded installers from `dependencies/` folder
+3. **Verification**: SHA256 checksums validate file integrity before installation
+
+### Supported Dependencies
+
+| Dependency | Category | Offline Support |
+|------------|----------|-----------------|
+| Git | Core | Yes |
+| VS Code | Core | Yes |
+| Windows Terminal | Core | WinGet only |
+| Node.js LTS | Runtime | Yes |
+| Python 3.12 | Runtime | Yes |
+| .NET SDK 8 | Runtime | Yes |
+| Docker Desktop | Containers | Yes |
+| Azure CLI | Cloud | Yes |
+| Windows ADK | VM Tools | Yes |
+
 ## Resources
 
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
@@ -760,4 +837,4 @@ Pull requests welcome! Test on a clean Windows 11 VM before submitting.
 
 ---
 
-**DevBox Factory v3.0.0** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
+**DevBox Factory v3.0.1** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)

@@ -16,8 +16,8 @@
     irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex
 
 .NOTES
-    Version: 3.0.0
-    Build: 20260104.1800
+    Version: 3.0.1
+    Build: 20260105.0100
     DevBox Factory - https://github.com/velocityeu/devbox-factory
 #>
 

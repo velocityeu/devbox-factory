@@ -11,6 +11,7 @@
     .\devbox install       # Install development tools
     .\devbox template      # Create VM template from ISO
     .\devbox vm            # Create VM from template
+    .\devbox deps          # Manage offline dependencies
     .\devbox test          # Run health checks
     .\devbox help          # Show this help
 
@@ -64,6 +65,8 @@ function Show-Help {
     Write-Host "    Create VM template from Windows ISO" -ForegroundColor White
     Write-Host "    vm" -ForegroundColor Yellow -NoNewline
     Write-Host "          Create development VM from template" -ForegroundColor White
+    Write-Host "    deps" -ForegroundColor Yellow -NoNewline
+    Write-Host "        Manage offline dependencies (download/status)" -ForegroundColor White
     Write-Host "    test" -ForegroundColor Yellow -NoNewline
     Write-Host "        Run health checks and verify installation" -ForegroundColor White
     Write-Host "    help" -ForegroundColor Yellow -NoNewline
@@ -114,6 +117,9 @@ switch ($normalizedCommand) {
     }
     "vm" {
         Invoke-Command -ScriptPath "$PSScriptRoot\vms\New-DevBoxVM.ps1" -Args $Arguments
+    }
+    "deps" {
+        Invoke-Command -ScriptPath "$PSScriptRoot\Download-Dependencies.ps1" -Args $Arguments
     }
     "test" {
         Invoke-Command -ScriptPath "$PSScriptRoot\utils\Test-DevBoxHealth.ps1" -Args $Arguments
