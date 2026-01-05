@@ -685,7 +685,8 @@ function Get-InstallationDirectory {
 function Download-DevBoxFiles {
     param(
         [Parameter(Mandatory)]
-        [string]$DestinationPath
+        [string]$DestinationPath,
+        [switch]$ReportUpdates
     )
 
     Ensure-TlsProtocols
@@ -694,6 +695,9 @@ function Download-DevBoxFiles {
         Downloaded = @()
         Failed = @()
         Skipped = @()
+        Updated = @()
+        Added = @()
+        Unchanged = @()
     }
 
     Write-Host ""
@@ -746,6 +750,16 @@ function Download-DevBoxFiles {
             New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
         }
 
+        $hadExistingFile = Test-Path $destFile
+        $preHash = $null
+        if ($hadExistingFile -and $ReportUpdates) {
+            try {
+                $preHash = (Get-FileHash -Path $destFile -Algorithm SHA256).Hash
+            } catch {
+                $preHash = $null
+            }
+        }
+
         # Use progress helpers if available
         if ($Script:DownloadHelpersAvailable) {
             # Download with progress (auto-selects spinner or bar based on content length)
@@ -756,6 +770,22 @@ function Download-DevBoxFiles {
 
             if ($downloadResult.Success) {
                 $results.Downloaded += $file
+                if ($ReportUpdates) {
+                    $postHash = $null
+                    try {
+                        $postHash = (Get-FileHash -Path $destFile -Algorithm SHA256).Hash
+                    } catch {
+                        $postHash = $null
+                    }
+
+                    if (-not $hadExistingFile) {
+                        $results.Added += $file
+                    } elseif ($preHash -and $postHash -and $preHash -ne $postHash) {
+                        $results.Updated += $file
+                    } else {
+                        $results.Unchanged += $file
+                    }
+                }
             } else {
                 if ($isRequired) {
                     $results.Failed += $file
@@ -778,6 +808,22 @@ function Download-DevBoxFiles {
                     if ($fileSize -gt 0) {
                         Write-Host "[+] $file" -ForegroundColor Green
                         $results.Downloaded += $file
+                        if ($ReportUpdates) {
+                            $postHash = $null
+                            try {
+                                $postHash = (Get-FileHash -Path $destFile -Algorithm SHA256).Hash
+                            } catch {
+                                $postHash = $null
+                            }
+
+                            if (-not $hadExistingFile) {
+                                $results.Added += $file
+                            } elseif ($preHash -and $postHash -and $preHash -ne $postHash) {
+                                $results.Updated += $file
+                            } else {
+                                $results.Unchanged += $file
+                            }
+                        }
                     } else {
                         throw "Empty file downloaded"
                     }
@@ -812,6 +858,24 @@ function Show-DownloadSummary {
     Write-Host ""
 
     Write-Host "  Downloaded: $($Results.Downloaded.Count) files" -ForegroundColor Green
+    if ($Results.Added.Count -gt 0) {
+        Write-Host "  Added:      $($Results.Added.Count) new files" -ForegroundColor Green
+    }
+    if ($Results.Updated.Count -gt 0) {
+        Write-Host "  Updated:    $($Results.Updated.Count) files" -ForegroundColor Green
+        foreach ($file in $Results.Updated) {
+            Write-Host "    - $file" -ForegroundColor Green
+        }
+    }
+    if ($Results.Added.Count -gt 0) {
+        Write-Host "  Added files:" -ForegroundColor Green
+        foreach ($file in $Results.Added) {
+            Write-Host "    - $file" -ForegroundColor Green
+        }
+    }
+    if ($Results.Unchanged.Count -gt 0) {
+        Write-Host "  Unchanged:  $($Results.Unchanged.Count) files" -ForegroundColor DarkGray
+    }
 
     if ($Results.Skipped.Count -gt 0) {
         Write-Host "  Skipped:    $($Results.Skipped.Count) optional files" -ForegroundColor Yellow
@@ -1063,7 +1127,8 @@ function Main {
     }
 
     # Download files
-    $downloadResults = Download-DevBoxFiles -DestinationPath $installPath
+    $isUpdate = $existingPath -and $installPath -eq $existingPath
+    $downloadResults = Download-DevBoxFiles -DestinationPath $installPath -ReportUpdates:$isUpdate
     Show-DownloadSummary -Results $downloadResults -InstallPath $installPath
 
     # Check for critical failures
