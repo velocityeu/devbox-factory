@@ -2168,15 +2168,25 @@ function Invoke-Sysprep {
             # Remove machine-specific files
             Remove-Item -Path "C:\Windows\Panther\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-            # Run Sysprep
+            # Run Sysprep - DO NOT use -Wait as sysprep will shutdown the VM
+            # which terminates the PS session and causes an error
             $sysprepPath = "$env:SystemRoot\System32\Sysprep\sysprep.exe"
-            $args = "/generalize /oobe /shutdown /mode:vm"
+            $sysprepArgs = "/generalize /oobe /shutdown /mode:vm"
 
-            Start-Process -FilePath $sysprepPath -ArgumentList $args -Wait -NoNewWindow
+            Start-Process -FilePath $sysprepPath -ArgumentList $sysprepArgs -NoNewWindow
+            # Give sysprep a moment to start before session closes
+            Start-Sleep -Seconds 5
         }
 
         Write-Log "Sysprep initiated - VM will shut down when complete" -Level Info
 
+    } catch {
+        # Expected: session terminates when VM shuts down during sysprep
+        if ($_.Exception.Message -match "socket target process has ended|transport failure|connection was closed") {
+            Write-Log "Sysprep initiated - VM is shutting down" -Level Info
+        } else {
+            throw
+        }
     } finally {
         Remove-PSSession -Session $session -ErrorAction SilentlyContinue
     }
