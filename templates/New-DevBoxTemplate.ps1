@@ -1446,17 +1446,47 @@ function Install-Prerequisites {
     $winpePath = Join-Path $Script:ADKPath "Windows Preinstallation Environment"
 
     if (-not (Test-Path $winpePath)) {
-        Write-Log "Installing Windows PE Add-on (this may take a minute)..." -Level Info
-        $result = winget install --id Microsoft.ADKPEAddon --accept-source-agreements --accept-package-agreements --silent 2>&1
-        if ($LASTEXITCODE -notin $wingetSuccessCodes) {
-            Write-Log "WinGet returned exit code: $LASTEXITCODE" -Level Warning
-            Write-Log "WinGet output: $result" -Level Warning
+        Write-Log "Installing Windows PE Add-on (this may take a few minutes)..." -Level Info
+
+        # Try WinGet first (may not be available for all ADK versions)
+        $wingetResult = winget install --id Microsoft.ADKPEAddon --accept-source-agreements --accept-package-agreements --silent 2>&1
+        $wingetSuccess = $LASTEXITCODE -in $wingetSuccessCodes
+
+        if (-not $wingetSuccess) {
+            Write-Log "WinGet package not available, downloading directly from Microsoft..." -Level Info
+
+            # Download Windows PE Add-on directly from Microsoft
+            # URL matches the ADK version (10.1.28000.1 for Windows 11 24H2)
+            $peAddonUrl = "https://download.microsoft.com/download/615540bc-be0b-433a-b91b-1f2b0642bb24/adk/adkwinpesetup.exe"
+            $peAddonInstaller = Join-Path $env:TEMP "adkwinpesetup.exe"
+
+            try {
+                Write-Log "Downloading Windows PE Add-on installer..." -Level Info
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Invoke-WebRequest -Uri $peAddonUrl -OutFile $peAddonInstaller -UseBasicParsing
+
+                if (Test-Path $peAddonInstaller) {
+                    Write-Log "Running Windows PE Add-on installer (silent)..." -Level Info
+                    $process = Start-Process -FilePath $peAddonInstaller -ArgumentList "/quiet", "/norestart", "/features", "OptionId.WindowsPreinstallationEnvironment" -Wait -PassThru
+
+                    if ($process.ExitCode -eq 0) {
+                        Write-Log "Windows PE Add-on installer completed" -Level Success
+                    } else {
+                        Write-Log "PE Add-on installer returned exit code: $($process.ExitCode)" -Level Warning
+                    }
+
+                    # Cleanup installer
+                    Remove-Item -Path $peAddonInstaller -Force -ErrorAction SilentlyContinue
+                }
+            } catch {
+                Write-Log "Failed to download/install PE Add-on: $_" -Level Warning
+            }
         }
 
         # Poll for installation completion
-        $maxWaitSeconds = 120  # 2 minutes max
+        $maxWaitSeconds = 180  # 3 minutes max for direct install
         $waited = 0
-        Write-Log "Waiting for WinPE Add-on installation..." -Level Info
+        Write-Log "Waiting for WinPE Add-on installation to complete..." -Level Info
 
         while (-not (Test-Path $winpePath) -and $waited -lt $maxWaitSeconds) {
             Start-Sleep -Seconds 5
@@ -1467,6 +1497,7 @@ function Install-Prerequisites {
 
         if (-not (Test-Path $winpePath)) {
             Write-Log "Windows PE Add-on may not have installed correctly" -Level Warning
+            Write-Log "You can install manually: https://docs.microsoft.com/windows-hardware/get-started/adk-install" -Level Warning
         } else {
             Write-Log "Windows PE Add-on installed successfully" -Level Success
         }
