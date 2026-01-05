@@ -1,6 +1,6 @@
 # DevBox Factory
 
-![Version](https://img.shields.io/badge/version-3.1.1-blue) ![Build](https://img.shields.io/badge/build-20260105.0600-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
+![Version](https://img.shields.io/badge/version-3.5.2-blue) ![Build](https://img.shields.io/badge/build-20260105.1800-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
 
 **One command. Identical dev environments. Every time.**
 
@@ -135,7 +135,7 @@ DevBox Factory provides a human-friendly CLI wrapper:
   +=====================================================================+
   |  DEVBOX FACTORY                                                     |
   |  One command. Identical dev environments. Every time.               |
-  |  by Velocity EU                           v3.1.1 build 20260105.0600|
+  |  by Velocity EU                           v3.5.2 build 20260105.1800|
   +=====================================================================+
 
   USAGE: .\devbox <command> [arguments]
@@ -187,7 +187,7 @@ All DevBox Factory scripts feature interactive menus with guided wizards. Simply
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  TOOL INSTALLER          Windows 11 Development Environment         |
-  |  by Velocity EU                           v3.1.1 build 20260105.0600|
+  |  by Velocity EU                           v3.5.2 build 20260105.1800|
   +=====================================================================+
 
   SELECT INSTALLATION PROFILE
@@ -263,7 +263,7 @@ Stage 1 of VM automation - creates a sysprepped Windows 11 template VHDX.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  TEMPLATE CREATOR       Hyper-V Windows 11 Template - Stage 1       |
-  |  by Velocity EU                           v3.1.1 build 20260105.0600|
+  |  by Velocity EU                           v3.5.2 build 20260105.1800|
   +=====================================================================+
 
   MAIN MENU
@@ -274,8 +274,8 @@ Stage 1 of VM automation - creates a sysprepped Windows 11 template VHDX.
    [2] Custom Configuration
        Configure all template settings manually
 
-   [3] View Current Settings
-       Review default configuration
+   [3] View Existing Templates
+       View template details and locations
 
    [Q] Quit
 
@@ -342,7 +342,7 @@ Stage 2 of VM automation - creates VMs from the template.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  VM CREATOR             Create Dev VMs from Template - Stage 2      |
-  |  by Velocity EU                           v3.1.1 build 20260105.0600|
+  |  by Velocity EU                           v3.5.2 build 20260105.1800|
   +=====================================================================+
 
   MAIN MENU
@@ -451,7 +451,7 @@ Stage 2 of VM automation - creates VMs from the template.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  HEALTH CHECK            Verify Installation and Environment        |
-  |  by Velocity EU                           v3.1.1 build 20260105.0600|
+  |  by Velocity EU                           v3.5.2 build 20260105.1800|
   +=====================================================================+
 
   CORE TOOLS
@@ -907,4 +907,4 @@ DevBox Factory supports pre-downloading dependencies for environments with limit
 
 ---
 
-**DevBox Factory v3.1.1** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
+**DevBox Factory v3.5.2** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)

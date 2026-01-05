@@ -26,9 +26,9 @@
 $Script:DevBoxVersion = @{
     Major       = 3
     Minor       = 5
-    Patch       = 1
-    Build       = "20260105.1200"
-    BuildDate   = "2026-01-05 12:00"
+    Patch       = 2
+    Build       = "20260105.1800"
+    BuildDate   = "2026-01-05 18:00"
 }
 
 $Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/devbox-factory/main"

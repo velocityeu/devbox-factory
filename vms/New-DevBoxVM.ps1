@@ -117,9 +117,9 @@ $ErrorActionPreference = "Stop"
 $Script:DevBoxVersion = @{
     Major = 3
     Minor = 5
-    Patch = 1
-    BuildDate = "2026-01-05 12:00"
-    BuildNumber = "20260105.1200"
+    Patch = 2
+    BuildDate = "2026-01-05 18:00"
+    BuildNumber = "20260105.1800"
 }
 
 # Script-level variables

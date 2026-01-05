@@ -31,9 +31,9 @@ param(
     [string[]]$Arguments
 )
 
-$Script:Version = "3.5.1"
-$Script:Build = "20260105.1200"
-$Script:BuildDate = "2026-01-05 12:00"
+$Script:Version = "3.5.2"
+$Script:Build = "20260105.1800"
+$Script:BuildDate = "2026-01-05 18:00"
 
 # Import logger module
 $loggerModule = Join-Path $PSScriptRoot "modules\DevBoxLogger.psm1"
