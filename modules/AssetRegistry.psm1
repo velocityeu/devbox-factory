@@ -11,8 +11,8 @@
     Enables safe cleanup and factory reset operations.
 
 .NOTES
-    DevBox Factory v3.0.3
-    Build: 20260105.0400
+    DevBox Factory v3.1.0
+    Build: 20260105.0500
 #>
 
 $Script:RegistryPath = $null

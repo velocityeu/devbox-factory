@@ -67,8 +67,8 @@
 .NOTES
     Requires: Windows 10/11 Pro or Server with Hyper-V capability
     DevBox Factory - https://github.com/velocityeu/devbox-factory
-    Version: 3.0.3
-    Build: 20260105.0400
+    Version: 3.1.0
+    Build: 20260105.0500
 #>
 
 [CmdletBinding()]
@@ -118,10 +118,10 @@ $ProgressPreference = "SilentlyContinue"
 # Version information
 $Script:DevBoxVersion = @{
     Major       = 3
-    Minor       = 0
-    Patch       = 3
-    BuildDate   = "2026-01-05 04:00"
-    BuildNumber = "20260105.0400"
+    Minor       = 1
+    Patch       = 0
+    BuildDate   = "2026-01-05 05:00"
+    BuildNumber = "20260105.0500"
 }
 
 # Script-level variables
@@ -795,6 +795,13 @@ function Show-ConfigurationSummary {
     Write-Host ""
     Write-Host "  Options:" -ForegroundColor Cyan
     Write-Host "    Skip Windows Updates: $(if($Config.SkipWindowsUpdates){'Yes'}else{'No'})" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  VM Credentials (for all created VMs):" -ForegroundColor Cyan
+    Write-Host "    Username: " -ForegroundColor White -NoNewline
+    Write-Host "Admin" -ForegroundColor Green
+    Write-Host "    Password: " -ForegroundColor White -NoNewline
+    Write-Host "VibeDev123!" -ForegroundColor Green
+    Write-Host "    Note: NOT 'Administrator' - the local account is 'Admin'" -ForegroundColor DarkGray
     Write-Host ""
     $estTime = if ($Config.DevBoxProfile -eq "None") { "45-60" } else { "60-90" }
     Write-Host "  Estimated Time: $estTime minutes" -ForegroundColor Yellow
@@ -2120,6 +2127,13 @@ function Main {
         Write-Log "" -Level Info
         Write-Log "TEMPLATE READY with DevBox tools PRE-INSTALLED!" -Level Success
         Write-Log "" -Level Info
+        Write-Host "  VM Credentials for all VMs created from this template:" -ForegroundColor Yellow
+        Write-Host "    Username: " -ForegroundColor White -NoNewline
+        Write-Host "Admin" -ForegroundColor Green
+        Write-Host "    Password: " -ForegroundColor White -NoNewline
+        Write-Host "VibeDev123!" -ForegroundColor Green
+        Write-Host "    Note: NOT 'Administrator' - the local account is 'Admin'" -ForegroundColor DarkGray
+        Write-Host ""
         Write-Log "Next step: Create VMs from this template - they will be READY TO CODE instantly!" -Level Info
         Write-Log "Command: .\devbox vm -VMName 'DevVM-01'" -Level Info
         Write-Log "Or run: .\New-DevBoxVM.ps1 -VMName 'DevVM-01' -TemplatePath '$Script:VHDXPath'" -Level Info

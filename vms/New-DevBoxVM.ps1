@@ -67,8 +67,8 @@
 .NOTES
     Requires: DevBox template created by New-DevBoxTemplate.ps1
     Author: DevBox Factory Team
-    Version: 3.0.3
-    Build: 20260105.0400
+    Version: 3.1.0
+    Build: 20260105.0500
 #>
 
 [CmdletBinding()]
@@ -116,10 +116,10 @@ $ErrorActionPreference = "Stop"
 # Version Information
 $Script:DevBoxVersion = @{
     Major = 3
-    Minor = 0
-    Patch = 3
-    BuildDate = "2026-01-05 04:00"
-    BuildNumber = "20260105.0400"
+    Minor = 1
+    Patch = 0
+    BuildDate = "2026-01-05 05:00"
+    BuildNumber = "20260105.0500"
 }
 
 # Script-level variables
@@ -829,6 +829,14 @@ function Show-ConfigurationSummary {
     Write-Host "     Install Mode: $($Config.InstallMode)" -ForegroundColor White
     Write-Host "     Profile: $($Config.DevBoxProfile)" -ForegroundColor White
     Write-Host "     Start VM: $(if ($Config.StartVM) { 'Yes' } else { 'No' })" -ForegroundColor White
+    Write-Host ""
+
+    Write-Host "   VM Credentials:" -ForegroundColor Cyan
+    Write-Host "     Username: " -ForegroundColor White -NoNewline
+    Write-Host "Admin" -ForegroundColor Green
+    Write-Host "     Password: " -ForegroundColor White -NoNewline
+    Write-Host "VibeDev123!" -ForegroundColor Green
+    Write-Host "     Note: NOT 'Administrator' - the local account is 'Admin'" -ForegroundColor DarkGray
     Write-Host ""
 
     Write-Host "  +===========================================================+" -ForegroundColor Magenta
@@ -1675,8 +1683,11 @@ function Main {
 
         Write-Host ""
         Write-Host "Default credentials:" -ForegroundColor Yellow
-        Write-Host "  Username: Admin" -ForegroundColor White
-        Write-Host "  Password: VibeDev123!" -ForegroundColor White
+        Write-Host "  Username: " -ForegroundColor White -NoNewline
+        Write-Host "Admin" -ForegroundColor Green
+        Write-Host "  Password: " -ForegroundColor White -NoNewline
+        Write-Host "VibeDev123!" -ForegroundColor Green
+        Write-Host "  Note: NOT 'Administrator' - the local account is 'Admin'" -ForegroundColor DarkGray
 
         if ($InstallMode -eq "Automatic") {
             Write-Host ""

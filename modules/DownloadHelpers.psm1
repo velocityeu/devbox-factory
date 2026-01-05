@@ -13,7 +13,7 @@
     - Install-FromDependency: Install from local file with WinGet fallback
 
 .NOTES
-    DevBox Factory v3.0.3
+    DevBox Factory v3.1.0
     Requires PowerShell 5.1+
 #>
 
