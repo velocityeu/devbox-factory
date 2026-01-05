@@ -120,20 +120,35 @@ $Script:DevBoxVersion = @{
     Major       = 3
     Minor       = 0
     Patch       = 1
-    BuildDate   = "2026-01-05 01:00"
-    BuildNumber = "20260105.0100"
+    BuildDate   = "2026-01-05 02:00"
+    BuildNumber = "20260105.0200"
 }
 
 # Script-level variables
-$Script:LogPath = Join-Path $env:USERPROFILE "DevBox-Template.log"
 $Script:RequiresReboot = $false
 $Script:VMName = "$TemplateName-Build"
 $Script:InteractiveMode = $false
 $Script:SelectedConfig = @{}
 $Script:VHDXPath = Join-Path $TemplatePath "$TemplateName.vhdx"
-$Script:TempVHDXPath = Join-Path $env:TEMP "$TemplateName-temp.vhdx"
 $Script:ADKPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit"
 $Script:ScriptRoot = $PSScriptRoot
+
+# Initialize paths using logger module
+$loggerModule = Join-Path (Split-Path $PSScriptRoot -Parent) "modules\DevBoxLogger.psm1"
+if (Test-Path $loggerModule) {
+    Import-Module $loggerModule -Force -ErrorAction SilentlyContinue
+    $Script:Paths = Initialize-DevBoxPaths -ScriptRoot $PSScriptRoot -LogPrefix "template"
+    $Script:LogPath = $Script:Paths.LogFile
+    $Script:TempFolder = $Script:Paths.TempFolder
+} else {
+    # Fallback to default paths
+    $Script:LogPath = Join-Path $env:USERPROFILE "DevBox-Template.log"
+    $Script:TempFolder = Join-Path (Split-Path $PSScriptRoot -Parent) "temp"
+    if (-not (Test-Path $Script:TempFolder)) {
+        New-Item -Path $Script:TempFolder -ItemType Directory -Force | Out-Null
+    }
+}
+$Script:TempVHDXPath = Join-Path $Script:TempFolder "$TemplateName-temp.vhdx"
 
 # Regional settings - detected from host system
 $Script:RegionalSettings = @{

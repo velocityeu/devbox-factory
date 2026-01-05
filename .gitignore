@@ -1,7 +1,15 @@
-# Logs
+# Logs folder - keep README, ignore log files
+log/*.log
+!log/README.md
+
+# Legacy log locations
 *.log
 VibeDev-Install.log
 DevBox-Install.log
+
+# Temp folder - keep README, ignore everything else
+temp/*
+!temp/README.md
 
 # Claude Code local config
 .claude/
@@ -19,6 +27,7 @@ Desktop.ini
 # Temporary files
 *.tmp
 *.temp
+*.vhdx
 
 # ISO files (large, user-provided)
 iso/*.iso

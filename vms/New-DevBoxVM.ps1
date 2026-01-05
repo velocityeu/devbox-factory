@@ -118,18 +118,30 @@ $Script:DevBoxVersion = @{
     Major = 3
     Minor = 0
     Patch = 1
-    BuildDate = "2026-01-05 01:00"
-    BuildNumber = "20260105.0100"
+    BuildDate = "2026-01-05 02:00"
+    BuildNumber = "20260105.0200"
 }
 
 # Script-level variables
-$Script:LogPath = Join-Path $env:USERPROFILE "DevBox-VM.log"
 $Script:ScriptRoot = $PSScriptRoot
 $Script:ParentRoot = Split-Path $PSScriptRoot -Parent
 $Script:InstallDevBoxPath = Join-Path $Script:ParentRoot "Install-DevBox.ps1"
-$Script:PresetsPath = Join-Path $Script:ParentRoot "config\\presets.json"
+$Script:PresetsPath = Join-Path $Script:ParentRoot "config\presets.json"
 $Script:CreatedVMs = @()
 $Script:Presets = $null
+
+# Initialize paths using logger module
+$loggerModule = Join-Path $Script:ParentRoot "modules\DevBoxLogger.psm1"
+if (Test-Path $loggerModule) {
+    Import-Module $loggerModule -Force -ErrorAction SilentlyContinue
+    $Script:Paths = Initialize-DevBoxPaths -ScriptRoot $PSScriptRoot -LogPrefix "vm"
+    $Script:LogPath = $Script:Paths.LogFile
+    $Script:TempFolder = $Script:Paths.TempFolder
+} else {
+    # Fallback to default paths
+    $Script:LogPath = Join-Path $env:USERPROFILE "DevBox-VM.log"
+    $Script:TempFolder = Join-Path $Script:ParentRoot "temp"
+}
 
 # Load presets if available
 if (Test-Path $Script:PresetsPath) {

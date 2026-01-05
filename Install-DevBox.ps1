@@ -201,8 +201,24 @@ $Script:Config = @{
 
 # Version Information
 $Script:Version = "3.0.1"
-$Script:Build = "20260105.0100"
-$Script:BuildDate = "2026-01-05 01:00"
+$Script:Build = "20260105.0200"
+$Script:BuildDate = "2026-01-05 02:00"
+
+# Import logger module if available
+$loggerModulePath = Join-Path $PSScriptRoot "modules\DevBoxLogger.psm1"
+if (Test-Path $loggerModulePath) {
+    try {
+        Import-Module $loggerModulePath -Force -ErrorAction Stop
+        $Script:Paths = Initialize-DevBoxPaths -ScriptRoot $PSScriptRoot -LogPrefix "install"
+        # Override LogPath if not custom
+        if ($LogPath -eq "$env:USERPROFILE\DevBox-Install.log") {
+            $LogPath = $Script:Paths.LogFile
+        }
+        $Script:TempFolder = $Script:Paths.TempFolder
+    } catch {
+        # Continue without centralized logging
+    }
+}
 
 # Import download helper module if available
 $Script:DownloadHelpersAvailable = $false

@@ -78,9 +78,21 @@ param(
 )
 
 $Script:Version = "3.0.1"
+$Script:Build = "20260105.0200"
 $Script:DependenciesPath = Join-Path $PSScriptRoot "dependencies"
 $Script:ManifestPath = Join-Path $Script:DependenciesPath "manifest.json"
 $Script:ModulesPath = Join-Path $PSScriptRoot "modules"
+
+# Import logger module if available
+$loggerModule = Join-Path $Script:ModulesPath "DevBoxLogger.psm1"
+if (Test-Path $loggerModule) {
+    try {
+        Import-Module $loggerModule -Force -ErrorAction Stop
+        $Script:Paths = Initialize-DevBoxPaths -ScriptRoot $PSScriptRoot -LogPrefix "deps"
+    } catch {
+        # Continue without centralized logging
+    }
+}
 
 # Import download helpers
 $helperModule = Join-Path $Script:ModulesPath "DownloadHelpers.psm1"

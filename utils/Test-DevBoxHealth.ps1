@@ -29,11 +29,23 @@ param(
 )
 
 $Script:Version = "3.0.1"
-$Script:Build = "20260105.0100"
-$Script:BuildDate = "2026-01-05 01:00"
+$Script:Build = "20260105.0200"
+$Script:BuildDate = "2026-01-05 02:00"
 $Script:PassCount = 0
 $Script:FailCount = 0
 $Script:WarnCount = 0
+$Script:ParentRoot = Split-Path $PSScriptRoot -Parent
+
+# Import logger module if available
+$loggerModulePath = Join-Path $Script:ParentRoot "modules\DevBoxLogger.psm1"
+if (Test-Path $loggerModulePath) {
+    try {
+        Import-Module $loggerModulePath -Force -ErrorAction Stop
+        $Script:Paths = Initialize-DevBoxPaths -ScriptRoot $PSScriptRoot -LogPrefix "health"
+    } catch {
+        # Continue without centralized logging
+    }
+}
 
 function Show-Banner {
     Clear-Host
