@@ -16,8 +16,8 @@
     irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex
 
 .NOTES
-    Version: 3.1.1
-    Build: 20260105.0600
+    Version: 3.5.0
+    Build: 20260105.1000
     DevBox Factory - https://github.com/velocityeu/devbox-factory
 #>
 
@@ -25,23 +25,30 @@
 
 $Script:DevBoxVersion = @{
     Major       = 3
-    Minor       = 1
-    Patch       = 1
-    Build       = "20260105.0600"
-    BuildDate   = "2026-01-05 05:00"
+    Minor       = 5
+    Patch       = 0
+    Build       = "20260105.1000"
+    BuildDate   = "2026-01-05 10:00"
 }
 
 $Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/devbox-factory/main"
 $Script:RequiredFiles = @(
     @{ Path = "Install-DevBox.ps1"; Required = $true },
     @{ Path = "devbox.ps1"; Required = $true },
+    @{ Path = "Invoke-WindowsCustomization.ps1"; Required = $true },
     @{ Path = "README.md"; Required = $false },
     @{ Path = "config/presets.json"; Required = $true },
+    @{ Path = "config/bloatware.json"; Required = $true },
+    @{ Path = "config/privacy.json"; Required = $true },
     @{ Path = "templates/New-DevBoxTemplate.ps1"; Required = $true },
     @{ Path = "templates/SetupComplete.ps1"; Required = $true },
     @{ Path = "templates/autounattend.xml"; Required = $true },
     @{ Path = "vms/New-DevBoxVM.ps1"; Required = $true },
+    @{ Path = "modules/DevBoxLogger.psm1"; Required = $true },
+    @{ Path = "modules/AssetRegistry.psm1"; Required = $true },
+    @{ Path = "modules/WindowsCustomization.psm1"; Required = $true },
     @{ Path = "utils/Test-DevBoxHealth.ps1"; Required = $false },
+    @{ Path = "utils/Remove-DevBoxAssets.ps1"; Required = $false },
     @{ Path = "iso/README.md"; Required = $false }
 )
 

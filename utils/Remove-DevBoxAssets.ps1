@@ -47,9 +47,9 @@ param(
     [switch]$Interactive
 )
 
-$Script:Version = "3.1.1"
-$Script:Build = "20260105.0600"
-$Script:BuildDate = "2026-01-05 06:00"
+$Script:Version = "3.5.0"
+$Script:Build = "20260105.1000"
+$Script:BuildDate = "2026-01-05 10:00"
 $Script:ParentRoot = Split-Path $PSScriptRoot -Parent
 
 # Import modules
