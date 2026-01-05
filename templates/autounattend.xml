@@ -8,12 +8,12 @@
             xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <SetupUILanguage>
-                <UILanguage>en-US</UILanguage>
+                <UILanguage>UILANGUAGE_PLACEHOLDER</UILanguage>
             </SetupUILanguage>
-            <InputLocale>en-US</InputLocale>
-            <SystemLocale>en-US</SystemLocale>
-            <UILanguage>en-US</UILanguage>
-            <UserLocale>en-US</UserLocale>
+            <InputLocale>INPUTLOCALE_PLACEHOLDER</InputLocale>
+            <SystemLocale>SYSTEMLOCALE_PLACEHOLDER</SystemLocale>
+            <UILanguage>UILANGUAGE_PLACEHOLDER</UILanguage>
+            <UserLocale>USERLOCALE_PLACEHOLDER</UserLocale>
         </component>
 
         <component name="Microsoft-Windows-Setup" processorArchitecture="amd64"
@@ -84,8 +84,8 @@
             <!-- User Data -->
             <UserData>
                 <ProductKey>
-                    <!-- Generic Windows 11 Pro key for installation -->
-                    <Key>VK7JG-NPHTM-C97JM-9MPGT-3V66T</Key>
+                    <!-- Generic Windows key - replaced based on selected edition -->
+                    <Key>PRODUCTKEY_PLACEHOLDER</Key>
                     <WillShowUI>OnError</WillShowUI>
                 </ProductKey>
                 <AcceptEula>true</AcceptEula>
@@ -238,10 +238,10 @@
             publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
             xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <InputLocale>en-US</InputLocale>
-            <SystemLocale>en-US</SystemLocale>
-            <UILanguage>en-US</UILanguage>
-            <UserLocale>en-US</UserLocale>
+            <InputLocale>INPUTLOCALE_PLACEHOLDER</InputLocale>
+            <SystemLocale>SYSTEMLOCALE_PLACEHOLDER</SystemLocale>
+            <UILanguage>UILANGUAGE_PLACEHOLDER</UILanguage>
+            <UserLocale>USERLOCALE_PLACEHOLDER</UserLocale>
         </component>
     </settings>
 

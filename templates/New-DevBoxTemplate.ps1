@@ -135,6 +135,38 @@ $Script:TempVHDXPath = Join-Path $env:TEMP "$TemplateName-temp.vhdx"
 $Script:ADKPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit"
 $Script:ScriptRoot = $PSScriptRoot
 
+# Regional settings - detected from host system
+$Script:RegionalSettings = @{
+    TimeZone = (Get-TimeZone).Id
+    InputLocale = (Get-Culture).Name
+    SystemLocale = (Get-Culture).Name
+    UILanguage = (Get-UICulture).Name
+    UserLocale = (Get-Culture).Name
+    GeoID = (Get-WinHomeLocation).GeoId
+}
+
+# Windows edition mappings
+$Script:Win11Editions = @{
+    1  = @{ Name = "Windows 11 Home"; Key = "YTMG3-N6DKC-DKB77-7M9GH-8HVX7" }
+    2  = @{ Name = "Windows 11 Home N"; Key = "4CPRK-NM3K3-X6XXQ-RXX86-WXCHW" }
+    3  = @{ Name = "Windows 11 Home Single Language"; Key = "BT79Q-G7N6G-PGBYW-4YWX6-6F4BT" }
+    4  = @{ Name = "Windows 11 Education"; Key = "YNMGQ-8RYV3-4PGQ3-C8XTP-7CFBY" }
+    5  = @{ Name = "Windows 11 Education N"; Key = "84NGF-MHBT6-FXBX8-QWJK7-DRR8H" }
+    6  = @{ Name = "Windows 11 Pro"; Key = "VK7JG-NPHTM-C97JM-9MPGT-3V66T" }
+    7  = @{ Name = "Windows 11 Pro N"; Key = "2B87N-8KFHP-DKV6R-Y2C8J-PKCKT" }
+    8  = @{ Name = "Windows 11 Pro for Workstations"; Key = "DXG7C-N36C4-C4HTG-X4T3X-2YV77" }
+    9  = @{ Name = "Windows 11 Pro for Workstations N"; Key = "WYPNQ-8C467-V2W6J-TX4WX-WT2RQ" }
+    10 = @{ Name = "Windows 11 Enterprise"; Key = "XGVPP-NMH47-7TTHJ-W3FW7-8HV2C" }
+    11 = @{ Name = "Windows 11 Enterprise N"; Key = "WGGHN-J84D6-QYCPR-T7PJ7-X766F" }
+}
+
+$Script:Server2025Editions = @{
+    1  = @{ Name = "Windows Server 2025 Standard"; Key = "VDYBN-27WPP-V4HQT-9VMD4-VMK7H" }
+    2  = @{ Name = "Windows Server 2025 Standard (Desktop)"; Key = "VDYBN-27WPP-V4HQT-9VMD4-VMK7H" }
+    3  = @{ Name = "Windows Server 2025 Datacenter"; Key = "WX4NM-KYWYW-QJJR4-XV3QB-6VM33" }
+    4  = @{ Name = "Windows Server 2025 Datacenter (Desktop)"; Key = "WX4NM-KYWYW-QJJR4-XV3QB-6VM33" }
+}
+
 #region Logging Functions
 
 function Write-Log {
@@ -414,6 +446,205 @@ function Show-ISOValidation {
     $null = Read-Host
 }
 
+function Get-ISOEditions {
+    param([string]$ISOPath)
+
+    $result = @{
+        IsServer = $false
+        IsWindows11 = $false
+        Editions = @()
+        WimPath = ""
+        Error = $null
+    }
+
+    try {
+        # Mount ISO
+        $mount = Mount-DiskImage -ImagePath $ISOPath -PassThru -ErrorAction Stop
+        $driveLetter = ($mount | Get-Volume).DriveLetter + ":"
+
+        try {
+            # Find install.wim or install.esd
+            $wimPath = Join-Path $driveLetter "sources\install.wim"
+            if (-not (Test-Path $wimPath)) {
+                $wimPath = Join-Path $driveLetter "sources\install.esd"
+                if (-not (Test-Path $wimPath)) {
+                    $result.Error = "Could not find install.wim or install.esd in ISO"
+                    return $result
+                }
+            }
+            $result.WimPath = $wimPath
+
+            # Get editions using DISM
+            $dismOutput = & dism /Get-WimInfo /WimFile:"$wimPath" 2>&1
+
+            # Parse editions
+            $currentIndex = 0
+            $currentName = ""
+            foreach ($line in $dismOutput) {
+                if ($line -match "^Index\s*:\s*(\d+)") {
+                    $currentIndex = [int]$matches[1]
+                }
+                if ($line -match "^Name\s*:\s*(.+)$") {
+                    $currentName = $matches[1].Trim()
+                    $result.Editions += @{
+                        Index = $currentIndex
+                        Name = $currentName
+                    }
+
+                    # Detect OS type
+                    if ($currentName -match "Server") {
+                        $result.IsServer = $true
+                    } elseif ($currentName -match "Windows 11|Windows 10") {
+                        $result.IsWindows11 = $true
+                    }
+                }
+            }
+
+        } finally {
+            # Dismount ISO
+            Dismount-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue | Out-Null
+        }
+
+    } catch {
+        $result.Error = $_.Exception.Message
+    }
+
+    return $result
+}
+
+function Show-EditionSelectionMenu {
+    param(
+        [array]$Editions,
+        [bool]$IsServer
+    )
+
+    Show-Banner
+
+    $osType = if ($IsServer) { "WINDOWS SERVER" } else { "WINDOWS 11" }
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |              SELECT $osType EDITION                    |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+
+    # Show available editions
+    foreach ($edition in $Editions) {
+        $recommended = ""
+        if ($edition.Name -match "Pro$" -or $edition.Name -match "Datacenter.*Desktop") {
+            $recommended = " * Recommended"
+            Write-Host "   [$($edition.Index)] $($edition.Name)$recommended" -ForegroundColor Green
+        } else {
+            Write-Host "   [$($edition.Index)] $($edition.Name)" -ForegroundColor White
+        }
+    }
+
+    Write-Host ""
+    Write-Host "   [B] Back" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+    # Default to Pro (6) for Win11 or Datacenter Desktop (4) for Server
+    $defaultIndex = if ($IsServer) { 4 } else { 6 }
+    $defaultExists = $Editions | Where-Object { $_.Index -eq $defaultIndex }
+    if (-not $defaultExists -and $Editions.Count -gt 0) {
+        $defaultIndex = $Editions[0].Index
+    }
+
+    $choice = Read-Host "  Select edition [$defaultIndex]"
+    if ([string]::IsNullOrWhiteSpace($choice)) { $choice = $defaultIndex.ToString() }
+
+    if ($choice -eq 'B' -or $choice -eq 'b') {
+        return $null
+    }
+
+    $selectedIndex = 0
+    if ([int]::TryParse($choice, [ref]$selectedIndex)) {
+        $selected = $Editions | Where-Object { $_.Index -eq $selectedIndex }
+        if ($selected) {
+            return $selected
+        }
+    }
+
+    # Return default if invalid input
+    return $Editions | Where-Object { $_.Index -eq $defaultIndex } | Select-Object -First 1
+}
+
+function Show-RegionalSettingsMenu {
+    param([hashtable]$CurrentSettings)
+
+    Show-Banner
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |              REGIONAL SETTINGS                             |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  Settings detected from your system:" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [1] Time Zone:     $($CurrentSettings.TimeZone)" -ForegroundColor White
+    Write-Host "   [2] Input Locale:  $($CurrentSettings.InputLocale)" -ForegroundColor White
+    Write-Host "   [3] System Locale: $($CurrentSettings.SystemLocale)" -ForegroundColor White
+    Write-Host "   [4] UI Language:   $($CurrentSettings.UILanguage)" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [A] Accept these settings (Recommended)" -ForegroundColor Green
+    Write-Host "   [C] Change to common presets" -ForegroundColor White
+    Write-Host "   [B] Back" -ForegroundColor Yellow
+    Write-Host ""
+
+    $choice = Read-Host "  Enter choice [A]"
+    if ([string]::IsNullOrWhiteSpace($choice)) { $choice = "A" }
+
+    return $choice.ToUpper()
+}
+
+function Show-RegionalPresetsMenu {
+    Show-Banner
+
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "  |              REGIONAL PRESETS                              |" -ForegroundColor Cyan
+    Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   [1] United States (en-US)" -ForegroundColor White
+    Write-Host "       Pacific Standard Time, en-US keyboard" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [2] United Kingdom (en-GB)" -ForegroundColor White
+    Write-Host "       GMT Standard Time, en-GB keyboard" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [3] Germany (de-DE)" -ForegroundColor White
+    Write-Host "       W. Europe Standard Time, de-DE keyboard" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [4] France (fr-FR)" -ForegroundColor White
+    Write-Host "       Romance Standard Time, fr-FR keyboard" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [5] Australia (en-AU)" -ForegroundColor White
+    Write-Host "       AUS Eastern Standard Time, en-AU keyboard" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [6] Japan (ja-JP)" -ForegroundColor White
+    Write-Host "       Tokyo Standard Time, ja-JP keyboard" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "   [B] Back" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
+
+    $choice = Read-Host "  Select preset"
+
+    $presets = @{
+        '1' = @{ TimeZone = "Pacific Standard Time"; InputLocale = "en-US"; SystemLocale = "en-US"; UILanguage = "en-US"; UserLocale = "en-US" }
+        '2' = @{ TimeZone = "GMT Standard Time"; InputLocale = "en-GB"; SystemLocale = "en-GB"; UILanguage = "en-GB"; UserLocale = "en-GB" }
+        '3' = @{ TimeZone = "W. Europe Standard Time"; InputLocale = "de-DE"; SystemLocale = "de-DE"; UILanguage = "de-DE"; UserLocale = "de-DE" }
+        '4' = @{ TimeZone = "Romance Standard Time"; InputLocale = "fr-FR"; SystemLocale = "fr-FR"; UILanguage = "fr-FR"; UserLocale = "fr-FR" }
+        '5' = @{ TimeZone = "AUS Eastern Standard Time"; InputLocale = "en-AU"; SystemLocale = "en-AU"; UILanguage = "en-AU"; UserLocale = "en-AU" }
+        '6' = @{ TimeZone = "Tokyo Standard Time"; InputLocale = "ja-JP"; SystemLocale = "ja-JP"; UILanguage = "ja-JP"; UserLocale = "ja-JP" }
+    }
+
+    if ($presets.ContainsKey($choice)) {
+        return $presets[$choice]
+    }
+
+    return $null
+}
+
 function Show-PresetMenu {
     Show-Banner
 
@@ -499,7 +730,15 @@ function Show-ConfigurationSummary {
     Write-Host "    Status: Verified OK" -ForegroundColor Green
     Write-Host ""
     Write-Host "  Windows Edition:" -ForegroundColor Cyan
-    Write-Host "    Edition: Windows 11 Pro (Index $($Config.WindowsEditionIndex))" -ForegroundColor White
+    $editionDisplay = if ($Config.WindowsEditionName) { $Config.WindowsEditionName } else { "Windows 11 Pro" }
+    Write-Host "    Edition: $editionDisplay (Index $($Config.WindowsEditionIndex))" -ForegroundColor White
+    if ($Config.IsServer) {
+        Write-Host "    Type: Windows Server" -ForegroundColor Cyan
+    }
+    Write-Host ""
+    Write-Host "  Regional Settings:" -ForegroundColor Cyan
+    Write-Host "    Time Zone: $($Config.TimeZone)" -ForegroundColor White
+    Write-Host "    Locale: $($Config.InputLocale)" -ForegroundColor White
     Write-Host ""
     Write-Host "  Template Settings:" -ForegroundColor Cyan
     Write-Host "    Name: $($Config.TemplateName)" -ForegroundColor White
@@ -528,7 +767,6 @@ function Show-ConfigurationSummary {
     Write-Host ""
     Write-Host "  Options:" -ForegroundColor Cyan
     Write-Host "    Skip Windows Updates: $(if($Config.SkipWindowsUpdates){'Yes'}else{'No'})" -ForegroundColor White
-    Write-Host "    Time Zone: $($Config.TimeZone)" -ForegroundColor White
     Write-Host ""
     $estTime = if ($Config.DevBoxProfile -eq "None") { "45-60" } else { "60-90" }
     Write-Host "  Estimated Time: $estTime minutes" -ForegroundColor Yellow
@@ -645,7 +883,14 @@ function Invoke-InteractiveMode {
         SwitchName = "Default Switch"
         SkipWindowsUpdates = $false
         WindowsEditionIndex = 6
-        TimeZone = "Pacific Standard Time"
+        WindowsEditionName = "Windows 11 Pro"
+        WindowsProductKey = "VK7JG-NPHTM-C97JM-9MPGT-3V66T"
+        IsServer = $false
+        TimeZone = $Script:RegionalSettings.TimeZone
+        InputLocale = $Script:RegionalSettings.InputLocale
+        SystemLocale = $Script:RegionalSettings.SystemLocale
+        UILanguage = $Script:RegionalSettings.UILanguage
+        UserLocale = $Script:RegionalSettings.UserLocale
         DevBoxProfile = "Full"
     }
 
@@ -707,17 +952,67 @@ function Invoke-InteractiveMode {
 
                 if (-not $isoSelected) { continue }
 
-                # Step 2: Preset Selection (Quick mode uses Standard)
+                # Step 2: Detect and Select Windows Edition
+                Write-Host ""
+                Write-Host "  Detecting available Windows editions..." -ForegroundColor Cyan
+                $isoInfo = Get-ISOEditions -ISOPath $config.ISOPath
+
+                if ($isoInfo.Editions.Count -gt 0) {
+                    $selectedEdition = Show-EditionSelectionMenu -Editions $isoInfo.Editions -IsServer $isoInfo.IsServer
+                    if ($null -eq $selectedEdition) { continue }
+
+                    $config.WindowsEditionIndex = $selectedEdition.Index
+                    $config.WindowsEditionName = $selectedEdition.Name
+                    $config.IsServer = $isoInfo.IsServer
+
+                    # Get product key based on edition
+                    $editionMap = if ($isoInfo.IsServer) { $Script:Server2025Editions } else { $Script:Win11Editions }
+                    if ($editionMap.ContainsKey($selectedEdition.Index)) {
+                        $config.WindowsProductKey = $editionMap[$selectedEdition.Index].Key
+                    }
+
+                    # Update template name based on OS type
+                    if ($isoInfo.IsServer) {
+                        $config.TemplateName = "WinServer-DevBox-Template"
+                    }
+                } else {
+                    Write-Host "  Could not detect editions - using defaults (Pro, Index 6)" -ForegroundColor Yellow
+                    Start-Sleep -Seconds 2
+                }
+
+                # Step 3: Regional Settings
+                $regionalChoice = Show-RegionalSettingsMenu -CurrentSettings @{
+                    TimeZone = $config.TimeZone
+                    InputLocale = $config.InputLocale
+                    SystemLocale = $config.SystemLocale
+                    UILanguage = $config.UILanguage
+                }
+
+                if ($regionalChoice -eq 'C') {
+                    $preset = Show-RegionalPresetsMenu
+                    if ($null -ne $preset) {
+                        $config.TimeZone = $preset.TimeZone
+                        $config.InputLocale = $preset.InputLocale
+                        $config.SystemLocale = $preset.SystemLocale
+                        $config.UILanguage = $preset.UILanguage
+                        $config.UserLocale = $preset.UserLocale
+                    }
+                } elseif ($regionalChoice -eq 'B') {
+                    continue
+                }
+                # 'A' accepts detected settings (already in config)
+
+                # Step 4: Preset Selection (Quick mode uses Standard)
                 $config.MemoryGB = 8
                 $config.ProcessorCount = 4
                 $config.DiskSizeGB = 127
 
-                # Step 3: DevBox Profile Selection
+                # Step 5: DevBox Profile Selection
                 $profileChoice = Show-DevBoxProfileMenu
                 if ($null -eq $profileChoice) { continue }
                 $config.DevBoxProfile = $profileChoice
 
-                # Step 4: Confirmation
+                # Step 6: Confirmation
                 $summaryChoice = Show-ConfigurationSummary -Config $config
                 if ($summaryChoice -eq 'P' -or $summaryChoice -eq 'p') {
                     return $config
@@ -775,7 +1070,57 @@ function Invoke-InteractiveMode {
 
                 if (-not $isoSelected) { continue }
 
-                # Step 2: Preset Selection
+                # Step 2: Detect and Select Windows Edition
+                Write-Host ""
+                Write-Host "  Detecting available Windows editions..." -ForegroundColor Cyan
+                $isoInfo = Get-ISOEditions -ISOPath $config.ISOPath
+
+                if ($isoInfo.Editions.Count -gt 0) {
+                    $selectedEdition = Show-EditionSelectionMenu -Editions $isoInfo.Editions -IsServer $isoInfo.IsServer
+                    if ($null -eq $selectedEdition) { continue }
+
+                    $config.WindowsEditionIndex = $selectedEdition.Index
+                    $config.WindowsEditionName = $selectedEdition.Name
+                    $config.IsServer = $isoInfo.IsServer
+
+                    # Get product key based on edition
+                    $editionMap = if ($isoInfo.IsServer) { $Script:Server2025Editions } else { $Script:Win11Editions }
+                    if ($editionMap.ContainsKey($selectedEdition.Index)) {
+                        $config.WindowsProductKey = $editionMap[$selectedEdition.Index].Key
+                    }
+
+                    # Update template name based on OS type
+                    if ($isoInfo.IsServer) {
+                        $config.TemplateName = "WinServer-DevBox-Template"
+                    }
+                } else {
+                    Write-Host "  Could not detect editions - using defaults (Pro, Index 6)" -ForegroundColor Yellow
+                    Start-Sleep -Seconds 2
+                }
+
+                # Step 3: Regional Settings
+                $regionalChoice = Show-RegionalSettingsMenu -CurrentSettings @{
+                    TimeZone = $config.TimeZone
+                    InputLocale = $config.InputLocale
+                    SystemLocale = $config.SystemLocale
+                    UILanguage = $config.UILanguage
+                }
+
+                if ($regionalChoice -eq 'C') {
+                    $preset = Show-RegionalPresetsMenu
+                    if ($null -ne $preset) {
+                        $config.TimeZone = $preset.TimeZone
+                        $config.InputLocale = $preset.InputLocale
+                        $config.SystemLocale = $preset.SystemLocale
+                        $config.UILanguage = $preset.UILanguage
+                        $config.UserLocale = $preset.UserLocale
+                    }
+                } elseif ($regionalChoice -eq 'B') {
+                    continue
+                }
+                # 'A' accepts detected settings (already in config)
+
+                # Step 4: Preset Selection
                 $presetChoice = Show-PresetMenu
                 switch ($presetChoice.ToUpper()) {
                     'B' { continue }
@@ -791,17 +1136,17 @@ function Invoke-InteractiveMode {
                 $config.ProcessorCount = $specs.ProcessorCount
                 $config.DiskSizeGB = $specs.DiskSizeGB
 
-                # Step 3: DevBox Profile Selection
+                # Step 5: DevBox Profile Selection
                 $profileChoice = Show-DevBoxProfileMenu
                 if ($null -eq $profileChoice) { continue }
                 $config.DevBoxProfile = $profileChoice
 
-                # Step 4: Additional Options
+                # Step 6: Additional Options
                 Write-Host ""
                 $skipUpdates = Read-Host "  Skip Windows Updates? (y/N)"
                 $config.SkipWindowsUpdates = ($skipUpdates -eq 'y' -or $skipUpdates -eq 'Y')
 
-                # Step 5: Confirmation
+                # Step 7: Confirmation
                 $summaryChoice = Show-ConfigurationSummary -Config $config
                 if ($summaryChoice -eq 'P' -or $summaryChoice -eq 'p') {
                     return $config
@@ -962,6 +1307,21 @@ function New-BootableVHDX {
         Write-Log "Created template directory: $TemplatePath" -Level Info
     }
 
+    # Clean up any existing temp VHDX from previous failed runs
+    if (Test-Path $Script:TempVHDXPath) {
+        Write-Log "Removing existing temp VHDX from previous run..." -Level Warning
+        try {
+            # Try to dismount first in case it's still mounted
+            Dismount-VHD -Path $Script:TempVHDXPath -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 2
+            Remove-Item -Path $Script:TempVHDXPath -Force -ErrorAction Stop
+            Write-Log "Previous temp VHDX removed" -Level Info
+        } catch {
+            Write-Log "Could not remove existing temp VHDX: $_" -Level Error
+            throw "Failed to clean up existing temp VHDX at $Script:TempVHDXPath. Please delete it manually and try again."
+        }
+    }
+
     # Mount ISO
     Write-Log "Mounting ISO: $ISOPath" -Level Info
     $isoMount = Mount-DiskImage -ImagePath $ISOPath -PassThru
@@ -1075,7 +1435,25 @@ function New-BootableVHDX {
             }
 
             # Set timezone
-            $unattendContent = $unattendContent -replace 'TIMEZONE_PLACEHOLDER', $TimeZone
+            $tzValue = if ($Script:TimeZone) { $Script:TimeZone } else { $TimeZone }
+            $unattendContent = $unattendContent -replace 'TIMEZONE_PLACEHOLDER', $tzValue
+
+            # Set regional settings
+            $inputLocale = if ($Script:InputLocale) { $Script:InputLocale } else { $Script:RegionalSettings.InputLocale }
+            $systemLocale = if ($Script:SystemLocale) { $Script:SystemLocale } else { $Script:RegionalSettings.SystemLocale }
+            $uiLanguage = if ($Script:UILanguage) { $Script:UILanguage } else { $Script:RegionalSettings.UILanguage }
+            $userLocale = if ($Script:UserLocale) { $Script:UserLocale } else { $Script:RegionalSettings.UserLocale }
+
+            $unattendContent = $unattendContent -replace 'INPUTLOCALE_PLACEHOLDER', $inputLocale
+            $unattendContent = $unattendContent -replace 'SYSTEMLOCALE_PLACEHOLDER', $systemLocale
+            $unattendContent = $unattendContent -replace 'UILANGUAGE_PLACEHOLDER', $uiLanguage
+            $unattendContent = $unattendContent -replace 'USERLOCALE_PLACEHOLDER', $userLocale
+
+            # Set product key based on selected edition
+            $productKey = if ($Script:WindowsProductKey) { $Script:WindowsProductKey } else { "VK7JG-NPHTM-C97JM-9MPGT-3V66T" }
+            $unattendContent = $unattendContent -replace 'PRODUCTKEY_PLACEHOLDER', $productKey
+
+            Write-Log "Regional settings: $inputLocale, TimeZone: $tzValue" -Level Info
 
             # Create Panther directory and save unattend
             $pantherPath = "${winLetter}:\Windows\Panther"
@@ -1609,7 +1987,14 @@ function Main {
         $Script:SwitchName = $config.SwitchName
         $Script:SkipWindowsUpdates = $config.SkipWindowsUpdates
         $Script:WindowsEditionIndex = $config.WindowsEditionIndex
+        $Script:WindowsEditionName = $config.WindowsEditionName
+        $Script:WindowsProductKey = $config.WindowsProductKey
+        $Script:IsServer = $config.IsServer
         $Script:TimeZone = $config.TimeZone
+        $Script:InputLocale = $config.InputLocale
+        $Script:SystemLocale = $config.SystemLocale
+        $Script:UILanguage = $config.UILanguage
+        $Script:UserLocale = $config.UserLocale
         $Script:DevBoxProfile = $config.DevBoxProfile
 
         # Update local variables for use in this function
@@ -1620,6 +2005,7 @@ function Main {
         $ProcessorCount = $config.ProcessorCount
         $DiskSizeGB = $config.DiskSizeGB
         $DevBoxProfile = $config.DevBoxProfile
+        $WindowsEditionIndex = $config.WindowsEditionIndex
 
         Clear-Host
         Show-Banner
@@ -1627,8 +2013,13 @@ function Main {
 
     Write-Log "DevBox Template Creator started" -Level Header
     Write-Log "ISO: $ISOPath" -Level Info
+    $editionDisplay = if ($Script:WindowsEditionName) { $Script:WindowsEditionName } else { "Windows 11 Pro" }
+    Write-Log "Edition: $editionDisplay (Index $WindowsEditionIndex)" -Level Info
     Write-Log "Template: $TemplatePath\$TemplateName.vhdx" -Level Info
     Write-Log "VM Specs: ${MemoryGB}GB RAM, $ProcessorCount CPUs, ${DiskSizeGB}GB Disk" -Level Info
+    $tzDisplay = if ($Script:TimeZone) { $Script:TimeZone } else { $TimeZone }
+    $localeDisplay = if ($Script:InputLocale) { $Script:InputLocale } else { $Script:RegionalSettings.InputLocale }
+    Write-Log "Regional: $tzDisplay, $localeDisplay" -Level Info
     $profileDisplay = if ($Script:DevBoxProfile) { $Script:DevBoxProfile } elseif ($DevBoxProfile) { $DevBoxProfile } else { "Full" }
     Write-Log "DevBox Profile: $profileDisplay (tools will be PRE-INSTALLED)" -Level Info
 
