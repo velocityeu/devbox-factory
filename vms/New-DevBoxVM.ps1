@@ -53,7 +53,7 @@
     Start the VM after creation
 
 .PARAMETER AdminPassword
-    Secure password for local Admin account
+    Reserved for future use. Currently VMs use the default password: VibeDev123!
 
 .EXAMPLE
     .\New-DevBoxVM.ps1 -VMName "DevVM-01" -StartVM
@@ -67,8 +67,8 @@
 .NOTES
     Requires: DevBox template created by New-DevBoxTemplate.ps1
     Author: DevBox Factory Team
-    Version: 3.1.0
-    Build: 20260105.0500
+    Version: 3.1.1
+    Build: 20260105.0600
 #>
 
 [CmdletBinding()]
@@ -85,7 +85,7 @@ param(
     [ValidateRange(2, 32)]
     [int]$ProcessorCount = 4,
 
-    [ValidateRange(40, 2048)]
+    [ValidateRange(64, 2048)]
     [int]$DiskSizeGB = 127,
 
     [switch]$DynamicMemory,
@@ -117,9 +117,9 @@ $ErrorActionPreference = "Stop"
 $Script:DevBoxVersion = @{
     Major = 3
     Minor = 1
-    Patch = 0
-    BuildDate = "2026-01-05 05:00"
-    BuildNumber = "20260105.0500"
+    Patch = 1
+    BuildDate = "2026-01-05 06:00"
+    BuildNumber = "20260105.0600"
 }
 
 # Script-level variables
@@ -1715,7 +1715,9 @@ function Main {
             Write-Log "Cleaning up: $($vm.Name)" -Level Warning
             Stop-VM -Name $vm.Name -Force -TurnOff -ErrorAction SilentlyContinue
             Remove-VM -Name $vm.Name -Force -ErrorAction SilentlyContinue
-            Remove-Item -Path (Split-Path $vm.VHDXPath) -Recurse -Force -ErrorAction SilentlyContinue
+            if ($vm.VHDXPath -and (Test-Path (Split-Path $vm.VHDXPath -Parent))) {
+                Remove-Item -Path (Split-Path $vm.VHDXPath -Parent) -Recurse -Force -ErrorAction SilentlyContinue
+            }
         }
 
         throw

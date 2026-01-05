@@ -13,7 +13,7 @@
     - Install-FromDependency: Install from local file with WinGet fallback
 
 .NOTES
-    DevBox Factory v3.1.0
+    DevBox Factory v3.1.1
     Requires PowerShell 5.1+
 #>
 
@@ -289,8 +289,15 @@ function Start-DownloadWithProgress {
                 Show-DownloadComplete -Activity $DisplayName -ErrorMessage $result.Error
             }
         } finally {
-            Unregister-Event -SubscriptionId $eventSubscription.Id -ErrorAction SilentlyContinue
-            Remove-Job -Id $eventSubscription.Id -Force -ErrorAction SilentlyContinue
+            # Safely unregister event subscription
+            if ($eventSubscription) {
+                try {
+                    Unregister-Event -SubscriptionId $eventSubscription.Id -ErrorAction SilentlyContinue
+                    Remove-Job -Id $eventSubscription.Id -Force -ErrorAction SilentlyContinue
+                } catch {
+                    # Silently ignore unregister errors
+                }
+            }
         }
 
     } catch {
@@ -298,6 +305,15 @@ function Start-DownloadWithProgress {
         Write-Host ""
         Show-DownloadComplete -Activity $DisplayName -ErrorMessage $result.Error
     } finally {
+        # Cleanup: Ensure event is unregistered even if outer catch ran
+        if ($eventSubscription) {
+            try {
+                Unregister-Event -SubscriptionId $eventSubscription.Id -ErrorAction SilentlyContinue
+                Remove-Job -Id $eventSubscription.Id -Force -ErrorAction SilentlyContinue
+            } catch {
+                # Silently ignore
+            }
+        }
         if ($webClient) {
             $webClient.Dispose()
         }
@@ -493,7 +509,8 @@ function Install-FromDependency {
                     if ($localPath -match '\.msi$') {
                         $process = Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$localPath`" $installArgs" -Wait -PassThru -NoNewWindow
                     } else {
-                        $process = Start-Process -FilePath $localPath -ArgumentList $installArgs -Wait -PassThru -NoNewWindow
+                        # Quote path to handle spaces in directory names
+                        $process = Start-Process -FilePath "`"$localPath`"" -ArgumentList $installArgs -Wait -PassThru -NoNewWindow
                     }
 
                     if ($process.ExitCode -eq 0 -or $process.ExitCode -eq 3010) {

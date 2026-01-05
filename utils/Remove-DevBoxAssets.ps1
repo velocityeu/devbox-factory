@@ -34,8 +34,8 @@
     # Preview all assets that would be affected
 
 .NOTES
-    DevBox Factory v3.1.0
-    Build: 20260105.0500
+    DevBox Factory v3.1.1
+    Build: 20260105.0600
     https://github.com/velocityeu/devbox-factory
 #>
 
@@ -47,9 +47,9 @@ param(
     [switch]$Interactive
 )
 
-$Script:Version = "3.1.0"
-$Script:Build = "20260105.0500"
-$Script:BuildDate = "2026-01-05 05:00"
+$Script:Version = "3.1.1"
+$Script:Build = "20260105.0600"
+$Script:BuildDate = "2026-01-05 06:00"
 $Script:ParentRoot = Split-Path $PSScriptRoot -Parent
 
 # Import modules

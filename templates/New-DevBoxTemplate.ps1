@@ -42,8 +42,8 @@
     Secure password for local Admin account
 
 .PARAMETER WindowsEditionIndex
-    Windows edition index in install.wim. Default: 6 (Pro)
-    Common indices: 1=Home, 3=Home Single Language, 5=Education, 6=Pro, 8=Pro for Workstations
+    Windows edition index in install.wim. Default: 10 (Enterprise)
+    Common indices: 1=Home, 5=Education, 6=Pro, 8=Pro for Workstations, 10=Enterprise
 
 .PARAMETER TimeZone
     Windows timezone. Default: Pacific Standard Time
@@ -67,8 +67,8 @@
 .NOTES
     Requires: Windows 10/11 Pro or Server with Hyper-V capability
     DevBox Factory - https://github.com/velocityeu/devbox-factory
-    Version: 3.1.0
-    Build: 20260105.0500
+    Version: 3.1.1
+    Build: 20260105.0600
 #>
 
 [CmdletBinding()]
@@ -84,7 +84,7 @@ param(
     [ValidateRange(2, 32)]
     [int]$ProcessorCount = 4,
 
-    [ValidateRange(40, 2048)]
+    [ValidateRange(64, 2048)]
     [int]$DiskSizeGB = 127,
 
     [string]$SwitchName = "Default Switch",
@@ -94,7 +94,7 @@ param(
     [SecureString]$AdminPassword,
 
     [ValidateRange(1, 11)]
-    [int]$WindowsEditionIndex = 6,
+    [int]$WindowsEditionIndex = 10,
 
     [string]$TimeZone = "Pacific Standard Time",
 
@@ -119,9 +119,9 @@ $ProgressPreference = "SilentlyContinue"
 $Script:DevBoxVersion = @{
     Major       = 3
     Minor       = 1
-    Patch       = 0
-    BuildDate   = "2026-01-05 05:00"
-    BuildNumber = "20260105.0500"
+    Patch       = 1
+    BuildDate   = "2026-01-05 06:00"
+    BuildNumber = "20260105.0600"
 }
 
 # Script-level variables
@@ -558,7 +558,7 @@ function Show-EditionSelectionMenu {
     # Show available editions
     foreach ($edition in $Editions) {
         $recommended = ""
-        if ($edition.Name -match "Pro$" -or $edition.Name -match "Datacenter.*Desktop") {
+        if ($edition.Name -match "Enterprise$" -or $edition.Name -match "Datacenter.*Desktop") {
             $recommended = " * Recommended"
             Write-Host "   [$($edition.Index)] $($edition.Name)$recommended" -ForegroundColor Green
         } else {
@@ -571,8 +571,8 @@ function Show-EditionSelectionMenu {
     Write-Host ""
     Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
 
-    # Default to Pro (6) for Win11 or Datacenter Desktop (4) for Server
-    $defaultIndex = if ($IsServer) { 4 } else { 6 }
+    # Default to Enterprise (10) for Win11 or Datacenter Desktop (4) for Server
+    $defaultIndex = if ($IsServer) { 4 } else { 10 }
     $defaultExists = $Editions | Where-Object { $_.Index -eq $defaultIndex }
     if (-not $defaultExists -and $Editions.Count -gt 0) {
         $defaultIndex = $Editions[0].Index
@@ -916,10 +916,10 @@ function Invoke-InteractiveMode {
         ProcessorCount = 4
         DiskSizeGB = 127
         SwitchName = "Default Switch"
-        SkipWindowsUpdates = $false
-        WindowsEditionIndex = 6
-        WindowsEditionName = "Windows 11 Pro"
-        WindowsProductKey = "VK7JG-NPHTM-C97JM-9MPGT-3V66T"
+        SkipWindowsUpdates = $true
+        WindowsEditionIndex = 10
+        WindowsEditionName = "Windows 11 Enterprise"
+        WindowsProductKey = "XGVPP-NMH47-7TTHJ-W3FW7-8HV2C"
         IsServer = $false
         TimeZone = $Script:RegionalSettings.TimeZone
         InputLocale = $Script:RegionalSettings.InputLocale
@@ -1176,10 +1176,10 @@ function Invoke-InteractiveMode {
                 if ($null -eq $profileChoice) { continue }
                 $config.DevBoxProfile = $profileChoice
 
-                # Step 6: Additional Options
+                # Step 6: Additional Options (default: skip updates for faster creation)
                 Write-Host ""
-                $skipUpdates = Read-Host "  Skip Windows Updates? (y/N)"
-                $config.SkipWindowsUpdates = ($skipUpdates -eq 'y' -or $skipUpdates -eq 'Y')
+                $skipUpdates = Read-Host "  Skip Windows Updates? (Y/n)"
+                $config.SkipWindowsUpdates = -not ($skipUpdates -eq 'n' -or $skipUpdates -eq 'N')
 
                 # Step 7: Confirmation
                 $summaryChoice = Show-ConfigurationSummary -Config $config

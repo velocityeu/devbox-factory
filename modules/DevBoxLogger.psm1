@@ -7,7 +7,7 @@
     Creates timestamped log files in the log/ folder.
 
 .NOTES
-    DevBox Factory v3.1.0
+    DevBox Factory v3.1.1
 #>
 
 # Module-level variables
