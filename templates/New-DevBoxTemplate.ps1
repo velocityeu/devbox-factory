@@ -2366,7 +2366,7 @@ function Main {
         Write-Host ""
         Write-Log "Next step: Create VMs from this template - they will be READY TO CODE instantly!" -Level Info
         Write-Log "Command: .\devbox vm -VMName 'DevVM-01'" -Level Info
-        Write-Log "Or run: .\New-DevBoxVM.ps1 -VMName 'DevVM-01' -TemplatePath '$Script:VHDXPath'" -Level Info
+        Write-Log "Or run: .\vms\New-DevBoxVM.ps1 -VMName 'DevVM-01' -TemplatePath '$Script:VHDXPath'" -Level Info
 
     } catch {
         Write-Log "Template creation failed: $_" -Level Error
