@@ -93,6 +93,137 @@ try {
 
 #endregion
 
+#region OOBE Bypass
+
+Write-Log "Disabling OOBE and first-run experiences..."
+
+# Disable "Let's finish setting up your device" reminders
+try {
+    $engagementPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\UserProfileEngagement"
+    if (-not (Test-Path $engagementPath)) {
+        New-Item -Path $engagementPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $engagementPath -Name ScoobeSystemSettingEnabled -Value 0 -Type DWord
+    Write-Log "Disabled 'Let's finish setting up' reminders"
+} catch {
+    Write-Log "Warning: Could not disable OOBE reminders: $_"
+}
+
+# Disable Windows Welcome Experience after updates
+try {
+    $cdmPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+    if (-not (Test-Path $cdmPath)) {
+        New-Item -Path $cdmPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $cdmPath -Name SubscribedContent-310093Enabled -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $cdmPath -Name SubscribedContent-338389Enabled -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $cdmPath -Name SoftLandingEnabled -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $cdmPath -Name SystemPaneSuggestionsEnabled -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Log "Disabled Windows Welcome Experience and suggestions"
+} catch {
+    Write-Log "Warning: Could not disable Welcome Experience: $_"
+}
+
+# Disable consumer features (sponsored apps, Start menu suggestions)
+try {
+    $cloudPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+    if (-not (Test-Path $cloudPath)) {
+        New-Item -Path $cloudPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $cloudPath -Name DisableWindowsConsumerFeatures -Value 1 -Type DWord
+    Write-Log "Disabled consumer features"
+} catch {
+    Write-Log "Warning: Could not disable consumer features: $_"
+}
+
+# Disable Office first-run wizard
+try {
+    $officePath = "HKLM:\SOFTWARE\Microsoft\Office\16.0\Common\General"
+    if (-not (Test-Path $officePath)) {
+        New-Item -Path $officePath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $officePath -Name ShownFirstRunOptin -Value 1 -Type DWord
+    Set-ItemProperty -Path $officePath -Name DisableFirstRun -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Log "Disabled Office first-run wizard"
+} catch {
+    Write-Log "Warning: Could not configure Office: $_"
+}
+
+# Disable OneDrive folder backup prompts
+try {
+    $onedrivePath = "HKLM:\SOFTWARE\Policies\Microsoft\OneDrive"
+    if (-not (Test-Path $onedrivePath)) {
+        New-Item -Path $onedrivePath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $onedrivePath -Name KFMBlockOptIn -Value 1 -Type DWord
+    Write-Log "Disabled OneDrive sync prompts"
+} catch {
+    Write-Log "Warning: Could not configure OneDrive: $_"
+}
+
+#endregion
+
+#region Privacy Settings
+
+Write-Log "Applying privacy settings..."
+
+# Disable Advertising ID
+try {
+    $adInfoPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo"
+    if (-not (Test-Path $adInfoPath)) {
+        New-Item -Path $adInfoPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $adInfoPath -Name DisabledByGroupPolicy -Value 1 -Type DWord
+    Write-Log "Advertising ID disabled"
+} catch {
+    Write-Log "Warning: Could not disable Advertising ID: $_"
+}
+
+# Disable Activity History
+try {
+    $systemPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
+    if (-not (Test-Path $systemPath)) {
+        New-Item -Path $systemPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $systemPath -Name EnableActivityFeed -Value 0 -Type DWord
+    Set-ItemProperty -Path $systemPath -Name PublishUserActivities -Value 0 -Type DWord
+    Set-ItemProperty -Path $systemPath -Name UploadUserActivities -Value 0 -Type DWord
+    Write-Log "Activity History disabled"
+} catch {
+    Write-Log "Warning: Could not disable Activity History: $_"
+}
+
+# Set telemetry to minimum based on edition
+try {
+    $edition = (Get-CimInstance Win32_OperatingSystem).Caption
+    $telemetryLevel = if ($edition -match "Enterprise|Education") { 0 } else { 1 }
+    $telemetryLevelName = if ($telemetryLevel -eq 0) { "Security" } else { "Basic" }
+
+    $dataCollectionPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+    if (-not (Test-Path $dataCollectionPath)) {
+        New-Item -Path $dataCollectionPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $dataCollectionPath -Name AllowTelemetry -Value $telemetryLevel -Type DWord
+    Set-ItemProperty -Path $dataCollectionPath -Name DoNotShowFeedbackNotifications -Value 1 -Type DWord
+    Write-Log "Telemetry set to $telemetryLevelName level"
+} catch {
+    Write-Log "Warning: Could not configure telemetry: $_"
+}
+
+# Disable Windows Copilot
+try {
+    $copilotPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot"
+    if (-not (Test-Path $copilotPath)) {
+        New-Item -Path $copilotPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $copilotPath -Name TurnOffWindowsCopilot -Value 1 -Type DWord
+    Write-Log "Windows Copilot disabled"
+} catch {
+    Write-Log "Warning: Could not disable Copilot: $_"
+}
+
+#endregion
+
 #region Disable Unnecessary Services
 
 Write-Log "Configuring services..."
@@ -264,6 +395,55 @@ try {
 } catch {
     Write-Log "Warning: Could not create template marker: $_"
 }
+
+#endregion
+
+#region Conservative Debloat
+
+Write-Log "Removing third-party bloatware (conservative mode)..."
+
+# Only remove obvious promotional/third-party apps
+$bloatwareApps = @(
+    "king.com.CandyCrushSaga",
+    "king.com.CandyCrushFriends",
+    "king.com.FarmHeroesSaga",
+    "BytedancePte.Ltd.TikTok",
+    "FACEBOOK.317180B0BB486",
+    "Facebook.Instagram",
+    "5A894077.McAfeeSecurity",
+    "AmazonVideo.PrimeVideo",
+    "SpotifyAB.SpotifyMusic",
+    "Disney.37853FC22B2CE",
+    "4DF9E0F8.Netflix",
+    "5319275A.WhatsAppDesktop",
+    "22364Disney.ESPNBetaPWA",
+    "Clipchamp.Clipchamp"
+)
+
+$removedCount = 0
+foreach ($appName in $bloatwareApps) {
+    try {
+        $package = Get-AppxPackage -Name "*$appName*" -AllUsers -ErrorAction SilentlyContinue
+        if ($package) {
+            # Remove for all users
+            Remove-AppxPackage -Package $package.PackageFullName -AllUsers -ErrorAction SilentlyContinue
+
+            # Remove provisioned package to prevent reinstall on new users
+            $provisioned = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue |
+                Where-Object { $_.PackageName -like "*$appName*" }
+            if ($provisioned) {
+                Remove-AppxProvisionedPackage -Online -PackageName $provisioned.PackageName -ErrorAction SilentlyContinue
+            }
+
+            Write-Log "Removed bloatware: $appName"
+            $removedCount++
+        }
+    } catch {
+        Write-Log "Warning: Could not remove $appName : $_"
+    }
+}
+
+Write-Log "Removed $removedCount bloatware apps"
 
 #endregion
 

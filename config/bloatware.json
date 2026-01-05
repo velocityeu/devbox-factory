@@ -1,0 +1,166 @@
+{
+  "version": "1.0.0",
+  "description": "Windows bloatware configuration for DevBox Factory",
+  "categories": {
+    "ThirdParty": {
+      "displayName": "Third-Party Apps",
+      "description": "Pre-installed promotional and advertising apps",
+      "keepByDefault": false,
+      "apps": [
+        "king.com.CandyCrushSaga",
+        "king.com.CandyCrushFriends",
+        "king.com.FarmHeroesSaga",
+        "BytedancePte.Ltd.TikTok",
+        "FACEBOOK.317180B0BB486",
+        "Facebook.Instagram",
+        "5A894077.McAfeeSecurity",
+        "AmazonVideo.PrimeVideo",
+        "SpotifyAB.SpotifyMusic",
+        "Disney.37853FC22B2CE",
+        "4DF9E0F8.Netflix",
+        "5319275A.WhatsAppDesktop",
+        "22364Disney.ESPNBetaPWA"
+      ]
+    },
+    "Entertainment": {
+      "displayName": "Entertainment Apps",
+      "description": "Music, video, and gaming apps",
+      "keepByDefault": false,
+      "apps": [
+        "Microsoft.ZuneMusic",
+        "Microsoft.ZuneVideo",
+        "Microsoft.MicrosoftSolitaireCollection",
+        "Microsoft.GamingApp",
+        "Microsoft.Clipchamp",
+        "MicrosoftCorporationII.QuickAssist"
+      ]
+    },
+    "Xbox": {
+      "displayName": "Xbox Gaming",
+      "description": "Xbox ecosystem and gaming overlay apps",
+      "keepByDefault": false,
+      "apps": [
+        "Microsoft.XboxApp",
+        "Microsoft.XboxGameOverlay",
+        "Microsoft.XboxGamingOverlay",
+        "Microsoft.XboxIdentityProvider",
+        "Microsoft.XboxSpeechToTextOverlay",
+        "Microsoft.Xbox.TCUI",
+        "Microsoft.GamingServices"
+      ]
+    },
+    "Bing": {
+      "displayName": "Bing Apps",
+      "description": "Bing search, news, weather, and finance",
+      "keepByDefault": false,
+      "apps": [
+        "Microsoft.BingNews",
+        "Microsoft.BingWeather",
+        "Microsoft.BingFinance",
+        "Microsoft.BingSearch",
+        "Microsoft.BingSports",
+        "Microsoft.BingTravel",
+        "Microsoft.BingHealthAndFitness"
+      ]
+    },
+    "Cortana": {
+      "displayName": "Cortana",
+      "description": "Cortana voice assistant",
+      "keepByDefault": false,
+      "apps": [
+        "Microsoft.549981C3F5F10"
+      ]
+    },
+    "Copilot": {
+      "displayName": "Windows Copilot",
+      "description": "AI assistant for Windows 11",
+      "keepByDefault": false,
+      "apps": [
+        "Microsoft.Copilot",
+        "Microsoft.Windows.Ai.Copilot.Provider"
+      ]
+    },
+    "Communication": {
+      "displayName": "Communication Apps",
+      "description": "Mail, calendar, people, and messaging",
+      "keepByDefault": true,
+      "apps": [
+        "microsoft.windowscommunicationsapps",
+        "Microsoft.People",
+        "Microsoft.YourPhone",
+        "MicrosoftTeams"
+      ]
+    },
+    "Productivity": {
+      "displayName": "Productivity Apps",
+      "description": "Office hub, notes, and task apps",
+      "keepByDefault": true,
+      "apps": [
+        "Microsoft.MicrosoftOfficeHub",
+        "Microsoft.Office.OneNote",
+        "Microsoft.MicrosoftStickyNotes",
+        "Microsoft.Todos",
+        "Microsoft.PowerAutomateDesktop"
+      ]
+    },
+    "Utilities": {
+      "displayName": "Utility Apps",
+      "description": "Maps, alarms, feedback, and other utilities",
+      "keepByDefault": false,
+      "apps": [
+        "Microsoft.WindowsMaps",
+        "Microsoft.WindowsAlarms",
+        "Microsoft.WindowsFeedbackHub",
+        "Microsoft.GetHelp",
+        "Microsoft.Getstarted",
+        "Microsoft.Microsoft3DViewer",
+        "Microsoft.MixedReality.Portal",
+        "Microsoft.Print3D",
+        "Microsoft.SkypeApp",
+        "Microsoft.OneConnect"
+      ]
+    },
+    "DevTools": {
+      "displayName": "Development Tools",
+      "description": "Terminal, PowerShell, and dev utilities (recommended to keep)",
+      "keepByDefault": true,
+      "apps": [
+        "Microsoft.WindowsTerminal",
+        "Microsoft.PowerShell",
+        "Microsoft.WSL"
+      ]
+    }
+  },
+  "protectedApps": [
+    "Microsoft.WindowsStore",
+    "Microsoft.StorePurchaseApp",
+    "Microsoft.WindowsCalculator",
+    "Microsoft.Windows.Photos",
+    "Microsoft.WindowsNotepad",
+    "Microsoft.Paint",
+    "Microsoft.ScreenSketch",
+    "Microsoft.WindowsTerminal",
+    "Microsoft.DesktopAppInstaller",
+    "Microsoft.SecHealthUI",
+    "Microsoft.WindowsDefender",
+    "Microsoft.HEIFImageExtension",
+    "Microsoft.HEVCVideoExtension",
+    "Microsoft.WebMediaExtensions",
+    "Microsoft.WebpImageExtension",
+    "Microsoft.VP9VideoExtensions"
+  ],
+  "removalProfiles": {
+    "Conservative": {
+      "description": "Remove only obvious third-party bloatware",
+      "categories": ["ThirdParty"]
+    },
+    "Moderate": {
+      "description": "Remove third-party, entertainment, and Xbox apps",
+      "categories": ["ThirdParty", "Entertainment", "Xbox", "Utilities"]
+    },
+    "Aggressive": {
+      "description": "Remove most non-essential apps including Bing, Cortana, Copilot",
+      "categories": ["ThirdParty", "Entertainment", "Xbox", "Bing", "Cortana", "Copilot", "Utilities", "Communication"]
+    }
+  }
+}

@@ -78,6 +78,8 @@ function Show-Help {
     Write-Host "        Manage offline dependencies (download/status)" -ForegroundColor White
     Write-Host "    test" -ForegroundColor Yellow -NoNewline
     Write-Host "        Run health checks and verify installation" -ForegroundColor White
+    Write-Host "    customize" -ForegroundColor Yellow -NoNewline
+    Write-Host "  Apply privacy, debloat, and Edge settings" -ForegroundColor White
     Write-Host "    cleanup" -ForegroundColor Yellow -NoNewline
     Write-Host "     Clean temp files and old logs" -ForegroundColor White
     Write-Host "    reset" -ForegroundColor Yellow -NoNewline
@@ -103,13 +105,24 @@ function Show-Help {
     Write-Host '    .\devbox reset -KeepTemplates' -ForegroundColor DarkGray -NoNewline
     Write-Host " Factory reset but preserve templates" -ForegroundColor Gray
     Write-Host ""
+    Write-Host "  CUSTOMIZE OPTIONS:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host '    .\devbox customize' -ForegroundColor DarkGray -NoNewline
+    Write-Host "             Interactive menu" -ForegroundColor Gray
+    Write-Host '    .\devbox customize -Privacy Enhanced' -ForegroundColor DarkGray -NoNewline
+    Write-Host " Apply privacy settings" -ForegroundColor Gray
+    Write-Host '    .\devbox customize -Debloat Moderate' -ForegroundColor DarkGray -NoNewline
+    Write-Host " Remove bloatware" -ForegroundColor Gray
+    Write-Host '    .\devbox customize -All' -ForegroundColor DarkGray -NoNewline
+    Write-Host "             Apply all defaults" -ForegroundColor Gray
+    Write-Host ""
     Write-Host "  EXAMPLES:" -ForegroundColor Cyan
     Write-Host ""
     Write-Host '    .\devbox install' -ForegroundColor DarkGray
     Write-Host '    .\devbox template -ISOPath C:\ISOs\Win11.iso' -ForegroundColor DarkGray
     Write-Host '    .\devbox vm -VMName DevVM-01 -StartVM' -ForegroundColor DarkGray
+    Write-Host '    .\devbox customize -All' -ForegroundColor DarkGray
     Write-Host '    .\devbox cleanup -All' -ForegroundColor DarkGray
-    Write-Host '    .\devbox reset' -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  DEFAULT VM CREDENTIALS:" -ForegroundColor Cyan
     Write-Host ""
@@ -275,6 +288,9 @@ switch ($normalizedCommand) {
     }
     "test" {
         Invoke-DevBoxCommand -ScriptPath "$PSScriptRoot\utils\Test-DevBoxHealth.ps1" -Args $Arguments
+    }
+    "customize" {
+        Invoke-DevBoxCommand -ScriptPath "$PSScriptRoot\Invoke-WindowsCustomization.ps1" -Args $Arguments
     }
     "cleanup" {
         Invoke-Cleanup -Args $Arguments

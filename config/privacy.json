@@ -1,0 +1,312 @@
+{
+  "version": "1.0.0",
+  "description": "Windows privacy settings configuration for DevBox Factory",
+  "levels": {
+    "Basic": {
+      "description": "Disable advertising and activity tracking only",
+      "settings": ["AdvertisingID", "ActivityHistory"],
+      "recommendedFor": ["General users", "Mixed environments"]
+    },
+    "Enhanced": {
+      "description": "Basic + telemetry reduction + Cortana/search customization",
+      "settings": ["AdvertisingID", "ActivityHistory", "Telemetry", "Cortana", "WebSearch", "ConsumerFeatures"],
+      "recommendedFor": ["Privacy-conscious users", "Development workstations"]
+    },
+    "Maximum": {
+      "description": "All privacy settings including Copilot, location, and diagnostic data",
+      "settings": ["AdvertisingID", "ActivityHistory", "Telemetry", "Cortana", "Copilot", "WebSearch", "Location", "DiagnosticData", "ConsumerFeatures", "Tips", "Feedback"],
+      "recommendedFor": ["Enterprise environments", "Secure workstations"]
+    }
+  },
+  "telemetryLevels": {
+    "Enterprise": 0,
+    "Education": 0,
+    "Pro": 1,
+    "Home": 1
+  },
+  "registrySettings": {
+    "AdvertisingID": {
+      "description": "Disable Windows advertising ID for app targeting",
+      "paths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+          "name": "DisabledByGroupPolicy",
+          "value": 1,
+          "type": "DWord"
+        },
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
+          "name": "Enabled",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "ActivityHistory": {
+      "description": "Disable activity history and timeline features",
+      "paths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+          "name": "EnableActivityFeed",
+          "value": 0,
+          "type": "DWord"
+        },
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+          "name": "PublishUserActivities",
+          "value": 0,
+          "type": "DWord"
+        },
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+          "name": "UploadUserActivities",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "Telemetry": {
+      "description": "Reduce Windows telemetry to minimum allowed level",
+      "paths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+          "name": "AllowTelemetry",
+          "value": "edition-based",
+          "type": "DWord"
+        },
+        {
+          "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+          "name": "AllowTelemetry",
+          "value": "edition-based",
+          "type": "DWord"
+        },
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+          "name": "DoNotShowFeedbackNotifications",
+          "value": 1,
+          "type": "DWord"
+        }
+      ]
+    },
+    "Cortana": {
+      "description": "Disable Cortana and voice activation",
+      "paths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+          "name": "AllowCortana",
+          "value": 0,
+          "type": "DWord"
+        },
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+          "name": "CortanaConsent",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "Copilot": {
+      "description": "Disable Windows Copilot AI assistant",
+      "paths": [
+        {
+          "path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
+          "name": "TurnOffWindowsCopilot",
+          "value": 1,
+          "type": "DWord"
+        },
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+          "name": "ShowCopilotButton",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "WebSearch": {
+      "description": "Disable web search in Start Menu",
+      "paths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+          "name": "DisableWebSearch",
+          "value": 1,
+          "type": "DWord"
+        },
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+          "name": "BingSearchEnabled",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "Location": {
+      "description": "Disable location tracking",
+      "paths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors",
+          "name": "DisableLocation",
+          "value": 1,
+          "type": "DWord"
+        },
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors",
+          "name": "DisableLocationScripting",
+          "value": 1,
+          "type": "DWord"
+        }
+      ]
+    },
+    "DiagnosticData": {
+      "description": "Disable diagnostic data collection beyond minimum",
+      "paths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+          "name": "LimitDiagnosticLogCollection",
+          "value": 1,
+          "type": "DWord"
+        },
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+          "name": "DisableOneSettingsDownloads",
+          "value": 1,
+          "type": "DWord"
+        }
+      ]
+    },
+    "ConsumerFeatures": {
+      "description": "Disable consumer features and sponsored content",
+      "paths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+          "name": "DisableWindowsConsumerFeatures",
+          "value": 1,
+          "type": "DWord"
+        },
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SubscribedContent-338388Enabled",
+          "value": 0,
+          "type": "DWord"
+        },
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SubscribedContent-310093Enabled",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "Tips": {
+      "description": "Disable tips, suggestions, and recommendations",
+      "paths": [
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SoftLandingEnabled",
+          "value": 0,
+          "type": "DWord"
+        },
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+          "name": "SystemPaneSuggestionsEnabled",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "Feedback": {
+      "description": "Disable feedback prompts",
+      "paths": [
+        {
+          "path": "HKCU:\\Software\\Microsoft\\Siuf\\Rules",
+          "name": "NumberOfSIUFInPeriod",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    }
+  },
+  "servicesToDisable": {
+    "Basic": [],
+    "Enhanced": [
+      {
+        "name": "DiagTrack",
+        "displayName": "Connected User Experiences and Telemetry"
+      },
+      {
+        "name": "dmwappushservice",
+        "displayName": "WAP Push Message Routing Service"
+      }
+    ],
+    "Maximum": [
+      {
+        "name": "DiagTrack",
+        "displayName": "Connected User Experiences and Telemetry"
+      },
+      {
+        "name": "dmwappushservice",
+        "displayName": "WAP Push Message Routing Service"
+      },
+      {
+        "name": "MapsBroker",
+        "displayName": "Downloaded Maps Manager"
+      },
+      {
+        "name": "lfsvc",
+        "displayName": "Geolocation Service"
+      }
+    ]
+  },
+  "edgeSettings": {
+    "disableTracking": {
+      "description": "Disable Edge tracking and telemetry",
+      "registryPaths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+          "name": "PersonalizationReportingEnabled",
+          "value": 0,
+          "type": "DWord"
+        },
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+          "name": "MetricsReportingEnabled",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "disableAds": {
+      "description": "Disable Edge shopping and sidebar features",
+      "registryPaths": [
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+          "name": "EdgeShoppingAssistantEnabled",
+          "value": 0,
+          "type": "DWord"
+        },
+        {
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+          "name": "HubsSidebarEnabled",
+          "value": 0,
+          "type": "DWord"
+        }
+      ]
+    },
+    "searchEngines": {
+      "Google": {
+        "name": "Google",
+        "searchUrl": "https://www.google.com/search?q={searchTerms}",
+        "suggestUrl": "https://www.google.com/complete/search?q={searchTerms}&client=chrome"
+      },
+      "DuckDuckGo": {
+        "name": "DuckDuckGo",
+        "searchUrl": "https://duckduckgo.com/?q={searchTerms}",
+        "suggestUrl": "https://duckduckgo.com/ac/?q={searchTerms}&type=list"
+      },
+      "Bing": {
+        "name": "Bing",
+        "searchUrl": "https://www.bing.com/search?q={searchTerms}",
+        "suggestUrl": "https://api.bing.com/qsonhs.aspx?q={searchTerms}"
+      }
+    }
+  }
+}

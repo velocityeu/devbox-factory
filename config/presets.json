@@ -206,6 +206,45 @@
     "comment": "Paths use {DevBoxRoot} placeholder - resolved at runtime to project folder"
   },
 
+  "customizationProfiles": {
+    "None": {
+      "description": "No additional Windows customization",
+      "privacy": "None",
+      "debloat": "None",
+      "configureEdge": false
+    },
+    "Privacy": {
+      "description": "Privacy-focused with minimal changes",
+      "privacy": "Enhanced",
+      "debloat": "Conservative",
+      "configureEdge": true,
+      "edgeSettings": {
+        "homepage": "https://duckduckgo.com",
+        "searchEngine": "DuckDuckGo",
+        "disableTracking": true
+      }
+    },
+    "Clean": {
+      "description": "Comprehensive cleanup for dev workstations",
+      "privacy": "Maximum",
+      "debloat": "Aggressive",
+      "configureEdge": true,
+      "edgeSettings": {
+        "homepage": "https://google.com",
+        "searchEngine": "Google",
+        "disableTracking": true,
+        "disableAds": true
+      }
+    },
+    "Enterprise": {
+      "description": "Enterprise-appropriate settings",
+      "privacy": "Enhanced",
+      "debloat": "Moderate",
+      "configureEdge": false,
+      "comment": "Respects corporate policies, no Edge changes"
+    }
+  },
+
   "errorCodes": {
     "HYPERV_NOT_AVAILABLE": {
       "Message": "Hyper-V is not available on this system",
