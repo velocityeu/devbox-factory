@@ -1671,7 +1671,7 @@ function Install-WindowsUpdates {
     } else {
         ConvertTo-SecureString "VibeDev123!" -AsPlainText -Force
     }
-    $credential = New-Object System.Management.Automation.PSCredential("Administrator", $securePassword)
+    $credential = New-Object System.Management.Automation.PSCredential("Admin", $securePassword)
 
     # Wait for PowerShell Direct to be available
     $maxAttempts = 30
@@ -1760,7 +1760,7 @@ function Install-DevBoxTools {
     } else {
         ConvertTo-SecureString "VibeDev123!" -AsPlainText -Force
     }
-    $credential = New-Object System.Management.Automation.PSCredential("Administrator", $securePassword)
+    $credential = New-Object System.Management.Automation.PSCredential("Admin", $securePassword)
 
     # Wait for PowerShell Direct to be available
     $maxAttempts = 30
@@ -1881,24 +1881,32 @@ function Invoke-Sysprep {
     } else {
         ConvertTo-SecureString "VibeDev123!" -AsPlainText -Force
     }
-    $credential = New-Object System.Management.Automation.PSCredential("Administrator", $securePassword)
+    $credential = New-Object System.Management.Automation.PSCredential("Admin", $securePassword)
 
     # Connect via PowerShell Direct
-    $maxAttempts = 20
+    $maxAttempts = 30
     $attempt = 0
     $session = $null
+    $lastError = $null
 
+    Write-Log "Connecting to VM via PowerShell Direct (user: Admin)..." -Level Info
     while ($attempt -lt $maxAttempts -and $null -eq $session) {
         try {
             $session = New-PSSession -VMName $Script:VMName -Credential $credential -ErrorAction Stop
+            Write-Log "PowerShell Direct connection established" -Level Success
         } catch {
+            $lastError = $_.Exception.Message
             $attempt++
+            Write-Host "." -NoNewline
             Start-Sleep -Seconds 10
         }
     }
+    Write-Host ""
 
     if ($null -eq $session) {
-        throw "Could not connect to VM for Sysprep"
+        Write-Log "Connection attempts: $attempt, Last error: $lastError" -Level Error
+        Write-Log "Tip: VM user is 'Admin' with password 'VibeDev123!' - verify OOBE completed" -Level Warning
+        throw "Could not connect to VM for Sysprep after $maxAttempts attempts"
     }
 
     try {
