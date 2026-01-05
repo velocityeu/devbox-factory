@@ -2055,6 +2055,9 @@ function Install-DevBoxTools {
             param($profileName)
 
             try {
+                # Ensure execution policy allows scripts to run
+                Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+
                 Set-Location "C:\DevBox"
 
                 # Run installer in silent mode with the specified profile
