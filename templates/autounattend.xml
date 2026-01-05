@@ -111,7 +111,7 @@
                 <!-- Enable PowerShell script execution -->
                 <SynchronousCommand wcm:action="add">
                     <Order>1</Order>
-                    <CommandLine>powershell.exe -Command "Set-ExecutionPolicy Bypass -Scope LocalMachine -Force"</CommandLine>
+                    <CommandLine>powershell.exe -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope LocalMachine -Force"</CommandLine>
                     <Description>Enable PowerShell scripts</Description>
                 </SynchronousCommand>
 
