@@ -216,6 +216,7 @@ function Unregister-DevBoxSwitch {
     .SYNOPSIS
         Remove a virtual switch from the registry
     #>
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
         [string]$SwitchName
@@ -223,6 +224,9 @@ function Unregister-DevBoxSwitch {
 
     $registry = Get-AssetRegistry
     if (-not $registry) { return $false }
+
+    $exists = $registry.virtualSwitches | Where-Object { $_.switchName -eq $SwitchName }
+    if (-not $exists) { return $false }
 
     $registry.virtualSwitches = @($registry.virtualSwitches | Where-Object { $_.switchName -ne $SwitchName })
     return Save-AssetRegistry -Registry $registry

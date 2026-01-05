@@ -66,6 +66,36 @@ if (Test-Path $loggerModule) {
     $Script:Paths = Initialize-DevBoxPaths -ScriptRoot $PSScriptRoot -LogPrefix "cleanup"
 }
 
+function Remove-SingleSwitch {
+    <#
+    .SYNOPSIS
+        Helper function to remove a single virtual switch
+    #>
+    param(
+        [Parameter(Mandatory)]
+        [string]$SwitchName,
+        [switch]$DryRun
+    )
+
+    if ($DryRun) {
+        Write-Host "[DRY RUN - would remove]" -ForegroundColor Yellow
+        return $true
+    }
+
+    try {
+        $hyperVSwitch = Get-VMSwitch -Name $SwitchName -ErrorAction SilentlyContinue
+        if ($hyperVSwitch) {
+            Remove-VMSwitch -Name $SwitchName -Force -ErrorAction Stop
+        }
+        Unregister-DevBoxSwitch -SwitchName $SwitchName | Out-Null
+        Write-Host "[OK]" -ForegroundColor Green
+        return $true
+    } catch {
+        Write-Host "[FAILED] $_" -ForegroundColor Red
+        return $false
+    }
+}
+
 function Show-Banner {
     Clear-Host
     Write-Host ""
@@ -460,14 +490,6 @@ function Remove-DevBoxSwitchesMenu {
     Write-Host "   [A] Remove ALL switches" -ForegroundColor Red
     Write-Host "   [B] Back to main menu" -ForegroundColor Yellow
     Write-Host ""
-
-    $choice = Read-Host "  Selection"
-
-    if ($choice -eq 'B' -or $choice -eq 'b') { return }
-
-    Write-Host "   [A] Remove ALL switches" -ForegroundColor Red
-    Write-Host "   [B] Back to main menu" -ForegroundColor Yellow
-    Write-Host ""
     Write-Host "  Enter numbers separated by commas (e.g., 1,2) or 'A' for all:" -ForegroundColor DarkGray
 
     $choice = Read-Host "  Selection"
@@ -511,20 +533,7 @@ function Remove-DevBoxSwitchesMenu {
 
     foreach ($sw in $toRemove) {
         Write-Host "  Removing $($sw.switchName)... " -NoNewline
-        if ($DryRun) {
-            Write-Host "[DRY RUN - would remove]" -ForegroundColor Yellow
-        } else {
-            try {
-                $hyperVSwitch = Get-VMSwitch -Name $sw.switchName -ErrorAction SilentlyContinue
-                if ($hyperVSwitch) {
-                    Remove-VMSwitch -Name $sw.switchName -Force -ErrorAction Stop
-                }
-                Unregister-DevBoxSwitch -SwitchName $sw.switchName | Out-Null
-                Write-Host "[OK]" -ForegroundColor Green
-            } catch {
-                Write-Host "[FAILED] $_" -ForegroundColor Red
-            }
-        }
+        Remove-SingleSwitch -SwitchName $sw.switchName -DryRun:$DryRun | Out-Null
     }
 
     Write-Host ""
@@ -699,7 +708,7 @@ function Invoke-FactoryReset {
                     Unregister-DevBoxTemplate -Name $template.name | Out-Null
                     Write-Host "[OK]" -ForegroundColor Green
                 } catch {
-                    Write-Host "[FAILED]" -ForegroundColor Red
+                    Write-Host "[FAILED] $_" -ForegroundColor Red
                 }
             }
         }
@@ -709,20 +718,7 @@ function Invoke-FactoryReset {
     $switches = Get-DevBoxSwitches
     foreach ($sw in $switches) {
         Write-Host "  Removing switch: $($sw.switchName)... " -NoNewline
-        if ($DryRun) {
-            Write-Host "[DRY RUN]" -ForegroundColor Yellow
-        } else {
-            try {
-                $hyperVSwitch = Get-VMSwitch -Name $sw.switchName -ErrorAction SilentlyContinue
-                if ($hyperVSwitch) {
-                    Remove-VMSwitch -Name $sw.switchName -Force -ErrorAction Stop
-                }
-                Unregister-DevBoxSwitch -SwitchName $sw.switchName | Out-Null
-                Write-Host "[OK]" -ForegroundColor Green
-            } catch {
-                Write-Host "[FAILED]" -ForegroundColor Red
-            }
-        }
+        Remove-SingleSwitch -SwitchName $sw.switchName -DryRun:$DryRun | Out-Null
     }
 
     # Remove folders
