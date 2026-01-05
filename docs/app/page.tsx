@@ -7,6 +7,7 @@ import Profiles from '@/components/Profiles'
 import Demo from '@/components/Demo'
 import QuickStart from '@/components/QuickStart'
 import Testimonials from '@/components/Testimonials'
+import About from '@/components/About'
 import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
 
@@ -22,6 +23,7 @@ export default function Home() {
       <Demo />
       <QuickStart />
       <Testimonials />
+      <About />
       <FAQ />
       <Footer />
     </main>
