@@ -484,7 +484,8 @@ function Show-TemplateScanResults {
 
     $index = 0
     if ([int]::TryParse($choice, [ref]$index) -and $index -ge 1 -and $index -le $Templates.Count) {
-        return $Templates[$index - 1].Path
+        $selectedTemplate = $Templates[$index - 1]
+        return $selectedTemplate['Path']
     }
 
     return $null
