@@ -1,6 +1,6 @@
 # DevBox Factory
 
-![Version](https://img.shields.io/badge/version-3.0.2-blue) ![Build](https://img.shields.io/badge/build-20260105.0300-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
+![Version](https://img.shields.io/badge/version-3.0.3-blue) ![Build](https://img.shields.io/badge/build-20260105.0400-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
 
 **One command. Identical dev environments. Every time.**
 
@@ -117,7 +117,7 @@ DevBox Factory provides a human-friendly CLI wrapper:
   +=====================================================================+
   |  DEVBOX FACTORY                                                     |
   |  One command. Identical dev environments. Every time.               |
-  |  by Velocity EU                           v3.0.2 build 20260105.0300|
+  |  by Velocity EU                           v3.0.3 build 20260105.0400|
   +=====================================================================+
 
   USAGE: .\devbox <command> [arguments]
@@ -169,7 +169,7 @@ All DevBox Factory scripts feature interactive menus with guided wizards. Simply
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  TOOL INSTALLER          Windows 11 Development Environment         |
-  |  by Velocity EU                           v3.0.2 build 20260105.0300|
+  |  by Velocity EU                           v3.0.3 build 20260105.0400|
   +=====================================================================+
 
   SELECT INSTALLATION PROFILE
@@ -245,7 +245,7 @@ Stage 1 of VM automation - creates a sysprepped Windows 11 template VHDX.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  TEMPLATE CREATOR       Hyper-V Windows 11 Template - Stage 1       |
-  |  by Velocity EU                           v3.0.2 build 20260105.0300|
+  |  by Velocity EU                           v3.0.3 build 20260105.0400|
   +=====================================================================+
 
   MAIN MENU
@@ -324,7 +324,7 @@ Stage 2 of VM automation - creates VMs from the template.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  VM CREATOR             Create Dev VMs from Template - Stage 2      |
-  |  by Velocity EU                           v3.0.2 build 20260105.0300|
+  |  by Velocity EU                           v3.0.3 build 20260105.0400|
   +=====================================================================+
 
   MAIN MENU
@@ -433,7 +433,7 @@ Stage 2 of VM automation - creates VMs from the template.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  HEALTH CHECK            Verify Installation and Environment        |
-  |  by Velocity EU                           v3.0.2 build 20260105.0300|
+  |  by Velocity EU                           v3.0.3 build 20260105.0400|
   +=====================================================================+
 
   CORE TOOLS
@@ -889,4 +889,4 @@ DevBox Factory supports pre-downloading dependencies for environments with limit
 
 ---
 
-**DevBox Factory v3.0.2** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
+**DevBox Factory v3.0.3** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)

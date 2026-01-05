@@ -14,10 +14,10 @@
     Name for the new VM (required)
 
 .PARAMETER TemplatePath
-    Path to the template VHDX file. Default: C:\HyperV\Templates\Win11-DevBox-Template.vhdx
+    Path to the template VHDX file. Default: {DevBoxRoot}\HyperV\Templates\Win11-DevBox-Template.vhdx
 
 .PARAMETER VMPath
-    Directory to store VM files. Default: C:\HyperV\VMs
+    Directory to store VM files. Default: {DevBoxRoot}\HyperV\VMs
 
 .PARAMETER MemoryGB
     Memory allocation for VM. Default: 8
@@ -67,8 +67,8 @@
 .NOTES
     Requires: DevBox template created by New-DevBoxTemplate.ps1
     Author: DevBox Factory Team
-    Version: 3.0.2
-    Build: 20260105.0300
+    Version: 3.0.3
+    Build: 20260105.0400
 #>
 
 [CmdletBinding()]
@@ -76,8 +76,8 @@ param(
     [Parameter(Mandatory = $false)]
     [string]$VMName,
 
-    [string]$TemplatePath = "C:\HyperV\Templates\Win11-DevBox-Template.vhdx",
-    [string]$VMPath = "C:\HyperV\VMs",
+    [string]$TemplatePath,  # Default set below after module import
+    [string]$VMPath,        # Default set below after module import
 
     [ValidateRange(4, 64)]
     [int]$MemoryGB = 8,
@@ -117,9 +117,9 @@ $ErrorActionPreference = "Stop"
 $Script:DevBoxVersion = @{
     Major = 3
     Minor = 0
-    Patch = 2
-    BuildDate = "2026-01-05 03:00"
-    BuildNumber = "20260105.0300"
+    Patch = 3
+    BuildDate = "2026-01-05 04:00"
+    BuildNumber = "20260105.0400"
 }
 
 # Script-level variables
@@ -132,6 +132,8 @@ $Script:Presets = $null
 
 # Initialize paths using logger module
 $loggerModule = Join-Path $Script:ParentRoot "modules\DevBoxLogger.psm1"
+$assetModule = Join-Path $Script:ParentRoot "modules\AssetRegistry.psm1"
+
 if (Test-Path $loggerModule) {
     Import-Module $loggerModule -Force -ErrorAction SilentlyContinue
     $Script:Paths = Initialize-DevBoxPaths -ScriptRoot $PSScriptRoot -LogPrefix "vm"
@@ -141,6 +143,19 @@ if (Test-Path $loggerModule) {
     # Fallback to default paths
     $Script:LogPath = Join-Path $env:USERPROFILE "DevBox-VM.log"
     $Script:TempFolder = Join-Path $Script:ParentRoot "temp"
+}
+
+if (Test-Path $assetModule) {
+    Import-Module $assetModule -Force -ErrorAction SilentlyContinue
+    Initialize-AssetRegistry -ScriptRoot $PSScriptRoot | Out-Null
+}
+
+# Set default paths if not provided (project-relative)
+if ([string]::IsNullOrEmpty($TemplatePath)) {
+    $TemplatePath = Join-Path $Script:ParentRoot "HyperV\Templates\Win11-DevBox-Template.vhdx"
+}
+if ([string]::IsNullOrEmpty($VMPath)) {
+    $VMPath = Join-Path $Script:ParentRoot "HyperV\VMs"
 }
 
 # Load presets if available
@@ -225,10 +240,10 @@ function Show-VHDXFilePicker {
     $dialog = New-Object System.Windows.Forms.OpenFileDialog
     $dialog.Filter = "VHDX Files (*.vhdx)|*.vhdx|All Files (*.*)|*.*"
     $dialog.Title = "Select DevBox Template VHDX"
-    $dialog.InitialDirectory = "C:\HyperV\Templates"
 
-    if (Test-Path "C:\HyperV\Templates") {
-        $dialog.InitialDirectory = "C:\HyperV\Templates"
+    $defaultTemplateDir = Join-Path $Script:ParentRoot "HyperV\Templates"
+    if (Test-Path $defaultTemplateDir) {
+        $dialog.InitialDirectory = $defaultTemplateDir
     } elseif (Test-Path $env:USERPROFILE) {
         $dialog.InitialDirectory = $env:USERPROFILE
     }
@@ -251,7 +266,12 @@ function Show-FolderPicker {
 }
 
 function Find-TemplateFiles {
-    param([string[]]$SearchPaths = @("C:\HyperV\Templates", "D:\HyperV\Templates", "E:\HyperV\Templates"))
+    param([string[]]$SearchPaths)
+
+    $defaultPath = Join-Path $Script:ParentRoot "HyperV\Templates"
+    if (-not $SearchPaths) {
+        $SearchPaths = @($defaultPath, "C:\HyperV\Templates", "D:\HyperV\Templates", "E:\HyperV\Templates")
+    }
 
     $templates = @()
     foreach ($path in $SearchPaths) {
@@ -415,7 +435,7 @@ function Show-TemplateSelectionMenu {
     Write-Host ""
     Write-Host "   [3] " -ForegroundColor Yellow -NoNewline
     Write-Host "Scan for templates" -ForegroundColor White
-    Write-Host "       Searches: C:\HyperV\Templates, D:\, E:\" -ForegroundColor DarkGray
+    Write-Host "       Searches: DevBox folder, C:\HyperV\Templates, D:\, E:\" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [B] " -ForegroundColor DarkYellow -NoNewline
     Write-Host "Back to main menu" -ForegroundColor White
@@ -865,8 +885,8 @@ function Show-ExistingVMs {
 function Invoke-InteractiveMode {
     $config = @{
         VMName = ""
-        TemplatePath = "C:\HyperV\Templates\Win11-DevBox-Template.vhdx"
-        VMPath = "C:\HyperV\VMs"
+        TemplatePath = (Join-Path $Script:ParentRoot "HyperV\Templates\Win11-DevBox-Template.vhdx")
+        VMPath = (Join-Path $Script:ParentRoot "HyperV\VMs")
         MemoryGB = 8
         ProcessorCount = 4
         DiskSizeGB = 127
@@ -1616,6 +1636,19 @@ function Main {
             $Script:CreatedVMs += @{
                 Name = $name
                 VHDXPath = $vhdxPath
+            }
+
+            # Register VM in asset registry
+            if (Get-Command Register-DevBoxVM -ErrorAction SilentlyContinue) {
+                $templateName = [System.IO.Path]::GetFileNameWithoutExtension($TemplatePath)
+                Register-DevBoxVM -VMName $name `
+                    -VHDXPath $vhdxPath `
+                    -TemplateName $templateName `
+                    -MemoryGB $MemoryGB `
+                    -ProcessorCount $ProcessorCount `
+                    -InstallMode $InstallMode `
+                    -Profile $DevBoxProfile | Out-Null
+                Write-Log "VM registered in asset registry" -Level Info
             }
 
             # Start VM if requested

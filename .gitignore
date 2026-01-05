@@ -42,3 +42,9 @@ dependencies/*.msix
 !dependencies/manifest.json
 !dependencies/README.md
 !dependencies/.gitkeep
+
+# Asset registry (local machine state)
+config/asset-registry.json
+
+# HyperV folder (VMs and templates created locally)
+HyperV/

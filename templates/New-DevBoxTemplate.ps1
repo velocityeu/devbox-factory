@@ -18,7 +18,7 @@
     Path to Windows 11 ISO file. If not provided, interactive mode is launched.
 
 .PARAMETER TemplatePath
-    Directory to store the template VHDX. Default: C:\HyperV\Templates
+    Directory to store the template VHDX. Default: {DevBoxRoot}\HyperV\Templates
 
 .PARAMETER TemplateName
     Name for the template. Default: Win11-DevBox-Template
@@ -67,15 +67,15 @@
 .NOTES
     Requires: Windows 10/11 Pro or Server with Hyper-V capability
     DevBox Factory - https://github.com/velocityeu/devbox-factory
-    Version: 3.0.2
-    Build: 20260105.0300
+    Version: 3.0.3
+    Build: 20260105.0400
 #>
 
 [CmdletBinding()]
 param(
     [string]$ISOPath,
 
-    [string]$TemplatePath = "C:\HyperV\Templates",
+    [string]$TemplatePath,  # Default set below after module import
     [string]$TemplateName = "Win11-DevBox-Template",
 
     [ValidateRange(4, 64)]
@@ -119,9 +119,9 @@ $ProgressPreference = "SilentlyContinue"
 $Script:DevBoxVersion = @{
     Major       = 3
     Minor       = 0
-    Patch       = 2
-    BuildDate   = "2026-01-05 03:00"
-    BuildNumber = "20260105.0300"
+    Patch       = 3
+    BuildDate   = "2026-01-05 04:00"
+    BuildNumber = "20260105.0400"
 }
 
 # Script-level variables
@@ -129,12 +129,14 @@ $Script:RequiresReboot = $false
 $Script:VMName = "$TemplateName-Build"
 $Script:InteractiveMode = $false
 $Script:SelectedConfig = @{}
-$Script:VHDXPath = Join-Path $TemplatePath "$TemplateName.vhdx"
 $Script:ADKPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Assessment and Deployment Kit"
 $Script:ScriptRoot = $PSScriptRoot
+$Script:ParentRoot = Split-Path $PSScriptRoot -Parent
 
-# Initialize paths using logger module
-$loggerModule = Join-Path (Split-Path $PSScriptRoot -Parent) "modules\DevBoxLogger.psm1"
+# Import modules
+$loggerModule = Join-Path $Script:ParentRoot "modules\DevBoxLogger.psm1"
+$assetModule = Join-Path $Script:ParentRoot "modules\AssetRegistry.psm1"
+
 if (Test-Path $loggerModule) {
     Import-Module $loggerModule -Force -ErrorAction SilentlyContinue
     $Script:Paths = Initialize-DevBoxPaths -ScriptRoot $PSScriptRoot -LogPrefix "template"
@@ -143,11 +145,22 @@ if (Test-Path $loggerModule) {
 } else {
     # Fallback to default paths
     $Script:LogPath = Join-Path $env:USERPROFILE "DevBox-Template.log"
-    $Script:TempFolder = Join-Path (Split-Path $PSScriptRoot -Parent) "temp"
+    $Script:TempFolder = Join-Path $Script:ParentRoot "temp"
     if (-not (Test-Path $Script:TempFolder)) {
         New-Item -Path $Script:TempFolder -ItemType Directory -Force | Out-Null
     }
 }
+
+if (Test-Path $assetModule) {
+    Import-Module $assetModule -Force -ErrorAction SilentlyContinue
+    Initialize-AssetRegistry -ScriptRoot $PSScriptRoot | Out-Null
+}
+
+# Set default TemplatePath if not provided (project-relative)
+if ([string]::IsNullOrEmpty($TemplatePath)) {
+    $TemplatePath = Join-Path $Script:ParentRoot "HyperV\Templates"
+}
+$Script:VHDXPath = Join-Path $TemplatePath "$TemplateName.vhdx"
 $Script:TempVHDXPath = Join-Path $Script:TempFolder "$TemplateName-temp.vhdx"
 
 # Regional settings - detected from host system
@@ -807,7 +820,7 @@ function Show-ExistingTemplates {
     Write-Host "  +-----------------------------------------------------------+" -ForegroundColor Cyan
     Write-Host ""
 
-    $templateDir = "C:\HyperV\Templates"
+    $templateDir = Join-Path $Script:ParentRoot "HyperV\Templates"
     if (-not (Test-Path $templateDir)) {
         Write-Host "   No templates found. Template directory does not exist." -ForegroundColor Yellow
         Write-Host "   Path: $templateDir" -ForegroundColor Gray
@@ -890,7 +903,7 @@ function Show-DevBoxProfileMenu {
 function Invoke-InteractiveMode {
     $config = @{
         ISOPath = ""
-        TemplatePath = "C:\HyperV\Templates"
+        TemplatePath = (Join-Path $Script:ParentRoot "HyperV\Templates")
         TemplateName = "Win11-DevBox-Template"
         MemoryGB = 8
         ProcessorCount = 4
@@ -2082,6 +2095,17 @@ function Main {
 
         # Step 9: Export template
         Export-Template
+
+        # Step 10: Register template in asset registry
+        if (Get-Command Register-DevBoxTemplate -ErrorAction SilentlyContinue) {
+            $registeredName = if ($Script:TemplateName) { $Script:TemplateName } else { $TemplateName }
+            Register-DevBoxTemplate -Name $registeredName `
+                -VHDXPath $Script:VHDXPath `
+                -SourceISO $ISOPath `
+                -WindowsEditionIndex $WindowsEditionIndex `
+                -Profile $profileToInstall | Out-Null
+            Write-Log "Template registered in asset registry" -Level Info
+        }
 
         $duration = (Get-Date) - $startTime
         Write-Log "Template creation completed in $([math]::Round($duration.TotalMinutes, 1)) minutes" -Level Success

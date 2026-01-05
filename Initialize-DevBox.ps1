@@ -16,8 +16,8 @@
     irm https://raw.githubusercontent.com/velocityeu/devbox-factory/main/Initialize-DevBox.ps1 | iex
 
 .NOTES
-    Version: 3.0.2
-    Build: 20260105.0300
+    Version: 3.0.3
+    Build: 20260105.0400
     DevBox Factory - https://github.com/velocityeu/devbox-factory
 #>
 
@@ -26,9 +26,9 @@
 $Script:DevBoxVersion = @{
     Major       = 3
     Minor       = 0
-    Patch       = 2
-    Build       = "20260105.0300"
-    BuildDate   = "2026-01-05 03:00"
+    Patch       = 3
+    Build       = "20260105.0400"
+    BuildDate   = "2026-01-05 04:00"
 }
 
 $Script:GitHubBaseUrl = "https://raw.githubusercontent.com/velocityeu/devbox-factory/main"

@@ -17,8 +17,8 @@
     .\Test-DevBoxHealth.ps1 -Category Core,AI
 
 .NOTES
-    DevBox Factory v3.0.2
-    Build: 20260105.0300
+    DevBox Factory v3.0.3
+    Build: 20260105.0400
     https://github.com/velocityeu/devbox-factory
 #>
 
@@ -28,9 +28,9 @@ param(
     [string[]]$Category = @('All')
 )
 
-$Script:Version = "3.0.2"
-$Script:Build = "20260105.0300"
-$Script:BuildDate = "2026-01-05 03:00"
+$Script:Version = "3.0.3"
+$Script:Build = "20260105.0400"
+$Script:BuildDate = "2026-01-05 04:00"
 $Script:PassCount = 0
 $Script:FailCount = 0
 $Script:WarnCount = 0

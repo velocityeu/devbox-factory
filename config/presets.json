@@ -1,6 +1,6 @@
 {
-  "version": "3.0.2",
-  "buildDate": "2026-01-05 03:00",
+  "version": "3.0.3",
+  "buildDate": "2026-01-05 04:00",
 
   "vmPresets": {
     "Lightweight": {
@@ -198,11 +198,12 @@
   ],
 
   "templateDefaults": {
-    "TemplatePath": "C:\\HyperV\\Templates",
+    "TemplatePath": "{DevBoxRoot}\\HyperV\\Templates",
     "TemplateName": "Win11-DevBox-Template",
-    "VMPath": "C:\\HyperV\\VMs",
+    "VMPath": "{DevBoxRoot}\\HyperV\\VMs",
     "SwitchName": "Default Switch",
-    "TimeZone": "Pacific Standard Time"
+    "TimeZone": "Pacific Standard Time",
+    "comment": "Paths use {DevBoxRoot} placeholder - resolved at runtime to project folder"
   },
 
   "errorCodes": {

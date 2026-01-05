@@ -14,11 +14,12 @@
     .\devbox deps          # Manage offline dependencies
     .\devbox test          # Run health checks
     .\devbox cleanup       # Clean temp files and old logs
+    .\devbox reset         # Remove VMs, templates (factory reset)
     .\devbox help          # Show this help
 
 .NOTES
-    DevBox Factory v3.0.2
-    Build: 20260105.0300
+    DevBox Factory v3.0.3
+    Build: 20260105.0400
     https://github.com/velocityeu/devbox-factory
 #>
 
@@ -30,9 +31,9 @@ param(
     [string[]]$Arguments
 )
 
-$Script:Version = "3.0.2"
-$Script:Build = "20260105.0300"
-$Script:BuildDate = "2026-01-05 03:00"
+$Script:Version = "3.0.3"
+$Script:Build = "20260105.0400"
+$Script:BuildDate = "2026-01-05 04:00"
 
 # Import logger module
 $loggerModule = Join-Path $PSScriptRoot "modules\DevBoxLogger.psm1"
@@ -79,6 +80,8 @@ function Show-Help {
     Write-Host "        Run health checks and verify installation" -ForegroundColor White
     Write-Host "    cleanup" -ForegroundColor Yellow -NoNewline
     Write-Host "     Clean temp files and old logs" -ForegroundColor White
+    Write-Host "    reset" -ForegroundColor Yellow -NoNewline
+    Write-Host "       Remove VMs, templates, factory reset" -ForegroundColor White
     Write-Host "    help" -ForegroundColor Yellow -NoNewline
     Write-Host "        Show this help message" -ForegroundColor White
     Write-Host ""
@@ -91,12 +94,22 @@ function Show-Help {
     Write-Host '    .\devbox cleanup -All' -ForegroundColor DarkGray -NoNewline
     Write-Host "       Clean both temp and old logs" -ForegroundColor Gray
     Write-Host ""
+    Write-Host "  RESET OPTIONS:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host '    .\devbox reset' -ForegroundColor DarkGray -NoNewline
+    Write-Host "           Interactive cleanup menu" -ForegroundColor Gray
+    Write-Host '    .\devbox reset -DryRun' -ForegroundColor DarkGray -NoNewline
+    Write-Host "    Preview what would be deleted" -ForegroundColor Gray
+    Write-Host '    .\devbox reset -KeepTemplates' -ForegroundColor DarkGray -NoNewline
+    Write-Host " Factory reset but preserve templates" -ForegroundColor Gray
+    Write-Host ""
     Write-Host "  EXAMPLES:" -ForegroundColor Cyan
     Write-Host ""
     Write-Host '    .\devbox install' -ForegroundColor DarkGray
     Write-Host '    .\devbox template -ISOPath C:\ISOs\Win11.iso' -ForegroundColor DarkGray
     Write-Host '    .\devbox vm -VMName DevVM-01 -StartVM' -ForegroundColor DarkGray
     Write-Host '    .\devbox cleanup -All' -ForegroundColor DarkGray
+    Write-Host '    .\devbox reset' -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  MORE INFO:" -ForegroundColor Cyan
     Write-Host "    https://github.com/velocityeu/devbox-factory" -ForegroundColor Blue
@@ -256,6 +269,9 @@ switch ($normalizedCommand) {
     }
     "cleanup" {
         Invoke-Cleanup -Args $Arguments
+    }
+    "reset" {
+        Invoke-DevBoxCommand -ScriptPath "$PSScriptRoot\utils\Remove-DevBoxAssets.ps1" -Args $Arguments
     }
     "help" {
         Show-Help

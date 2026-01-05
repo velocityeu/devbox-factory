@@ -49,7 +49,7 @@
     # Shows download status of all dependencies
 
 .NOTES
-    DevBox Factory v3.0.2
+    DevBox Factory v3.0.3
     https://github.com/velocityeu/devbox-factory
 #>
 
@@ -77,8 +77,8 @@ param(
     [switch]$Clean
 )
 
-$Script:Version = "3.0.2"
-$Script:Build = "20260105.0300"
+$Script:Version = "3.0.3"
+$Script:Build = "20260105.0400"
 $Script:DependenciesPath = Join-Path $PSScriptRoot "dependencies"
 $Script:ManifestPath = Join-Path $Script:DependenciesPath "manifest.json"
 $Script:ModulesPath = Join-Path $PSScriptRoot "modules"
