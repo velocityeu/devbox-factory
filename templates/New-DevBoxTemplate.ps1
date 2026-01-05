@@ -1456,8 +1456,8 @@ function Install-Prerequisites {
             Write-Log "WinGet package not available, downloading directly from Microsoft..." -Level Info
 
             # Download Windows PE Add-on directly from Microsoft
-            # URL matches the ADK version (10.1.28000.1 for Windows 11 24H2)
-            $peAddonUrl = "https://download.microsoft.com/download/615540bc-be0b-433a-b91b-1f2b0642bb24/adk/adkwinpesetup.exe"
+            # Using go.microsoft.com redirect for stability (ADK 10.1.26100.2454 - Dec 2024)
+            $peAddonUrl = "https://go.microsoft.com/fwlink/?linkid=2289981"
             $peAddonInstaller = Join-Path $env:TEMP "adkwinpesetup.exe"
 
             try {
