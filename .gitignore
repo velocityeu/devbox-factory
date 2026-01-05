@@ -11,8 +11,9 @@ DevBox-Install.log
 temp/*
 !temp/README.md
 
-# Claude Code local config
-.claude/
+# Claude Code local config (keep skills for team sharing)
+.claude/*
+!.claude/skills/
 
 # Windows
 Thumbs.db
