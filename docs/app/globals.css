@@ -97,14 +97,9 @@
     box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.3), 0 16px 48px -16px rgba(0, 0, 0, 0.4);
   }
 
-  /* Gradient text */
+  /* Accent text - solid color, no gradients (Jony Ive style) */
   .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, var(--color-accent) 0%, #6366f1 100%);
-  }
-
-  .dark .gradient-text {
-    background-image: linear-gradient(135deg, #2997ff 0%, #a855f7 100%);
+    color: var(--color-accent);
   }
 
   /* Premium button styles */

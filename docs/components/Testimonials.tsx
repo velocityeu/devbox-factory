@@ -7,19 +7,19 @@ import Button from './ui/Button'
 const testimonials = [
   {
     quote: 'Finally, a tool that understands the pain of environment setup. Saved me hours on my new laptop setup.',
-    avatar: '👨‍💻',
+    initials: 'VC',
     name: 'Vibe Coder',
     role: 'Building with Claude Code',
   },
   {
     quote: 'Our team of 12 developers now has identical environments. No more "works on my machine" excuses in PRs.',
-    avatar: '👩‍💼',
+    initials: 'TL',
     name: 'Tech Lead',
     role: 'Enterprise Team',
   },
   {
     quote: 'I went from "what\'s a PATH variable" to shipping my first Claude Code project in one afternoon. This is how it should be.',
-    avatar: '🧑‍🎓',
+    initials: 'ND',
     name: 'New Developer',
     role: 'Learning AI Development',
   },
@@ -55,8 +55,8 @@ export default function Testimonials() {
                   &ldquo;{testimonial.quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-3 pt-4 border-t border-[var(--color-border-light)]">
-                  <span className="w-10 h-10 flex items-center justify-center bg-[var(--color-accent)]/10 rounded-full text-xl">
-                    {testimonial.avatar}
+                  <span className="w-10 h-10 flex items-center justify-center bg-[var(--color-bg-secondary)] border border-[var(--color-border-light)] rounded-full text-sm font-medium text-secondary">
+                    {testimonial.initials}
                   </span>
                   <div>
                     <span className="block font-medium text-primary text-sm">{testimonial.name}</span>

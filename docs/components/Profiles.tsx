@@ -5,7 +5,6 @@ import Card from './ui/Card'
 
 const profiles = [
   {
-    icon: '🤖',
     title: 'AI Coder',
     desc: 'Claude, Cursor, AI-powered dev',
     tools: ['Claude Code CLI', 'Cursor IDE', 'VS Code + AI', 'Node.js & Python'],
@@ -13,28 +12,24 @@ const profiles = [
     featured: true,
   },
   {
-    icon: '🌐',
     title: 'Web Developer',
     desc: 'Full-stack web development',
     tools: ['Node.js & package managers', 'Python 3.12', 'Docker Desktop', 'Databases'],
     time: '~25 min',
   },
   {
-    icon: '☁️',
     title: 'Azure Developer',
     desc: 'Cloud-native on Azure',
     tools: ['Azure CLI & Functions', '.NET SDK 8', 'Terraform & Bicep', 'Azure Data Studio'],
     time: '~20 min',
   },
   {
-    icon: '🚀',
     title: 'Full Stack',
     desc: 'Everything included',
     tools: ['All AI tools', 'All runtimes', 'Docker & DBs', 'Cloud tools'],
     time: '~45 min',
   },
   {
-    icon: '🎯',
     title: 'Minimal',
     desc: 'Just the essentials',
     tools: ['Git', 'Terminal', 'VS Code', 'PowerShell 7'],
@@ -76,8 +71,7 @@ export default function Profiles() {
                   Popular
                 </span>
               )}
-              <span className="text-4xl mb-3 block">{profile.icon}</span>
-              <h3 className="font-semibold text-primary mb-1">{profile.title}</h3>
+              <h3 className="font-semibold text-primary mb-1 mt-2">{profile.title}</h3>
               <p className="text-tertiary text-xs mb-4">{profile.desc}</p>
               <ul className="text-left space-y-1.5 mb-4">
                 {profile.tools.map((tool) => (
@@ -88,7 +82,7 @@ export default function Profiles() {
                 ))}
               </ul>
               <div className="pt-3 border-t border-[var(--color-border-light)] text-xs text-tertiary">
-                ⏱️ {profile.time}
+                {profile.time}
               </div>
             </Card>
           ))}

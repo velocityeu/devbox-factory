@@ -15,46 +15,46 @@ const terminalContent: Record<number, string> = {
   1: `PS C:\\> irm devbox.run | iex
 
 Downloading DevBox Factory...
-████████████████████████████████ 100%
+================================ 100%
 
-✓ Downloaded successfully
-✓ Verifying checksums
-✓ Extracting files
+Done - Downloaded successfully
+Done - Verifying checksums
+Done - Extracting files
 
 Starting installer...`,
-  2: `╔═══════════════════════════════════════════════╗
-║  ⚡ DevBox Factory v3.5.2                      ║
-║  One command. Perfect dev environment.         ║
-╚═══════════════════════════════════════════════╝
+  2: `+-----------------------------------------------+
+|  DevBox Factory v3.5.2                        |
+|  One command. Perfect dev environment.        |
++-----------------------------------------------+
 
 ? Select profile:
 
-  ❯ 🤖 AI Coder     - Claude, Cursor, VS Code
-    🌐 Web Dev      - Node, Python, Docker
-    ☁️  Azure        - CLI, .NET, Terraform
-    🚀 Full Stack   - Everything
-    🎯 Minimal      - Just essentials`,
+  > AI Coder     - Claude, Cursor, VS Code
+    Web Dev      - Node, Python, Docker
+    Azure        - CLI, .NET, Terraform
+    Full Stack   - Everything
+    Minimal      - Just essentials`,
   3: `Installing AI Coder profile...
 
-✓ Git for Windows
-✓ Windows Terminal
-✓ VS Code
-→ Claude Code CLI...
-  ████████████████████░░░░░░░░ 65%
+Done - Git for Windows
+Done - Windows Terminal
+Done - VS Code
+     - Claude Code CLI...
+  =====================---------- 65%
 
 Estimated: 8 minutes remaining`,
-  4: `╔═══════════════════════════════════════════════╗
-║  ✨ Installation Complete!                     ║
-╚═══════════════════════════════════════════════╝
+  4: `+-----------------------------------------------+
+|  Installation Complete!                       |
++-----------------------------------------------+
 
-✓ Git configured
-✓ Claude Code CLI (v1.0.17)
-✓ Cursor IDE
-✓ VS Code + extensions
-✓ Node.js 22 (NVM)
-✓ Python 3.12
+Done - Git configured
+Done - Claude Code CLI (v1.0.17)
+Done - Cursor IDE
+Done - VS Code + extensions
+Done - Node.js 22 (NVM)
+Done - Python 3.12
 
-→ Run 'claude' to start coding!`,
+> Run 'claude' to start coding!`,
 }
 
 export default function Demo() {

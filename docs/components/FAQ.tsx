@@ -44,7 +44,7 @@ export default function FAQ() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <span className="section-badge mb-4">Got Questions?</span>
+          <span className="section-badge mb-4">Questions</span>
           <h2 className="text-display text-primary">
             Frequently asked <span className="gradient-text">questions</span>
           </h2>

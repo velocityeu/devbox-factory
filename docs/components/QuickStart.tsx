@@ -63,13 +63,13 @@ export default function QuickStart() {
               <p className="text-tertiary text-sm mb-4">{opt.desc}</p>
 
               <div className="flex items-center gap-2 p-3 bg-gray-900 rounded-lg mb-3">
-                <code className="flex-1 text-xs text-[#2997ff] font-mono overflow-x-auto whitespace-nowrap">
+                <code className="flex-1 text-xs text-[var(--color-accent)] font-mono overflow-x-auto whitespace-nowrap">
                   {opt.cmd}
                 </code>
                 <CopyButton text={opt.cmd} />
               </div>
 
-              <p className="text-xs text-tertiary">💡 {opt.note}</p>
+              <p className="text-xs text-tertiary">{opt.note}</p>
             </Card>
           ))}
         </div>
@@ -82,16 +82,18 @@ export default function QuickStart() {
           transition={{ duration: 0.5 }}
           className="card p-6"
         >
-          <h4 className="font-semibold text-primary mb-4">📋 Requirements</h4>
+          <h4 className="font-semibold text-primary mb-4">Requirements</h4>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: '💻', text: 'Windows 11 or Server 2025' },
-              { icon: '👑', text: 'Admin privileges' },
-              { icon: '🌐', text: 'Internet connection' },
-              { icon: '💾', text: '~15GB free space' },
+              { text: 'Windows 11 or Server 2025' },
+              { text: 'Admin privileges' },
+              { text: 'Internet connection' },
+              { text: '~15GB free space' },
             ].map((req) => (
               <div key={req.text} className="flex items-center gap-3 text-secondary text-sm">
-                <span>{req.icon}</span>
+                <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
                 <span>{req.text}</span>
               </div>
             ))}

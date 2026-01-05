@@ -59,8 +59,7 @@ export default function Footer() {
             {/* Brand */}
             <div className="md:max-w-xs">
               <Link href="#" className="flex items-center gap-2 text-lg font-semibold text-primary mb-3">
-                <span className="text-xl">⚡</span>
-                <span>DevBox<span className="text-accent">Factory</span></span>
+                <span>DevBox</span><span className="text-accent">Factory</span>
               </Link>
               <p className="text-sm text-tertiary">One command. Perfect dev environment. Every time.</p>
             </div>
@@ -107,7 +106,7 @@ export default function Footer() {
           {/* Bottom */}
           <div className="pt-8 border-t border-[var(--color-border-light)] text-center">
             <p className="text-sm text-tertiary mb-1">
-              Made with ⚡ by{' '}
+              Made by{' '}
               <a
                 href="https://github.com/velocityeu"
                 target="_blank"
@@ -117,7 +116,7 @@ export default function Footer() {
                 Velocity EU
               </a>
             </p>
-            <p className="text-xs text-tertiary/60">MIT License &bull; Open Source &bull; Free Forever</p>
+            <p className="text-xs text-tertiary/60">MIT License · Open Source · Free Forever</p>
           </div>
         </div>
       </footer>

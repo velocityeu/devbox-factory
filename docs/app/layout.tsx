@@ -53,14 +53,8 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <ThemeProvider>
-          {/* Subtle background gradient */}
-          <div className="fixed inset-0 -z-10 bg-secondary" />
-          <div className="fixed inset-0 -z-10 bg-gradient-to-b from-transparent via-transparent to-[var(--color-bg-secondary)] opacity-50" />
-
-          {/* Subtle animated orbs - only in dark mode */}
-          <div className="fixed -z-10 w-[500px] h-[500px] -top-32 -right-32 rounded-full bg-primary-500/5 dark:bg-primary-500/10 blur-3xl animate-float pointer-events-none" />
-          <div className="fixed -z-10 w-[400px] h-[400px] top-1/2 -left-32 rounded-full bg-purple-500/5 dark:bg-purple-500/10 blur-3xl animate-float pointer-events-none" style={{ animationDelay: '-10s' }} />
-
+          {/* Clean, minimal background */}
+          <div className="fixed inset-0 -z-10 bg-[var(--color-bg)]" />
           {children}
         </ThemeProvider>
       </body>

@@ -44,9 +44,13 @@ export default function Solution() {
         {/* Comparison */}
         <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-6 items-stretch mb-16">
           {/* Before */}
-          <Card hover={false} className="border-red-500/20 dark:border-red-500/30">
+          <Card hover={false} className="border-[var(--color-border)]">
             <div className="flex items-center gap-3 mb-6">
-              <span className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 text-lg">✗</span>
+              <span className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 text-sm font-medium">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </span>
               <h3 className="text-lg font-semibold text-primary">Without DevBox Factory</h3>
             </div>
             <ul className="space-y-3 mb-6">
@@ -58,7 +62,6 @@ export default function Solution() {
               ))}
             </ul>
             <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/5 border border-red-500/10">
-              <span className="text-xl">😩</span>
               <span className="text-sm font-medium text-primary">Still debugging at midnight</span>
             </div>
           </Card>
@@ -76,9 +79,13 @@ export default function Solution() {
           </div>
 
           {/* After */}
-          <Card hover={false} className="border-emerald-500/20 dark:border-emerald-500/30">
+          <Card hover={false} className="border-[var(--color-border)]">
             <div className="flex items-center gap-3 mb-6">
-              <span className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 text-lg">✓</span>
+              <span className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 text-sm font-medium">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
               <h3 className="text-lg font-semibold text-primary">With DevBox Factory</h3>
             </div>
             <ul className="space-y-3 mb-6">
@@ -90,7 +97,6 @@ export default function Solution() {
               ))}
             </ul>
             <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
-              <span className="text-xl">🚀</span>
               <span className="text-sm font-medium text-primary">Already shipping features</span>
             </div>
           </Card>
@@ -99,12 +105,11 @@ export default function Solution() {
         {/* Value Props */}
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            { icon: '💰', title: 'Save $500+ Per Developer', desc: '2 days of setup = real money.' },
-            { icon: '🧠', title: 'Preserve Your Energy', desc: 'Build, don\'t battle tools.' },
-            { icon: '⚡', title: 'Immediate Productivity', desc: 'Zero to coding in 2 minutes.' },
+            { title: 'Save $500+ Per Developer', desc: '2 days of setup = real money.' },
+            { title: 'Preserve Your Energy', desc: 'Build, don\'t battle tools.' },
+            { title: 'Immediate Productivity', desc: 'Zero to coding in 2 minutes.' },
           ].map((prop, i) => (
             <Card key={prop.title} delay={i * 0.1} className="text-center">
-              <span className="text-3xl mb-3 block">{prop.icon}</span>
               <h4 className="font-semibold text-primary mb-1">{prop.title}</h4>
               <p className="text-secondary text-sm">{prop.desc}</p>
             </Card>

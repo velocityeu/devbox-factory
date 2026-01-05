@@ -5,32 +5,26 @@ import Card from './ui/Card'
 
 const features = [
   {
-    icon: '🤖',
     title: 'AI Coding Tools',
     items: ['Claude Code CLI', 'Cursor IDE', 'GitHub Copilot', 'VS Code AI extensions'],
   },
   {
-    icon: '⚙️',
     title: 'Dev Essentials',
     items: ['Git configured', 'Windows Terminal', 'PowerShell 7', 'SSH keys ready'],
   },
   {
-    icon: '📦',
     title: 'Runtimes',
     items: ['Node.js via NVM', 'Python 3.12', 'npm, pnpm, yarn', '.NET SDK 8'],
   },
   {
-    icon: '🐳',
     title: 'Containers',
     items: ['WSL2 configured', 'Docker Desktop', 'PostgreSQL 16', 'MongoDB & Redis'],
   },
   {
-    icon: '☁️',
     title: 'Cloud Tools',
     items: ['Azure CLI', 'Terraform', 'Azure Data Studio', 'Storage Explorer'],
   },
   {
-    icon: '🎛️',
     title: 'Windows Optimized',
     items: ['Bloatware removed', 'Privacy tuned', 'Performance optimized', 'Dev-focused'],
   },
@@ -61,7 +55,6 @@ export default function Features() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
           {features.map((feature, index) => (
             <Card key={feature.title} delay={index * 0.05}>
-              <span className="text-3xl mb-4 block">{feature.icon}</span>
               <h3 className="text-lg font-semibold text-primary mb-4">{feature.title}</h3>
               <ul className="space-y-2">
                 {feature.items.map((item) => (
@@ -86,7 +79,7 @@ export default function Features() {
           className="card p-8 md:p-12 text-center border-[var(--color-accent)]/20"
         >
           <h3 className="text-title text-primary mb-4">
-            🎯 Template-Based Cloning
+            Template-Based Cloning
           </h3>
           <p className="text-secondary max-w-2xl mx-auto mb-8">
             Create a perfect template once. Clone identical environments in 2-3 minutes, forever.
@@ -94,7 +87,7 @@ export default function Features() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
             {[
-              { value: '1×', label: 'Template creation' },
+              { value: '1x', label: 'Template creation' },
               { value: '∞', label: 'Identical clones' },
               { value: '0', label: 'Setup headaches' },
             ].map((stat, i) => (
