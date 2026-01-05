@@ -200,9 +200,9 @@ $Script:Config = @{
 }
 
 # Version Information
-$Script:Version = "3.0.1"
-$Script:Build = "20260105.0200"
-$Script:BuildDate = "2026-01-05 02:00"
+$Script:Version = "3.0.2"
+$Script:Build = "20260105.0300"
+$Script:BuildDate = "2026-01-05 03:00"
 
 # Import logger module if available
 $loggerModulePath = Join-Path $PSScriptRoot "modules\DevBoxLogger.psm1"

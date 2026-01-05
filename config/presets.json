@@ -1,6 +1,6 @@
 {
-  "version": "3.0.1",
-  "buildDate": "2026-01-05 01:00",
+  "version": "3.0.2",
+  "buildDate": "2026-01-05 03:00",
 
   "vmPresets": {
     "Lightweight": {

@@ -1,6 +1,6 @@
 # DevBox Factory
 
-![Version](https://img.shields.io/badge/version-3.0.1-blue) ![Build](https://img.shields.io/badge/build-20260105.0100-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
+![Version](https://img.shields.io/badge/version-3.0.2-blue) ![Build](https://img.shields.io/badge/build-20260105.0300-darkgray) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4) ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE)
 
 **One command. Identical dev environments. Every time.**
 
@@ -18,8 +18,12 @@ Professional-grade Windows 11 development environment automation. Create reprodu
 - **CLI Wrapper** - Human-friendly `.\devbox` commands
 - **Pre-configured Profiles** - Full, AI Coder, Web Dev, Azure, or Minimal
 - **Hyper-V VM Factory** - Create identical dev VMs from golden templates
+- **Windows Edition Selection** - Choose Home, Pro, Enterprise, Education, or Server editions
+- **Regional Auto-Detection** - Automatically uses host timezone, locale, and language
 - **Interactive Menus** - Guided wizards with file pickers
 - **Comprehensive Pre-flight Checks** - Validates Hyper-V, ISO, disk space upfront
+- **Centralized Logging** - All operations logged to `log/` folder with timestamps
+- **Temp File Management** - Cleanup command to manage temporary files
 - **Health Checks** - Verify your environment with `.\devbox test`
 - **Idempotent** - Safe to run multiple times
 
@@ -103,6 +107,7 @@ DevBox Factory provides a human-friendly CLI wrapper:
 .\devbox vm            # Create VM from template
 .\devbox deps          # Manage offline dependencies (download/status)
 .\devbox test          # Run health checks
+.\devbox cleanup       # Clean temp files and old logs
 .\devbox help          # Show help
 ```
 
@@ -112,7 +117,7 @@ DevBox Factory provides a human-friendly CLI wrapper:
   +=====================================================================+
   |  DEVBOX FACTORY                                                     |
   |  One command. Identical dev environments. Every time.               |
-  |  by Velocity EU                           v3.0.1 build 20260105.0100|
+  |  by Velocity EU                           v3.0.2 build 20260105.0300|
   +=====================================================================+
 
   USAGE: .\devbox <command> [arguments]
@@ -125,14 +130,21 @@ DevBox Factory provides a human-friendly CLI wrapper:
     vm          Create development VM from template
     deps        Manage offline dependencies (download/status)
     test        Run health checks and verify installation
+    cleanup     Clean temp files and old logs
     help        Show this help message
+
+  CLEANUP OPTIONS:
+
+    .\devbox cleanup -Temp      Remove temporary files
+    .\devbox cleanup -Logs      Remove logs older than 30 days
+    .\devbox cleanup -All       Clean both temp and old logs
 
   EXAMPLES:
 
     .\devbox install
     .\devbox template -ISOPath C:\ISOs\Win11.iso
     .\devbox vm -VMName DevVM-01 -StartVM
-    .\devbox deps -Status
+    .\devbox cleanup -All
 
   MORE INFO:
     https://github.com/velocityeu/devbox-factory
@@ -157,7 +169,7 @@ All DevBox Factory scripts feature interactive menus with guided wizards. Simply
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  TOOL INSTALLER          Windows 11 Development Environment         |
-  |  by Velocity EU                           v3.0.1 build 20260105.0100|
+  |  by Velocity EU                           v3.0.2 build 20260105.0300|
   +=====================================================================+
 
   SELECT INSTALLATION PROFILE
@@ -233,7 +245,7 @@ Stage 1 of VM automation - creates a sysprepped Windows 11 template VHDX.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  TEMPLATE CREATOR       Hyper-V Windows 11 Template - Stage 1       |
-  |  by Velocity EU                           v3.0.1 build 20260105.0100|
+  |  by Velocity EU                           v3.0.2 build 20260105.0300|
   +=====================================================================+
 
   MAIN MENU
@@ -312,7 +324,7 @@ Stage 2 of VM automation - creates VMs from the template.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  VM CREATOR             Create Dev VMs from Template - Stage 2      |
-  |  by Velocity EU                           v3.0.1 build 20260105.0100|
+  |  by Velocity EU                           v3.0.2 build 20260105.0300|
   +=====================================================================+
 
   MAIN MENU
@@ -421,7 +433,7 @@ Stage 2 of VM automation - creates VMs from the template.
   |                      F A C T O R Y                                  |
   +=====================================================================+
   |  HEALTH CHECK            Verify Installation and Environment        |
-  |  by Velocity EU                           v3.0.1 build 20260105.0100|
+  |  by Velocity EU                           v3.0.2 build 20260105.0300|
   +=====================================================================+
 
   CORE TOOLS
@@ -668,7 +680,12 @@ devbox-factory/
 ├── dependencies/              # Pre-downloaded installers (offline mode)
 │   ├── manifest.json          # Dependency definitions
 │   └── README.md              # Offline installation guide
+├── log/                       # Centralized log files (auto-generated)
+│   └── README.md              # Logging documentation
+├── temp/                      # Temporary files (VHDX creation, etc.)
+│   └── README.md              # Temp folder documentation
 ├── modules/
+│   ├── DevBoxLogger.psm1      # Centralized logging module
 │   └── DownloadHelpers.psm1   # Download progress functions
 ├── iso/                       # Place Windows ISOs here
 │   └── README.md              # ISO instructions
@@ -747,9 +764,44 @@ az login
 ### VS Code extensions not installing
 Install manually: `Ctrl+Shift+X` in VS Code
 
-## Log File
+## Logging and Cleanup
 
-Installation logs: `%USERPROFILE%\DevBox-Install.log`
+### Log Files
+
+All DevBox Factory operations are logged to the `log/` folder with timestamps:
+
+```
+log/
+├── devbox-20260105-120000.log     # CLI wrapper operations
+├── template-20260105-130000.log   # Template creation logs
+├── vm-20260105-140000.log         # VM creation logs
+├── install-20260105-150000.log    # Tool installation logs
+└── health-20260105-160000.log     # Health check logs
+```
+
+Legacy log location (fallback): `%USERPROFILE%\DevBox-Install.log`
+
+### Temporary Files
+
+Template creation uses the `temp/` folder for intermediate files (e.g., VHDX during creation). If a previous operation failed, stale temp files may remain.
+
+### Cleanup Command
+
+```powershell
+# Interactive cleanup menu
+.\devbox cleanup
+
+# Remove temporary files only
+.\devbox cleanup -Temp
+
+# Remove logs older than 30 days
+.\devbox cleanup -Logs
+
+# Clean both temp files and old logs
+.\devbox cleanup -All
+```
+
+**Startup Detection:** DevBox Factory automatically detects leftover temp files and prompts you to clean them when running any command.
 
 ## Why DevBox Factory?
 
@@ -837,4 +889,4 @@ DevBox Factory supports pre-downloading dependencies for environments with limit
 
 ---
 
-**DevBox Factory v3.0.1** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
+**DevBox Factory v3.0.2** | Built by [Velocity EU](https://www.velocity-eu.com) | [Report Issues](https://github.com/velocityeu/devbox-factory/issues)
