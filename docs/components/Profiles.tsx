@@ -64,14 +64,14 @@ export default function Profiles() {
             <Card
               key={profile.title}
               delay={index * 0.05}
-              className={`text-center relative ${profile.featured ? 'border-[var(--color-accent)]/30 ring-1 ring-[var(--color-accent)]/10' : ''}`}
+              className={`text-center ${profile.featured ? 'border-[var(--color-accent)]/30 ring-1 ring-[var(--color-accent)]/10' : ''}`}
             >
               {profile.featured && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[var(--color-accent)] text-white text-xs font-medium rounded-full">
+                <span className="inline-block px-3 py-1 mb-3 bg-[var(--color-accent)] text-white text-xs font-medium rounded-full">
                   Popular
                 </span>
               )}
-              <h3 className="font-semibold text-primary mb-1 mt-2">{profile.title}</h3>
+              <h3 className="font-semibold text-primary mb-1">{profile.title}</h3>
               <p className="text-tertiary text-xs mb-4">{profile.desc}</p>
               <ul className="text-left space-y-1.5 mb-4">
                 {profile.tools.map((tool) => (
