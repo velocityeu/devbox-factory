@@ -388,7 +388,7 @@ function Show-TemplateValidation {
     }
 
     Write-Host ""
-    Read-Host "  Press Enter to continue"
+    $null = Read-Host "  Press Enter to continue"
 }
 
 function Show-MainMenu {
@@ -453,7 +453,7 @@ function Show-TemplateScanResults {
         Write-Host "  No VHDX templates found in common locations." -ForegroundColor Yellow
         Write-Host "  Run New-DevBoxTemplate.ps1 to create one first." -ForegroundColor DarkGray
         Write-Host ""
-        Read-Host "  Press Enter to continue"
+        $null = Read-Host "  Press Enter to continue"
         return $null
     }
 
@@ -794,7 +794,7 @@ function Show-PreFlightChecks {
         $choice = Read-Host "  Press Enter to proceed or 'C' to cancel"
         return ($choice.ToUpper() -ne 'C')
     } else {
-        Read-Host "  Press Enter to go back"
+        $null = Read-Host "  Press Enter to go back"
         return $false
     }
 }
@@ -887,7 +887,7 @@ function Show-ExistingVMs {
     }
 
     Write-Host ""
-    Read-Host "  Press Enter to continue"
+    $null = Read-Host "  Press Enter to continue"
 }
 
 function Invoke-InteractiveMode {
