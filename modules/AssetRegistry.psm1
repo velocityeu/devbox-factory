@@ -211,6 +211,23 @@ function Register-DevBoxSwitch {
     return Save-AssetRegistry -Registry $registry
 }
 
+function Unregister-DevBoxSwitch {
+    <#
+    .SYNOPSIS
+        Remove a virtual switch from the registry
+    #>
+    param(
+        [Parameter(Mandatory)]
+        [string]$SwitchName
+    )
+
+    $registry = Get-AssetRegistry
+    if (-not $registry) { return $false }
+
+    $registry.virtualSwitches = @($registry.virtualSwitches | Where-Object { $_.switchName -ne $SwitchName })
+    return Save-AssetRegistry -Registry $registry
+}
+
 function Unregister-DevBoxTemplate {
     <#
     .SYNOPSIS
@@ -315,9 +332,11 @@ function Get-DevBoxVMs {
         foreach ($hyperVVM in $allVMs) {
             $isRegistered = $vms | Where-Object { $_.vmName -eq $hyperVVM.Name }
             if (-not $isRegistered) {
+                $primaryDisk = $hyperVVM.HardDrives | Select-Object -First 1
+                $primaryDiskPath = if ($primaryDisk) { $primaryDisk.Path } else { $null }
                 $orphan = [PSCustomObject]@{
                     vmName = $hyperVVM.Name
-                    vhdxPath = ($hyperVVM.HardDrives | Select-Object -First 1).Path
+                    vhdxPath = $primaryDiskPath
                     templateName = "Unknown"
                     memoryGB = [math]::Round($hyperVVM.MemoryStartup / 1GB, 0)
                     processorCount = $hyperVVM.ProcessorCount
@@ -414,6 +433,7 @@ Export-ModuleMember -Function @(
     'Register-DevBoxTemplate'
     'Register-DevBoxVM'
     'Register-DevBoxSwitch'
+    'Unregister-DevBoxSwitch'
     'Unregister-DevBoxTemplate'
     'Unregister-DevBoxVM'
     'Get-DevBoxTemplates'
