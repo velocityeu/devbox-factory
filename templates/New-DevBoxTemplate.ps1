@@ -408,8 +408,8 @@ function Show-MainMenu {
     Write-Host "   [2] Custom Configuration" -ForegroundColor White
     Write-Host "       Full control over all settings" -ForegroundColor Gray
     Write-Host ""
-    Write-Host "   [3] Manage Existing Templates" -ForegroundColor White
-    Write-Host "       View, delete, or export templates" -ForegroundColor Gray
+    Write-Host "   [3] View Existing Templates" -ForegroundColor White
+    Write-Host "       View template details and locations" -ForegroundColor Gray
     Write-Host ""
     Write-Host "   [Q] Quit" -ForegroundColor White
     Write-Host ""
