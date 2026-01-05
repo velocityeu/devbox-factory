@@ -1466,11 +1466,21 @@ function Install-Prerequisites {
                 Invoke-WebRequest -Uri $peAddonUrl -OutFile $peAddonInstaller -UseBasicParsing
 
                 if (Test-Path $peAddonInstaller) {
-                    Write-Log "Running Windows PE Add-on installer (silent)..." -Level Info
-                    $process = Start-Process -FilePath $peAddonInstaller -ArgumentList "/quiet", "/norestart", "/features", "OptionId.WindowsPreinstallationEnvironment" -Wait -PassThru
+                    Write-Log "Running Windows PE Add-on installer (silent, this downloads ~4GB)..." -Level Info
+                    # /ceip off prevents telemetry prompts, /quiet for silent install
+                    $process = Start-Process -FilePath $peAddonInstaller -ArgumentList "/quiet", "/norestart", "/ceip", "off", "/features", "OptionId.WindowsPreinstallationEnvironment" -PassThru
 
-                    if ($process.ExitCode -eq 0) {
+                    # Wait up to 15 minutes for the installer (it downloads ~4GB)
+                    $timeoutMinutes = 15
+                    $completed = $process.WaitForExit($timeoutMinutes * 60 * 1000)
+
+                    if (-not $completed) {
+                        Write-Log "PE Add-on installer timed out after $timeoutMinutes minutes" -Level Warning
+                        Write-Log "The installer may still be running in the background" -Level Warning
+                    } elseif ($process.ExitCode -eq 0) {
                         Write-Log "Windows PE Add-on installer completed" -Level Success
+                    } elseif ($process.ExitCode -eq 3010) {
+                        Write-Log "Windows PE Add-on installed (reboot may be required)" -Level Success
                     } else {
                         Write-Log "PE Add-on installer returned exit code: $($process.ExitCode)" -Level Warning
                     }
