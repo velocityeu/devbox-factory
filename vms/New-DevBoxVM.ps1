@@ -435,7 +435,7 @@ function Show-TemplateSelectionMenu {
     Write-Host ""
     Write-Host "   [3] " -ForegroundColor Yellow -NoNewline
     Write-Host "Scan for templates" -ForegroundColor White
-    Write-Host "       Searches: DevBox folder, C:\HyperV\Templates, D:\, E:\" -ForegroundColor DarkGray
+    Write-Host "       Searches: DevBox folder, C:\HyperV\Templates, D:\HyperV\Templates, E:\HyperV\Templates" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   [B] " -ForegroundColor DarkYellow -NoNewline
     Write-Host "Back to main menu" -ForegroundColor White

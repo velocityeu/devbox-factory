@@ -258,7 +258,14 @@ function Remove-DevBoxVMsMenu {
     if ($choice -eq 'A' -or $choice -eq 'a') {
         $toRemove = $VMs
     } else {
-        $indices = $choice -split ',' | ForEach-Object { [int]$_.Trim() - 1 }
+        $indices = @()
+        foreach ($token in ($choice -split ',')) {
+            $trimmed = $token.Trim()
+            $parsedIndex = 0
+            if ([int]::TryParse($trimmed, [ref]$parsedIndex)) {
+                $indices += ($parsedIndex - 1)
+            }
+        }
         $toRemove = @($indices | Where-Object { $_ -ge 0 -and $_ -lt $VMs.Count } | ForEach-Object { $VMs[$_] })
     }
 
@@ -306,9 +313,11 @@ function Remove-DevBoxVMsMenu {
                 }
 
                 # Remove VM folder
-                $vmFolder = Split-Path $vm.vhdxPath -Parent
-                if ((Test-Path $vmFolder) -and (Get-ChildItem $vmFolder).Count -eq 0) {
-                    Remove-Item -Path $vmFolder -Force -Recurse -ErrorAction SilentlyContinue
+                if (-not [string]::IsNullOrWhiteSpace($vm.vhdxPath)) {
+                    $vmFolder = Split-Path $vm.vhdxPath -Parent
+                    if ((Test-Path $vmFolder) -and (Get-ChildItem $vmFolder).Count -eq 0) {
+                        Remove-Item -Path $vmFolder -Force -Recurse -ErrorAction SilentlyContinue
+                    }
                 }
 
                 # Unregister from asset registry
@@ -366,7 +375,14 @@ function Remove-DevBoxTemplatesMenu {
     if ($choice -eq 'A' -or $choice -eq 'a') {
         $toRemove = $Templates
     } else {
-        $indices = $choice -split ',' | ForEach-Object { [int]$_.Trim() - 1 }
+        $indices = @()
+        foreach ($token in ($choice -split ',')) {
+            $trimmed = $token.Trim()
+            $parsedIndex = 0
+            if ([int]::TryParse($trimmed, [ref]$parsedIndex)) {
+                $indices += ($parsedIndex - 1)
+            }
+        }
         $toRemove = @($indices | Where-Object { $_ -ge 0 -and $_ -lt $Templates.Count } | ForEach-Object { $Templates[$_] })
     }
 
@@ -449,9 +465,69 @@ function Remove-DevBoxSwitchesMenu {
 
     if ($choice -eq 'B' -or $choice -eq 'b') { return }
 
-    # Similar removal logic...
+    Write-Host "   [A] Remove ALL switches" -ForegroundColor Red
+    Write-Host "   [B] Back to main menu" -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "  [INFO] Switch removal not yet implemented." -ForegroundColor Yellow
+    Write-Host "  Enter numbers separated by commas (e.g., 1,2) or 'A' for all:" -ForegroundColor DarkGray
+
+    $choice = Read-Host "  Selection"
+
+    if ($choice -eq 'B' -or $choice -eq 'b') { return }
+
+    $toRemove = @()
+    if ($choice -eq 'A' -or $choice -eq 'a') {
+        $toRemove = $Switches
+    } else {
+        $indices = @()
+        foreach ($token in ($choice -split ',')) {
+            $trimmed = $token.Trim()
+            $parsedIndex = 0
+            if ([int]::TryParse($trimmed, [ref]$parsedIndex)) {
+                $indices += ($parsedIndex - 1)
+            }
+        }
+        $toRemove = @($indices | Where-Object { $_ -ge 0 -and $_ -lt $Switches.Count } | ForEach-Object { $Switches[$_] })
+    }
+
+    if ($toRemove.Count -eq 0) {
+        Write-Host "  [WARN] No valid selections." -ForegroundColor Yellow
+        return
+    }
+
+    Write-Host ""
+    Write-Host "  Will remove $($toRemove.Count) switch(es):" -ForegroundColor Yellow
+    foreach ($sw in $toRemove) {
+        Write-Host "    - $($sw.switchName)" -ForegroundColor White
+    }
+    Write-Host ""
+
+    if (-not $Force -and -not $DryRun) {
+        $confirm = Read-Host "  Confirm removal? (Y/N)"
+        if ($confirm -ne 'Y' -and $confirm -ne 'y') {
+            Write-Host "  Cancelled." -ForegroundColor DarkGray
+            return
+        }
+    }
+
+    foreach ($sw in $toRemove) {
+        Write-Host "  Removing $($sw.switchName)... " -NoNewline
+        if ($DryRun) {
+            Write-Host "[DRY RUN - would remove]" -ForegroundColor Yellow
+        } else {
+            try {
+                $hyperVSwitch = Get-VMSwitch -Name $sw.switchName -ErrorAction SilentlyContinue
+                if ($hyperVSwitch) {
+                    Remove-VMSwitch -Name $sw.switchName -Force -ErrorAction Stop
+                }
+                Unregister-DevBoxSwitch -SwitchName $sw.switchName | Out-Null
+                Write-Host "[OK]" -ForegroundColor Green
+            } catch {
+                Write-Host "[FAILED] $_" -ForegroundColor Red
+            }
+        }
+    }
+
+    Write-Host ""
     Read-Host "  Press Enter to continue"
 }
 
@@ -625,6 +701,26 @@ function Invoke-FactoryReset {
                 } catch {
                     Write-Host "[FAILED]" -ForegroundColor Red
                 }
+            }
+        }
+    }
+
+    # Remove Custom Switches
+    $switches = Get-DevBoxSwitches
+    foreach ($sw in $switches) {
+        Write-Host "  Removing switch: $($sw.switchName)... " -NoNewline
+        if ($DryRun) {
+            Write-Host "[DRY RUN]" -ForegroundColor Yellow
+        } else {
+            try {
+                $hyperVSwitch = Get-VMSwitch -Name $sw.switchName -ErrorAction SilentlyContinue
+                if ($hyperVSwitch) {
+                    Remove-VMSwitch -Name $sw.switchName -Force -ErrorAction Stop
+                }
+                Unregister-DevBoxSwitch -SwitchName $sw.switchName | Out-Null
+                Write-Host "[OK]" -ForegroundColor Green
+            } catch {
+                Write-Host "[FAILED]" -ForegroundColor Red
             }
         }
     }
