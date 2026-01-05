@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+
+# Debug
+npm-debug.log*
+
+# Misc
+.DS_Store
+*.pem
