@@ -42,8 +42,8 @@
     Secure password for local Admin account
 
 .PARAMETER WindowsEditionIndex
-    Windows edition index in install.wim. Default: 10 (Enterprise)
-    Common indices: 1=Home, 5=Education, 6=Pro, 8=Pro for Workstations, 10=Enterprise
+    Windows edition index in install.wim. Default: 3 (auto-detects Enterprise)
+    Note: Index varies by ISO. Script auto-detects Enterprise edition when available.
 
 .PARAMETER TimeZone
     Windows timezone. Default: Pacific Standard Time
@@ -94,7 +94,7 @@ param(
     [SecureString]$AdminPassword,
 
     [ValidateRange(1, 11)]
-    [int]$WindowsEditionIndex = 10,
+    [int]$WindowsEditionIndex = 3,
 
     [string]$TimeZone = "Pacific Standard Time",
 
@@ -193,6 +193,50 @@ $Script:Server2025Editions = @{
     2  = @{ Name = "Windows Server 2025 Standard (Desktop)"; Key = "VDYBN-27WPP-V4HQT-9VMD4-VMK7H" }
     3  = @{ Name = "Windows Server 2025 Datacenter"; Key = "WX4NM-KYWYW-QJJR4-XV3QB-6VM33" }
     4  = @{ Name = "Windows Server 2025 Datacenter (Desktop)"; Key = "WX4NM-KYWYW-QJJR4-XV3QB-6VM33" }
+}
+
+# Get product key by matching edition name (indices vary by ISO)
+function Get-ProductKeyByName {
+    param(
+        [string]$EditionName,
+        [bool]$IsServer = $false
+    )
+
+    $editionMap = if ($IsServer) { $Script:Server2025Editions } else { $Script:Win11Editions }
+
+    # Try exact match first by iterating through all entries
+    foreach ($key in $editionMap.Keys) {
+        if ($editionMap[$key].Name -eq $EditionName) {
+            return $editionMap[$key].Key
+        }
+    }
+
+    # Try partial match (e.g., "Enterprise" matches "Windows 11 Enterprise")
+    foreach ($key in $editionMap.Keys) {
+        $mapName = $editionMap[$key].Name
+        if ($EditionName -match "Enterprise" -and $mapName -match "Enterprise$") {
+            return $editionMap[$key].Key
+        }
+        if ($EditionName -match "Pro$" -and $mapName -match "Pro$") {
+            return $editionMap[$key].Key
+        }
+        if ($EditionName -match "Education$" -and $mapName -match "Education$") {
+            return $editionMap[$key].Key
+        }
+        if ($EditionName -match "Datacenter" -and $mapName -match "Datacenter") {
+            return $editionMap[$key].Key
+        }
+        if ($EditionName -match "Standard" -and $mapName -match "Standard") {
+            return $editionMap[$key].Key
+        }
+    }
+
+    # Default fallback keys
+    if ($IsServer) {
+        return "WX4NM-KYWYW-QJJR4-XV3QB-6VM33"  # Datacenter
+    } else {
+        return "XGVPP-NMH47-7TTHJ-W3FW7-8HV2C"  # Enterprise
+    }
 }
 
 #region Logging Functions
@@ -666,10 +710,22 @@ function Show-EditionSelectionMenu {
     Write-Host ""
     Write-Host "  -----------------------------------------------------------" -ForegroundColor DarkGray
 
-    # Default to Enterprise (10) for Win11 or Datacenter Desktop (4) for Server
-    $defaultIndex = if ($IsServer) { 4 } else { 10 }
-    $defaultExists = $Editions | Where-Object { $_.Index -eq $defaultIndex }
-    if (-not $defaultExists -and $Editions.Count -gt 0) {
+    # Auto-detect best default: Enterprise for Win11, Datacenter for Server
+    $defaultIndex = $null
+    if ($IsServer) {
+        # Prefer Datacenter Desktop, then Datacenter, then first available
+        $datacenterDesktop = $Editions | Where-Object { $_.Name -match "Datacenter.*Desktop" } | Select-Object -First 1
+        $datacenter = $Editions | Where-Object { $_.Name -match "Datacenter" } | Select-Object -First 1
+        $defaultIndex = if ($datacenterDesktop) { $datacenterDesktop.Index } elseif ($datacenter) { $datacenter.Index } else { $null }
+    } else {
+        # Prefer Enterprise (not N), then Pro, then first available
+        $enterprise = $Editions | Where-Object { $_.Name -match "Enterprise$" } | Select-Object -First 1
+        $pro = $Editions | Where-Object { $_.Name -match "Pro$" } | Select-Object -First 1
+        $defaultIndex = if ($enterprise) { $enterprise.Index } elseif ($pro) { $pro.Index } else { $null }
+    }
+
+    # Fallback to first edition if nothing matched
+    if (-not $defaultIndex -and $Editions.Count -gt 0) {
         $defaultIndex = $Editions[0].Index
     }
 
@@ -1012,9 +1068,9 @@ function Invoke-InteractiveMode {
         DiskSizeGB = 127
         SwitchName = "Default Switch"
         SkipWindowsUpdates = $true
-        WindowsEditionIndex = 10
+        WindowsEditionIndex = 3
         WindowsEditionName = "Windows 11 Enterprise"
-        WindowsProductKey = "XGVPP-NMH47-7TTHJ-W3FW7-8HV2C"
+        WindowsProductKey = "XGVPP-NMH47-7TTHJ-W3FW7-8HV2C"  # Generic KMS key for Enterprise
         IsServer = $false
         TimeZone = $Script:RegionalSettings.TimeZone
         InputLocale = $Script:RegionalSettings.InputLocale
@@ -1095,18 +1151,15 @@ function Invoke-InteractiveMode {
                     $config.WindowsEditionName = $selectedEdition.Name
                     $config.IsServer = $isoInfo.IsServer
 
-                    # Get product key based on edition
-                    $editionMap = if ($isoInfo.IsServer) { $Script:Server2025Editions } else { $Script:Win11Editions }
-                    if ($editionMap.ContainsKey($selectedEdition.Index)) {
-                        $config.WindowsProductKey = $editionMap[$selectedEdition.Index].Key
-                    }
+                    # Get product key based on edition name (handles varying indices across ISOs)
+                    $config.WindowsProductKey = Get-ProductKeyByName -EditionName $selectedEdition.Name -IsServer $isoInfo.IsServer
 
                     # Update template name based on OS type
                     if ($isoInfo.IsServer) {
                         $config.TemplateName = "WinServer-DevBox-Template"
                     }
                 } else {
-                    Write-Host "  Could not detect editions - using defaults (Pro, Index 6)" -ForegroundColor Yellow
+                    Write-Host "  Could not detect editions - using defaults (Enterprise)" -ForegroundColor Yellow
                     Start-Sleep -Seconds 2
                 }
 
@@ -1213,18 +1266,15 @@ function Invoke-InteractiveMode {
                     $config.WindowsEditionName = $selectedEdition.Name
                     $config.IsServer = $isoInfo.IsServer
 
-                    # Get product key based on edition
-                    $editionMap = if ($isoInfo.IsServer) { $Script:Server2025Editions } else { $Script:Win11Editions }
-                    if ($editionMap.ContainsKey($selectedEdition.Index)) {
-                        $config.WindowsProductKey = $editionMap[$selectedEdition.Index].Key
-                    }
+                    # Get product key based on edition name (handles varying indices across ISOs)
+                    $config.WindowsProductKey = Get-ProductKeyByName -EditionName $selectedEdition.Name -IsServer $isoInfo.IsServer
 
                     # Update template name based on OS type
                     if ($isoInfo.IsServer) {
                         $config.TemplateName = "WinServer-DevBox-Template"
                     }
                 } else {
-                    Write-Host "  Could not detect editions - using defaults (Pro, Index 6)" -ForegroundColor Yellow
+                    Write-Host "  Could not detect editions - using defaults (Enterprise)" -ForegroundColor Yellow
                     Start-Sleep -Seconds 2
                 }
 
@@ -1308,28 +1358,50 @@ function Install-Prerequisites {
 
     # 2. Check/Enable Hyper-V
     Write-Log "Checking Hyper-V status..." -Level Info
-    $hypervFeature = Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -ErrorAction SilentlyContinue
 
-    if ($null -eq $hypervFeature) {
-        # Try alternative check for Windows Server
+    # Detect if running on Windows Server vs Windows Client
+    $isServer = (Get-CimInstance Win32_OperatingSystem).ProductType -ne 1
+
+    if ($isServer) {
+        # Windows Server: Use Get-WindowsFeature (Server Manager cmdlet)
         $hypervRole = Get-WindowsFeature -Name Hyper-V -ErrorAction SilentlyContinue
-        if ($null -ne $hypervRole -and $hypervRole.InstallState -ne 'Installed') {
+        if ($null -eq $hypervRole) {
+            throw "Could not query Hyper-V role status. Ensure you have Server Manager installed."
+        }
+        if ($hypervRole.InstallState -ne 'Installed') {
             Write-Log "Installing Hyper-V role (Server)..." -Level Info
             Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart:$false
             $Script:RequiresReboot = $true
+        } else {
+            Write-Log "Hyper-V role is already installed" -Level Success
         }
-    } elseif ($hypervFeature.State -ne 'Enabled') {
-        Write-Log "Enabling Hyper-V feature..." -Level Info
-        Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -NoRestart -All
-        $Script:RequiresReboot = $true
     } else {
-        Write-Log "Hyper-V is already enabled" -Level Success
+        # Windows Client (10/11): Use Get-WindowsOptionalFeature
+        $hypervFeature = Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -ErrorAction SilentlyContinue
+
+        if ($null -eq $hypervFeature) {
+            throw "Hyper-V feature not available on this Windows edition. Ensure you have Windows 10/11 Pro, Enterprise, or Education."
+        }
+
+        if ($hypervFeature.State -ne 'Enabled') {
+            Write-Log "Enabling Hyper-V feature..." -Level Info
+            Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -NoRestart -All
+            $Script:RequiresReboot = $true
+        } else {
+            Write-Log "Hyper-V is already enabled" -Level Success
+        }
     }
 
     # 3. Check/Install Windows ADK
     Write-Log "Checking Windows ADK..." -Level Info
     $dismPath = Join-Path $Script:ADKPath "Deployment Tools\amd64\DISM\dism.exe"
     $bcdbootPath = Join-Path $Script:ADKPath "Deployment Tools\amd64\BCDBoot\bcdboot.exe"
+
+    # WinGet success exit codes:
+    # 0 = Success
+    # -1978335189 (0x8A150019) = Already installed
+    # -1978335194 (0x8A150014) = Newer version available
+    $wingetSuccessCodes = @(0, -1978335189, -1978335194)
 
     if (-not (Test-Path $dismPath)) {
         Write-Log "Installing Windows ADK (this may take several minutes)..." -Level Info
@@ -1342,16 +1414,27 @@ function Install-Prerequisites {
 
         # Install ADK
         $result = winget install --id Microsoft.WindowsADK --accept-source-agreements --accept-package-agreements --silent 2>&1
-        if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) {
+        if ($LASTEXITCODE -notin $wingetSuccessCodes) {
+            Write-Log "WinGet returned exit code: $LASTEXITCODE" -Level Warning
             Write-Log "WinGet output: $result" -Level Warning
         }
 
-        # Wait for installation
-        Start-Sleep -Seconds 5
+        # Poll for installation completion (ADK can take 2-5 minutes)
+        $maxWaitSeconds = 300  # 5 minutes max
+        $pollInterval = 5
+        $waited = 0
+        Write-Log "Waiting for ADK installation to complete..." -Level Info
+
+        while (-not (Test-Path $dismPath) -and $waited -lt $maxWaitSeconds) {
+            Start-Sleep -Seconds $pollInterval
+            $waited += $pollInterval
+            Write-Host "." -NoNewline
+        }
+        Write-Host ""  # New line after dots
 
         # Verify installation
         if (-not (Test-Path $dismPath)) {
-            throw "Windows ADK installation failed. DISM not found at: $dismPath"
+            throw "Windows ADK installation failed after ${waited}s. DISM not found at: $dismPath"
         }
         Write-Log "Windows ADK installed successfully" -Level Success
     } else {
@@ -1363,12 +1446,30 @@ function Install-Prerequisites {
     $winpePath = Join-Path $Script:ADKPath "Windows Preinstallation Environment"
 
     if (-not (Test-Path $winpePath)) {
-        Write-Log "Installing Windows PE Add-on..." -Level Info
+        Write-Log "Installing Windows PE Add-on (this may take a minute)..." -Level Info
         $result = winget install --id Microsoft.ADKPEAddon --accept-source-agreements --accept-package-agreements --silent 2>&1
-        if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne -1978335189) {
+        if ($LASTEXITCODE -notin $wingetSuccessCodes) {
+            Write-Log "WinGet returned exit code: $LASTEXITCODE" -Level Warning
             Write-Log "WinGet output: $result" -Level Warning
         }
-        Start-Sleep -Seconds 5
+
+        # Poll for installation completion
+        $maxWaitSeconds = 120  # 2 minutes max
+        $waited = 0
+        Write-Log "Waiting for WinPE Add-on installation..." -Level Info
+
+        while (-not (Test-Path $winpePath) -and $waited -lt $maxWaitSeconds) {
+            Start-Sleep -Seconds 5
+            $waited += 5
+            Write-Host "." -NoNewline
+        }
+        Write-Host ""
+
+        if (-not (Test-Path $winpePath)) {
+            Write-Log "Windows PE Add-on may not have installed correctly" -Level Warning
+        } else {
+            Write-Log "Windows PE Add-on installed successfully" -Level Success
+        }
     } else {
         Write-Log "Windows PE Add-on is already installed" -Level Success
     }

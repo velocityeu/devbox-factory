@@ -751,17 +751,25 @@ function Install-Package {
     # Online installation via WinGet
     Write-Log "Installing $name via WinGet..." -Level Info
 
+    # WinGet success exit codes:
+    # 0 = Success
+    # -1978335189 (0x8A150019) = Already installed
+    # -1978335194 (0x8A150014) = Newer version available (still succeeds)
+    $wingetSuccessCodes = @(0, -1978335189, -1978335194)
+
     try {
         $result = winget install --id $PackageId --exact --accept-source-agreements --accept-package-agreements --silent 2>&1
 
-        if ($LASTEXITCODE -eq 0) {
+        if ($LASTEXITCODE -in $wingetSuccessCodes) {
             Write-Log "$name installed successfully." -Level Success
             [void]$Script:Config.InstalledItems.Add($name)
             return $true
+        } else {
+            Write-Log "WinGet returned exit code: $LASTEXITCODE" -Level Warning
         }
     }
     catch {
-        Write-Log "WinGet installation failed for $name" -Level Warning
+        Write-Log "WinGet installation failed for $name : $_" -Level Warning
     }
 
     # Fallback to Chocolatey

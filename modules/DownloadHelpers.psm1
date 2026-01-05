@@ -530,6 +530,12 @@ function Install-FromDependency {
     if ($dep.wingetId) {
         Write-Host "  [*] Installing $($dep.displayName) via WinGet..." -ForegroundColor Cyan
 
+        # WinGet success exit codes:
+        # 0 = Success
+        # -1978335189 (0x8A150019) = Already installed
+        # -1978335194 (0x8A150014) = Newer version available (still succeeds)
+        $wingetSuccessCodes = @(0, -1978335189, -1978335194)
+
         try {
             $wingetArgs = @(
                 "install",
@@ -542,9 +548,11 @@ function Install-FromDependency {
 
             $process = Start-Process -FilePath "winget" -ArgumentList $wingetArgs -Wait -PassThru -NoNewWindow -RedirectStandardOutput "NUL"
 
-            if ($process.ExitCode -eq 0) {
+            if ($process.ExitCode -in $wingetSuccessCodes) {
                 Write-Host "  [+] $($dep.displayName) installed via WinGet" -ForegroundColor Green
                 return $true
+            } else {
+                Write-Host "  [!] WinGet returned exit code: $($process.ExitCode)" -ForegroundColor Yellow
             }
         } catch {
             Write-Host "  [!] WinGet installation failed: $_" -ForegroundColor Yellow
