@@ -485,20 +485,59 @@ function Get-ISOEditions {
         Error = $null
     }
 
+    Write-Host "    Checking ISO..." -ForegroundColor DarkGray -NoNewline
+
     try {
-        # Check if ISO is already mounted and dismount first
-        $existingMount = Get-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue
-        if ($existingMount -and $existingMount.Attached) {
-            Write-Host "    Dismounting existing mount..." -ForegroundColor DarkGray
-            Dismount-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue | Out-Null
-            Start-Sleep -Milliseconds 500
+        # Check if ISO is already mounted - use job with timeout to prevent hang
+        $checkJob = Start-Job -ScriptBlock {
+            param($path)
+            Get-DiskImage -ImagePath $path -ErrorAction SilentlyContinue
+        } -ArgumentList $ISOPath
+
+        $checkComplete = Wait-Job $checkJob -Timeout 10
+        if ($checkComplete) {
+            $existingMount = Receive-Job $checkJob
+            Remove-Job $checkJob -Force -ErrorAction SilentlyContinue
+
+            if ($existingMount -and $existingMount.Attached) {
+                Write-Host " dismounting previous..." -ForegroundColor DarkGray -NoNewline
+                Dismount-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue | Out-Null
+                Start-Sleep -Milliseconds 500
+            }
+        } else {
+            Stop-Job $checkJob -ErrorAction SilentlyContinue
+            Remove-Job $checkJob -Force -ErrorAction SilentlyContinue
+            Write-Host ""
+            Write-Host "    [!] Disk check timed out - continuing anyway..." -ForegroundColor Yellow
         }
 
         # Mount ISO
-        Write-Host "    Mounting ISO..." -ForegroundColor DarkGray
-        $mount = Mount-DiskImage -ImagePath $ISOPath -PassThru -ErrorAction Stop
+        Write-Host " mounting..." -ForegroundColor DarkGray -NoNewline
+        $mountJob = Start-Job -ScriptBlock {
+            param($path)
+            Mount-DiskImage -ImagePath $path -PassThru -ErrorAction Stop
+        } -ArgumentList $ISOPath
+
+        $mountComplete = Wait-Job $mountJob -Timeout 30
+        if (-not $mountComplete) {
+            Stop-Job $mountJob -ErrorAction SilentlyContinue
+            Remove-Job $mountJob -Force -ErrorAction SilentlyContinue
+            Write-Host ""
+            $result.Error = "ISO mount timed out (30s) - file may be corrupted or on slow storage"
+            return $result
+        }
+
+        $mount = Receive-Job $mountJob
+        Remove-Job $mountJob -Force -ErrorAction SilentlyContinue
+
+        if (-not $mount) {
+            Write-Host ""
+            $result.Error = "Failed to mount ISO"
+            return $result
+        }
 
         # Wait for volume to be available (up to 10 seconds)
+        Write-Host " waiting for volume..." -ForegroundColor DarkGray -NoNewline
         $driveLetter = $null
         $attempts = 0
         while (-not $driveLetter -and $attempts -lt 20) {
@@ -511,10 +550,13 @@ function Get-ISOEditions {
         }
 
         if (-not $driveLetter) {
+            Write-Host ""
             $result.Error = "Could not get drive letter after mounting ISO"
             Dismount-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue | Out-Null
             return $result
         }
+
+        Write-Host " $driveLetter" -ForegroundColor Green
 
         try {
             # Find install.wim or install.esd
