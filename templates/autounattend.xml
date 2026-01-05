@@ -8,12 +8,12 @@
             xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <SetupUILanguage>
-                <UILanguage>UILANGUAGE_PLACEHOLDER</UILanguage>
+                <UILanguage>en-US</UILanguage>
             </SetupUILanguage>
-            <InputLocale>INPUTLOCALE_PLACEHOLDER</InputLocale>
-            <SystemLocale>SYSTEMLOCALE_PLACEHOLDER</SystemLocale>
-            <UILanguage>UILANGUAGE_PLACEHOLDER</UILanguage>
-            <UserLocale>USERLOCALE_PLACEHOLDER</UserLocale>
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
         </component>
 
         <component name="Microsoft-Windows-Setup" processorArchitecture="amd64"
@@ -21,71 +21,11 @@
             xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-            <!-- Disk Configuration for UEFI/GPT -->
-            <DiskConfiguration>
-                <Disk wcm:action="add">
-                    <DiskID>0</DiskID>
-                    <WillWipeDisk>true</WillWipeDisk>
-                    <CreatePartitions>
-                        <!-- EFI System Partition (260MB) -->
-                        <CreatePartition wcm:action="add">
-                            <Order>1</Order>
-                            <Size>260</Size>
-                            <Type>EFI</Type>
-                        </CreatePartition>
-                        <!-- Microsoft Reserved Partition (16MB) -->
-                        <CreatePartition wcm:action="add">
-                            <Order>2</Order>
-                            <Size>16</Size>
-                            <Type>MSR</Type>
-                        </CreatePartition>
-                        <!-- Windows Partition (extend to fill disk) -->
-                        <CreatePartition wcm:action="add">
-                            <Order>3</Order>
-                            <Extend>true</Extend>
-                            <Type>Primary</Type>
-                        </CreatePartition>
-                    </CreatePartitions>
-                    <ModifyPartitions>
-                        <!-- Format EFI Partition -->
-                        <ModifyPartition wcm:action="add">
-                            <Order>1</Order>
-                            <PartitionID>1</PartitionID>
-                            <Format>FAT32</Format>
-                            <Label>System</Label>
-                        </ModifyPartition>
-                        <!-- MSR Partition - no formatting needed -->
-                        <ModifyPartition wcm:action="add">
-                            <Order>2</Order>
-                            <PartitionID>2</PartitionID>
-                        </ModifyPartition>
-                        <!-- Format Windows Partition -->
-                        <ModifyPartition wcm:action="add">
-                            <Order>3</Order>
-                            <PartitionID>3</PartitionID>
-                            <Format>NTFS</Format>
-                            <Label>Windows</Label>
-                            <Letter>C</Letter>
-                        </ModifyPartition>
-                    </ModifyPartitions>
-                </Disk>
-            </DiskConfiguration>
-
-            <!-- Image Install Settings -->
-            <ImageInstall>
-                <OSImage>
-                    <InstallTo>
-                        <DiskID>0</DiskID>
-                        <PartitionID>3</PartitionID>
-                    </InstallTo>
-                </OSImage>
-            </ImageInstall>
-
             <!-- User Data -->
             <UserData>
                 <ProductKey>
-                    <!-- Generic Windows key - replaced based on selected edition -->
-                    <Key>PRODUCTKEY_PLACEHOLDER</Key>
+                    <!-- Generic Windows 11 Pro key -->
+                    <Key>VK7JG-NPHTM-C97JM-9MPGT-3V66T</Key>
                     <WillShowUI>OnError</WillShowUI>
                 </ProductKey>
                 <AcceptEula>true</AcceptEula>
@@ -99,8 +39,8 @@
             publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
             xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <ComputerName>VibeDev-Template</ComputerName>
-            <TimeZone>TIMEZONE_PLACEHOLDER</TimeZone>
+            <ComputerName>DevBox-Template</ComputerName>
+            <TimeZone>Pacific Standard Time</TimeZone>
         </component>
 
         <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64"
@@ -123,14 +63,6 @@
                 </RunSynchronousCommand>
             </RunSynchronous>
         </component>
-
-        <!-- Disable Server Manager auto-start (if on Server) -->
-        <component name="Microsoft-Windows-ServerManager-SvrMgrNc" processorArchitecture="amd64"
-            publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <DoNotOpenServerManagerAtLogon>true</DoNotOpenServerManagerAtLogon>
-        </component>
     </settings>
 
     <!-- OOBE Pass: Out-of-Box Experience -->
@@ -147,8 +79,6 @@
                 <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
                 <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
                 <ProtectYourPC>3</ProtectYourPC>
-                <SkipMachineOOBE>true</SkipMachineOOBE>
-                <SkipUserOOBE>true</SkipUserOOBE>
             </OOBE>
 
             <!-- Local Admin Account -->
@@ -158,7 +88,7 @@
                         <Name>Admin</Name>
                         <Group>Administrators</Group>
                         <Password>
-                            <Value>ADMIN_PASSWORD_PLACEHOLDER</Value>
+                            <Value>VgBpAGIAZQBEAGUAdgAxADIAMwAhAFAAYQBzAHMAdwBvAHIAZAA=</Value>
                             <PlainText>false</PlainText>
                         </Password>
                     </LocalAccount>
@@ -170,7 +100,7 @@
                 <Enabled>true</Enabled>
                 <Username>Admin</Username>
                 <Password>
-                    <Value>ADMIN_PASSWORD_PLACEHOLDER</Value>
+                    <Value>VgBpAGIAZQBEAGUAdgAxADIAMwAhAFAAYQBzAHMAdwBvAHIAZAA=</Value>
                     <PlainText>false</PlainText>
                 </Password>
                 <LogonCount>5</LogonCount>
@@ -229,7 +159,7 @@
             </FirstLogonCommands>
 
             <!-- Regional settings -->
-            <TimeZone>TIMEZONE_PLACEHOLDER</TimeZone>
+            <TimeZone>Pacific Standard Time</TimeZone>
 
         </component>
 
@@ -238,10 +168,10 @@
             publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
             xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <InputLocale>INPUTLOCALE_PLACEHOLDER</InputLocale>
-            <SystemLocale>SYSTEMLOCALE_PLACEHOLDER</SystemLocale>
-            <UILanguage>UILANGUAGE_PLACEHOLDER</UILanguage>
-            <UserLocale>USERLOCALE_PLACEHOLDER</UserLocale>
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
         </component>
     </settings>
 
