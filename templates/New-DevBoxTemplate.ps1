@@ -486,15 +486,43 @@ function Get-ISOEditions {
     }
 
     try {
+        # Check if ISO is already mounted and dismount first
+        $existingMount = Get-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue
+        if ($existingMount -and $existingMount.Attached) {
+            Write-Host "    Dismounting existing mount..." -ForegroundColor DarkGray
+            Dismount-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue | Out-Null
+            Start-Sleep -Milliseconds 500
+        }
+
         # Mount ISO
+        Write-Host "    Mounting ISO..." -ForegroundColor DarkGray
         $mount = Mount-DiskImage -ImagePath $ISOPath -PassThru -ErrorAction Stop
-        $driveLetter = ($mount | Get-Volume).DriveLetter + ":"
+
+        # Wait for volume to be available (up to 10 seconds)
+        $driveLetter = $null
+        $attempts = 0
+        while (-not $driveLetter -and $attempts -lt 20) {
+            Start-Sleep -Milliseconds 500
+            $volume = $mount | Get-Volume -ErrorAction SilentlyContinue
+            if ($volume -and $volume.DriveLetter) {
+                $driveLetter = $volume.DriveLetter + ":"
+            }
+            $attempts++
+        }
+
+        if (-not $driveLetter) {
+            $result.Error = "Could not get drive letter after mounting ISO"
+            Dismount-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue | Out-Null
+            return $result
+        }
 
         try {
             # Find install.wim or install.esd
             $wimPath = Join-Path $driveLetter "sources\install.wim"
+            $isEsd = $false
             if (-not (Test-Path $wimPath)) {
                 $wimPath = Join-Path $driveLetter "sources\install.esd"
+                $isEsd = $true
                 if (-not (Test-Path $wimPath)) {
                     $result.Error = "Could not find install.wim or install.esd in ISO"
                     return $result
@@ -502,8 +530,30 @@ function Get-ISOEditions {
             }
             $result.WimPath = $wimPath
 
-            # Get editions using DISM
-            $dismOutput = & dism /Get-WimInfo /WimFile:"$wimPath" 2>&1
+            # Get editions using DISM (with progress for ESD files which are slower)
+            if ($isEsd) {
+                Write-Host "    Reading install.esd (this may take 30-60 seconds)..." -ForegroundColor DarkGray
+            } else {
+                Write-Host "    Reading install.wim..." -ForegroundColor DarkGray
+            }
+
+            # Run DISM with timeout
+            $dismJob = Start-Job -ScriptBlock {
+                param($wim)
+                & dism /Get-WimInfo /WimFile:"$wim" 2>&1
+            } -ArgumentList $wimPath
+
+            # Wait up to 120 seconds for DISM
+            $completed = Wait-Job $dismJob -Timeout 120
+            if (-not $completed) {
+                Stop-Job $dismJob -ErrorAction SilentlyContinue
+                Remove-Job $dismJob -Force -ErrorAction SilentlyContinue
+                $result.Error = "DISM timed out reading image info (try a different ISO)"
+                return $result
+            }
+
+            $dismOutput = Receive-Job $dismJob
+            Remove-Job $dismJob -Force -ErrorAction SilentlyContinue
 
             # Parse editions
             $currentIndex = 0
@@ -530,11 +580,14 @@ function Get-ISOEditions {
 
         } finally {
             # Dismount ISO
+            Write-Host "    Dismounting ISO..." -ForegroundColor DarkGray
             Dismount-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue | Out-Null
         }
 
     } catch {
         $result.Error = $_.Exception.Message
+        # Try to dismount on error
+        Dismount-DiskImage -ImagePath $ISOPath -ErrorAction SilentlyContinue | Out-Null
     }
 
     return $result
